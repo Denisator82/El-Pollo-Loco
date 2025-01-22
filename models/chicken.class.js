@@ -35,7 +35,7 @@ class Chicken extends MovableObject {
         let path = this.IMAGES_WALKING[i];
         this.img = this.imageCache[path];
         this.currentImage++;
-        }, 200);
+        }, 100);
     }
 
 

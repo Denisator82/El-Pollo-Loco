@@ -16,16 +16,20 @@ class World {
     ];
     ctx;
     canvas;
+    keyboard;
 
-    constructor(canvas){
+    constructor(canvas, keyboard){
         this.ctx = canvas.getContext('2d');
         this.canvas = canvas;
+        this.keyboard = keyboard; 
         this.draw();
+        this.setWorld();
     }
 
+    setWorld(){
+        this.character.world = this; // es wird nur "this" übergeben damit man die aktuelle Instanz der Welt hat
+    }
 
-
-    
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -34,8 +38,6 @@ class World {
         this.addObjectsToMap(this.enemies);
         this.addObjectsToMap(this.clouds);
         
-
-
         //Draw() wird immer wieder eingefügt 
         let self = this;
         requestAnimationFrame(function() {

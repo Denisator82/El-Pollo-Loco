@@ -6,7 +6,7 @@ class MovableObject {
     img;
     imageCache = [];
     currentImage = 0;
-    speed = 0.25;
+    speed = 0.15;
 
     //loadImage('img/test.png')
     loadImage(path) {
@@ -25,7 +25,6 @@ class MovableObject {
             this.imageCache[path] = img;
         });
     }
-
 
     moveRight(){
         console.log('Moving right');
