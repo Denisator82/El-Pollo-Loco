@@ -2,6 +2,7 @@ class Cloud extends MovableObject {
     y = 20;
     width = 500;
     height = 250;
+    
 
 
     constructor(){
@@ -12,9 +13,9 @@ class Cloud extends MovableObject {
     }
 
     animate(){
-        setInterval(() => {
-        this.x -= 0.25;
-        }, 1000 / 60);
+       this.moveLeft();
     }
+
+
 
 }
