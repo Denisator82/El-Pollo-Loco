@@ -12,7 +12,7 @@ class MovableObject {
     //loadImage('img/test.png')
     loadImage(path) {
         this.img = new Image(); //this.img = document.getElementById('image') <img id="image" src>
-        this.img.src= path; 
+        this.img.src = path; 
     }
 
     /**
@@ -26,6 +26,15 @@ class MovableObject {
             this.imageCache[path] = img;
         });
     }
+
+    playAnimation(images){
+        let i = this.currentImage % this.IMAGES_WALKING.length; // let i = 7 % 6; => 1, Rest 1
+        let path = images[i];
+        this.img = this.imageCache[path];
+        this.currentImage++;
+    }
+
+
 
     moveRight(){
         console.log('Moving right');
