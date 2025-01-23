@@ -34,8 +34,6 @@ class MovableObject {
         this.currentImage++;
     }
 
-
-
     moveRight(){
         console.log('Moving right');
     }
@@ -45,5 +43,4 @@ class MovableObject {
             this.x -= this.speed;
             }, 1000 / 60);
     }
-
 }

@@ -30,7 +30,6 @@ class Character extends MovableObject{
                 this.otherDirection = false;
                 this.walking_sound.play();
             }
-
             if(this.world.keyboard.LEFT && this.x > 0) {
                 this.x -= this.speed;
                 this.otherDirection = true;
@@ -39,9 +38,7 @@ class Character extends MovableObject{
             this.world.camera_x = -this.x + 100;
         }, 1000 / 60);
 
-
         setInterval(() => {
-
             if(this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
                 // Walk animation
                 this.playAnimation(this.IMAGES_WALKING);
