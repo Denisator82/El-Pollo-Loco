@@ -34,6 +34,12 @@ class Character extends MovableObject{
         'img/img_pollo_locco/img/2_character_pepe/5_dead/D-57.png'
     ];
 
+    IMAGES_HURT = [
+        'img/img_pollo_locco/img/2_character_pepe/4_hurt/H-41.png',
+        'img/img_pollo_locco/img/2_character_pepe/4_hurt/H-42.png',
+        'img/img_pollo_locco/img/2_character_pepe/4_hurt/H-43.png'
+    ];
+
 
     world;
     walking_sound = new Audio('audio/running_sand.mp3');
@@ -43,6 +49,7 @@ class Character extends MovableObject{
         this.loadImages(this.IMAGES_WALKING);
         this.loadImages(this.IMAGES_JUMPING);
         this.loadImages(this.IMAGES_DEAD);
+        this.loadImages(this.IMAGES_HURT);
         this.applyGravity();
         this.animate();
     }
@@ -70,16 +77,18 @@ class Character extends MovableObject{
             this.world.camera_x = -this.x + 100;
         }, 1000 / 60);
 
+
+        //Muss gechecked werden Video 14 thisHurt nicht vorhanden!
         setInterval(() => {
 
             if (this.isDead()) {
                 this.playAnimation(this.IMAGES_DEAD);
-            } else if(this.isAboveGround()) {
+            } else if(this.isHurt()) {
+                this.playAnimation(this.IMAGES_HURT);
+            } else if (this.isAboveGround()) {
                 this.playAnimation(this.IMAGES_JUMPING);
             } else {
-
-                if(this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
-                    // Walk animation
+                if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
                     this.playAnimation(this.IMAGES_WALKING);
                 }
             }    
