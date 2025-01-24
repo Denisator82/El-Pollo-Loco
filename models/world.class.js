@@ -5,6 +5,7 @@ class World {
     canvas;
     keyboard;
     camera_x = 0;
+    statusBar = new StatusBar();
 
     constructor(canvas, keyboard){
         this.ctx = canvas.getContext('2d');
@@ -22,8 +23,9 @@ class World {
     checkCollisions() {
         setInterval(() => {
             this.level.enemies.forEach( (enemy) => {
-                if( this.character.isColliding(enemy) ){
+                if( this.character.isColliding(enemy)){
                     this.character.hit();
+                    this.statusBar.setPercentage(this.character.energy);
                 }
             });
         },200);
@@ -31,11 +33,20 @@ class World {
 
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
         this.ctx.translate(this.camera_x, 0);
         this.addObjectsToMap(this.level.backgroundObjects);
+
+
+        this.ctx.translate(-this.camera_x, 0);
+        // ------ Space for fixed objects ------
+        this.addToMap(this.statusBar);
+        this.ctx.translate(this.camera_x, 0);
+
         this.addToMap(this.character);
         this.addObjectsToMap(this.level.clouds);
         this.addObjectsToMap(this.level.enemies);
+
         this.ctx.translate(-this.camera_x, 0);
 
         //Draw() wird immer wieder eingefügt 

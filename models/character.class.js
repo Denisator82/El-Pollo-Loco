@@ -78,20 +78,20 @@ class Character extends MovableObject{
         }, 1000 / 60);
 
 
-        //Muss gechecked werden Video 14 thisHurt nicht vorhanden!
         setInterval(() => {
 
             if (this.isDead()) {
-                this.playAnimation(this.IMAGES_DEAD);
+                this.playAnimation(this.IMAGES_DEAD)
             } else if(this.isHurt()) {
-                this.playAnimation(this.IMAGES_HURT);
+                this.playAnimation(this.IMAGES_HURT)
             } else if (this.isAboveGround()) {
-                this.playAnimation(this.IMAGES_JUMPING);
+                this.playAnimation(this.IMAGES_JUMPING)
             } else {
                 if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
                     this.playAnimation(this.IMAGES_WALKING);
                 }
-            }    
+            }
+
         }, 50);
     }
 
