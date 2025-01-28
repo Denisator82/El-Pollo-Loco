@@ -1,5 +1,4 @@
 class Bottle extends MoveableObject {
-    
     width = 80;
     height = 80;
 
@@ -8,7 +7,8 @@ class Bottle extends MoveableObject {
     ];
 
     constructor() {
-        super().loadImage('img/img_pollo_locco/img/6_salsa_bottle/1_salsa_bottle_on_ground.png');
+        super();
+        this.loadImage(this.IMAGES[0]);
         this.loadImages(this.IMAGES);
         this.x = 400 + Math.random() * 1500;
     }

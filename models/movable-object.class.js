@@ -1,4 +1,5 @@
 class MovableObject extends DrawableObject {
+    
     speed = 0.15;
     otherDirection = false;
     speedY = 0;
@@ -19,7 +20,7 @@ class MovableObject extends DrawableObject {
         if (this instanceof ThrowableObject) { // Throwable object should always fall
             return true;
         } else {
-            return this.y < 180;
+            return this.y < 115;
         }
     }
 
