@@ -1,4 +1,4 @@
-class Coin extends MoveableObject {
+class Coin extends MovableObject {
     width = 120;
     height = 120;
     collected = false; //Stautus der Münze

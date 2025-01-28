@@ -12,6 +12,8 @@ class MovableObject extends DrawableObject {
             if (this.isAboveGround() || this.speedY > 0) {
                 this.y -= this.speedY;
                 this.speedY -= this.acceleration;
+            }else {
+                this.speedY = 0; // reset the vertical speed when the character is on the ground
             }
         }, 1000 / 25);
     }
@@ -20,7 +22,7 @@ class MovableObject extends DrawableObject {
         if (this instanceof ThrowableObject) { // Throwable object should always fall
             return true;
         } else {
-            return this.y < 115;
+            return this.y < 115  ; //Adjust this value to match the ground level in game
         }
     }
 
