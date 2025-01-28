@@ -1,9 +1,46 @@
 body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Fredericka the Great', cursive;
+    height: 100vh;
+    width: 100vw;
+    background-image: url('img/background_1920x1080/desert01.png');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover; /* oder background-size: 100% 100%; */
     display: flex;
+    justify-content: center;
     flex-direction: column;
     align-items: center;
 }
 
+
 canvas {
     background-color: black;
+    display: block;
+    padding: 10px;
+    border: 5px;
+    border-radius: 5px;
+}
+
+.title {
+    margin-top: 0px;
+    margin-bottom: 25px;
+    text-align: center;
+    font-size: 94px
+}
+
+
+/*Smartphones ----------*/
+@media only screen and (max-width: 720px){
+    canvas {
+        width: 100%;
+    }
+}
+
+/*Smartphones ----------*/
+@media only screen and (max-height: 480px){
+    canvas {
+        height: 100vh;
+    }
 }
