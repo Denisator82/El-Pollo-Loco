@@ -16,19 +16,19 @@ function init(){
 
 
 window.addEventListener("keydown", (e) => {
-    if(e.keyCode == 39){
+    if(e.keyCode == 39 || e.keyCode == 68){
         keyboard.RIGHT = true;
     }
 
-    if(e.keyCode == 37){
+    if(e.keyCode == 37 || e.keyCode == 65){
         keyboard.LEFT = true;
     }
 
-    if(e.keyCode == 38){
+    if(e.keyCode == 38 || e.keyCode == 87){
         keyboard.UP = true;
     }
 
-    if(e.keyCode == 40){
+    if(e.keyCode == 40 || e.keyCode == 83){
         keyboard.DOWN = true;
     }
 
@@ -36,27 +36,27 @@ window.addEventListener("keydown", (e) => {
         keyboard.SPACE = true;
     }
 
-    if(e.keyCode == 68){
-        keyboard.D = true;
+    if(e.keyCode == 16){
+        keyboard.SHIFT = true;
     }
 
     
 });
 
 window.addEventListener("keyup", (e) => {
-    if(e.keyCode == 39){
+    if(e.keyCode == 39 || e.keyCode == 68){
         keyboard.RIGHT = false;
     }
 
-    if(e.keyCode == 37){
+    if(e.keyCode == 37 || e.keyCode == 65){
         keyboard.LEFT = false;
     }
 
-    if(e.keyCode == 36){
+    if(e.keyCode == 38 || e.keyCode == 87){
         keyboard.UP = false;
     }
 
-    if(e.keyCode == 40){
+    if(e.keyCode == 40 || e.keyCode == 83){
         keyboard.DOWN = false;
     }
 
@@ -64,8 +64,8 @@ window.addEventListener("keyup", (e) => {
         keyboard.SPACE = false;
     }
 
-    if(e.keyCode == 68){
-        keyboard.D = false;
+    if(e.keyCode == 16){
+        keyboard.SHIFT = false;
     }
 
     //console.log(e);

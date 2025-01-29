@@ -33,7 +33,7 @@ class World {
     }
 
     checkThrowObjects(){ //Flaschen schmeißen
-        if (this.keyboard.D) {
+        if (this.keyboard.SHIFT) {
             let bottle = new ThrowableObject(this.character.x + 100, this.character.y + 100);
             this.throwableObjects.push(bottle);
         }
@@ -50,14 +50,17 @@ class World {
         this.level.coins.forEach( (coin) => {
             if( this.character.isColliding(coin)){
                 this.character.collectCoin(coin);
-                this.statusBar.setPercentage(++this.coinCounter);
+                this.coinCounter++;
+                let percentage = (this.coinCounter / 10) * 100; // 10 Münzen 100%
+                this.statusBarCoin.setPercentage(percentage); // Aktualisiere die Statusleiste basierend auf dem Prozentsatz
             }
         });
 
-        this.level.bottles.forEach( (bottle) => {
-            if( this.character.isColliding(bottle)){
+        this.level.bottles.forEach((bottle) => {
+            if (this.character.isColliding(bottle)) {
                 this.character.collectBottle(bottle);
-                this.statusBarBottle.setPercentage(this.character.bottlesCollected); //Beispielaktualisierung der Statusleiste
+                let bottlePercentage = (this.character.bottlesCollected / 8) * 100; // 8 Flaschen entsprechen 100%
+                this.statusBarBottle.setPercentage(bottlePercentage); // Aktualisiere die Statusleiste basierend auf dem Prozentsatz
             }
         });
 

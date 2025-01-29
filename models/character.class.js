@@ -149,10 +149,27 @@ class Character extends MovableObject{
     collectCoin(coin) {
         this.coinsCollected++;
         this.world.removeObject(coin);
+        this.updateCoinStatus();
     }
 
-    collectCoin(bottle) {
+    updateCoinStatus(){
+        //1 Stufe pro 2 Münzen
+        const coinsPerLevel = 2;
+        const level = Math.floor(this.coinsCollected / coinsPerLevel);
+        const percentage = (level / 5) * 100;
+        this.world.statusBarCoin.setPercentage(percentage);
+    }
+
+    collectBottle(bottle) {
         this.bottlesCollected++;
         this.world.removeObject(bottle);
+        this.updateBottleStatus();
+    }
+
+    updateBottleStatus(){
+        // 1 Stufe pro 8 Flaschen
+        const bottlesPerLevel = 8;
+        const percentage = (this.bottlesCollected / bottlesPerLevel) * 100;
+        this.world.statusBarBottle.setPercentage(percentage);
     }
 }
