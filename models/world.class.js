@@ -32,10 +32,9 @@ class World {
         },200);
     }
 
-    checkThrowObjects(){ //Flaschen schmeißen
+    checkThrowObjects(){ // Flaschen werfen
         if (this.keyboard.SHIFT) {
-            let bottle = new ThrowableObject(this.character.x + 100, this.character.y + 100);
-            this.throwableObjects.push(bottle);
+            this.character.throwBottle();
         }
     }
 

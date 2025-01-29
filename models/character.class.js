@@ -172,4 +172,13 @@ class Character extends MovableObject{
         const percentage = (this.bottlesCollected / bottlesPerLevel) * 100;
         this.world.statusBarBottle.setPercentage(percentage);
     }
+
+    throwBottle() {
+        if (this.bottlesCollected > 0) {
+            this.bottlesCollected--;
+            this.updateBottleStatus();
+            let bottle = new ThrowableObject(this.x + 100, this.y + 100);
+            this.world.throwableObjects.push(bottle);
+        }
+    }
 }
