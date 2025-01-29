@@ -46,6 +46,21 @@ class World {
                 this.statusBar.setPercentage(this.character.energy);
             }
         });
+
+        this.level.coins.forEach( (coin) => {
+            if( this.character.isColliding(coin)){
+                this.character.collectCoin(coin);
+                this.statusBar.setPercentage(++this.coinCounter);
+            }
+        });
+
+        this.level.bottles.forEach( (bottle) => {
+            if( this.character.isColliding(bottle)){
+                this.character.collectBottle(bottle);
+                this.statusBarBottle.setPercentage(this.character.bottlesCollected); //Beispielaktualisierung der Statusleiste
+            }
+        });
+
     }
 
     draw() {
@@ -107,4 +122,11 @@ class World {
         this.ctx.restore();
     }
 
+    removeObject(object) {
+        if(object instanceof Coin) {
+            this.level.coins.splice(this.level.coins.indexOf(object), 1);
+        } else if (object instanceof Bottle) {
+            this.level.bottles.splice(this.level.bottles.indexOf(object), 1);
+        }
+    }
 }

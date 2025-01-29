@@ -2,9 +2,9 @@ class Character extends MovableObject{
     y = 40;
     height = 250;
     width = 120;
-    speed = 5;
-    standingTime = 0;
-    sleepDelay = 5000;
+    speed = 10;
+    coinsCollected = 0;
+    bottlesCollected = 0;
     
 
     IMAGES_STANDING = [
@@ -86,20 +86,7 @@ class Character extends MovableObject{
         this.animate();
     }
 
-    animateStanding(){
-        this.playAnimation(this.IMAGES_STANDING);
-        this.standingTime += 50;
-        if (this.standingTime >= this.sleepDelay) {
-            this.playAnimation(this.IMAGES_SLEEPING);
-        }
-    }
-
-    resetStandingTime() {
-        this.standingTime = 0;
-    }
-
     animate(){
-
         setInterval(() => {
             this.walking_sound.pause();
             if(this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
@@ -124,9 +111,7 @@ class Character extends MovableObject{
             this.world.camera_x = -this.x + 100;
         }, 1000 / 60);
 
-
         setInterval(() => {
-
             if (this.isDead()) {
                 this.playAnimation(this.IMAGES_DEAD);
                 this.resetStandingTime();
@@ -143,11 +128,31 @@ class Character extends MovableObject{
                 this.animateStanding();
             }
         }, 100);
+
+        setInterval(() => {
+            this.checkCollisions(); //Überprüfe Kollisionen
+        }, 1000/60);
     }
 
-    jump(){
-        if (!this.isAboveGround()){
-            this.speedY = 25;
-            }
-    }   
+    animateStanding(){
+        this.playAnimation(this.IMAGES_STANDING);
+        this.standingTime += 50;
+        if (this.standingTime >= this.sleepDelay) {
+            this.playAnimation(this.IMAGES_SLEEPING);
+        }
+    }
+
+    resetStandingTime() {
+        this.standingTime = 0;
+    }
+    
+    collectCoin(coin) {
+        this.coinsCollected++;
+        this.world.removeObject(coin);
+    }
+
+    collectCoin(bottle) {
+        this.bottlesCollected++;
+        this.world.removeObject(bottle);
+    }
 }

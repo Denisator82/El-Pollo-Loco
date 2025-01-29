@@ -6,7 +6,8 @@ class MovableObject extends DrawableObject {
     acceleration = 2.5;
     energy = 100;
     lastHit = 0;
-    standig = 0;
+    standingTime = 0;
+    sleepDelay = 5000;
 
     applyGravity() {
         setInterval(() => {
@@ -34,6 +35,28 @@ class MovableObject extends DrawableObject {
             this.y + this.height > mo.y &&
             this.x < mo.x &&
             this.y < mo.y + mo.height;
+    }
+
+    collectCoin(coin) {
+        if (this.isColliding(coin)) {
+            this.world.removeObject(coin); //Entferne die Münze aus der Welt
+        }
+    }
+
+    collectBottle(bottle) {
+        if (this.isColliding(bottle)) {
+            this.world.removeObject(bottle); //Entferne die Flasche aus der Welt
+        }
+    }
+
+    checkCollisions(){
+        this.world.coins.array.forEach(coin => {
+            this.collectCoin(coin);
+        });
+
+        this.world.bottles.array.forEach(bottle => {
+            this.collectBottle(bottle);
+        });
     }
 
     hit() {
@@ -71,6 +94,8 @@ class MovableObject extends DrawableObject {
     }
 
     jump(){
-        this.speedY = 30;
+        if (!this.isAboveGround()){
+            this.speedY = 25;
+            }
     }
 }
