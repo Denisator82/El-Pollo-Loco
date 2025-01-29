@@ -12,8 +12,8 @@ class Coin extends MovableObject {
         super() // Initialisiere die Elternklasse
         this.loadImage(this.IMAGES[0]); //Lade das erste Bild
         this.loadImages(this.IMAGES); //Lade alle Bilder in den Speicher
-        this.x = 400 + Math.random() * 500;
-        this.y = 100 + Math.random() * 100;
+        this.x = 200 + Math.random() * 1800;
+        this.y = 160 + Math.random() * 120;
         this.animate(); //Startet die animation
     };
 
@@ -38,7 +38,7 @@ class Coin extends MovableObject {
         setInterval(() => {
             this.coinCollected();
             this.coinAnimation();
-        }, 100);
+        }, 200);
     }
 
 }

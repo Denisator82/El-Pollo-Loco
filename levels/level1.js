@@ -15,6 +15,10 @@ let level1;
         ],
         [
             new Cloud(),
+            new Cloud(),
+            new Cloud(),
+            new Cloud(),
+            new Cloud(),
         ],
         [
             new BackgroundObject('img/img_pollo_locco/img/5_background/layers/air.png', -719),
@@ -41,6 +45,10 @@ let level1;
             new BackgroundObject('img/img_pollo_locco/img/5_background/layers/1_first_layer/2.png', 719*3),
         ],
         [
+            new Coin(),
+            new Coin(),
+            new Coin(),
+            new Coin(),
             new Coin(),
             new Coin(),
             new Coin(),

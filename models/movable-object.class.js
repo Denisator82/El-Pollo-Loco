@@ -22,7 +22,7 @@ class MovableObject extends DrawableObject {
         if (this instanceof ThrowableObject) { // Throwable object should always fall
             return true;
         } else {
-            return this.y < 115  ; //Adjust this value to match the ground level in game
+            return this.y < 175  ; //Adjust this value to match the ground level in game
         }
     }
 
