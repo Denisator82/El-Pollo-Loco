@@ -1,8 +1,8 @@
 class Endboss extends MovableObject {
-
     height = 400;
     width = 250;
     y = 55;
+    hadFirstContact = false;
 
     IMAGES_ALERT = [
         'img/img_pollo_locco/img/4_enemie_boss_chicken/2_alert/G5.png',
@@ -45,8 +45,6 @@ class Endboss extends MovableObject {
         'img/img_pollo_locco/img/4_enemie_boss_chicken/5_dead/G26.png',
     ];
 
-// hadFirstContact = false;
-
     constructor(){
         super().loadImage(this.IMAGES_ALERT[0]);
         this.loadImages(this.IMAGES_ALERT);
@@ -59,29 +57,22 @@ class Endboss extends MovableObject {
         this.speed = 0.25 - Math.random() * 0.25;
     }
 
-    //Junus Video: Intro Animation (Beim Endgegner)
-    // animate() {
-    //     let i = 0
-    //     setInterval(() => {
-
-    //         if(i < 10) {
-    //             this.playAnimation(this.IMAGES_ALERT);
-    //         } else {
-    //             this.playAnimation(this.IMAGES_WALKING);
-    //         }
-    //         i++;
-
-    //         if(world.character.x > 2800 && !hadFirstContact) {
-    //             i = 0;
-    //             hadFirstContact= true; 
-    //         }
-    //     }, 200);
-    // }
-
-    animate(){
-
+    animate() {
+        let i = 0
         setInterval(() => {
-            this.playAnimation(this.IMAGES_ALERT) ;
-        }, 200);
+            if(i < 10) {
+                this.playAnimation(this.IMAGES_ALERT);
+            } else if (i < 30) {
+                this.playAnimation(this.IMAGES_ATTACK);
+            } else {
+                this.playAnimation(this.IMAGES_WALKING);
+            }
+            i++;
+
+            if(world.character.x > 1500 && !hadFirstContact) {
+                i = 0;
+                hadFirstContact= true; 
+            }
+        }, 500);
     }
 }
