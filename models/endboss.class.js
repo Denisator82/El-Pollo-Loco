@@ -52,10 +52,43 @@ class Endboss extends MovableObject {
         this.loadImages(this.IMAGES_ATTACK);
         this.loadImages(this.IMAGES_HURT);
         this.loadImages(this.IMAGES_DEAD);
-        this.x = 2500; 
-        this.animate();
-        this.speed = 0.25 - Math.random() * 0.25;
+        this.x = 2500;
+        this.speed = 2; 
+        this.animate();    
     }
+
+    // animate() {
+    //     this.animateMovement();
+    //     this.animateBehavior();
+    // }
+
+    // animateMovement() {
+    //     setInterval(() => {
+    //         if (this.hadFirstContact) {
+    //             this.moveLeft;
+    //         }
+    //     }, 1000/ 60);
+    // }
+
+    // animateBehavior() {
+    //     let i = 0
+    //     setInterval(() => {
+    //         if(i < 10) {
+    //             this.playAnimation(this.IMAGES_ALERT);
+    //         } else if (i < 30) {
+    //             this.playAnimation(this.IMAGES_ATTACK);
+    //         } else {
+    //             this.playAnimation(this.IMAGES_WALKING);
+    //             this.x -= this.speed;
+    //         }
+    //         i++;
+
+    //         if(world.character.x > 2000 && !this.hadFirstContact) {
+    //             i = 0;
+    //             hadFirstContact= true; 
+    //         }
+    //     }, 200);
+    // }
 
     animate() {
         let i = 0
@@ -76,3 +109,6 @@ class Endboss extends MovableObject {
         }, 500);
     }
 }
+
+
+
