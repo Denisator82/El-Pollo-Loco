@@ -3,6 +3,7 @@ class Endboss extends MovableObject {
     width = 250;
     y = 55;
     hadFirstContact = false;
+    speed = 20;
 
     IMAGES_ALERT = [
         'img/img_pollo_locco/img/4_enemie_boss_chicken/2_alert/G5.png',
@@ -52,11 +53,32 @@ class Endboss extends MovableObject {
         this.loadImages(this.IMAGES_ATTACK);
         this.loadImages(this.IMAGES_HURT);
         this.loadImages(this.IMAGES_DEAD);
-        this.x = 2500;
-        this.speed = 2; 
+        this.x = 2500; // Platzierung vom Endboss auf der Karte
         this.animate();    
     }
 
+    animate() {
+        let i = 0
+        setInterval(() => {
+            if(i < 10) {
+                this.playAnimation(this.IMAGES_ALERT);
+            } else if (i < 30) {
+                this.playAnimation(this.IMAGES_ATTACK);
+            } else {
+                this.playAnimation(this.IMAGES_WALKING);
+                this.x -=this.speed;
+            }
+            i++;
+
+            if(world.character.x > 1500 && !hadFirstContact) {
+                i = 0;
+                hadFirstContact= true; 
+            }
+        }, 500);
+    }
+}
+
+//In Klärung
     // animate() {
     //     this.animateMovement();
     //     this.animateBehavior();
@@ -89,26 +111,5 @@ class Endboss extends MovableObject {
     //         }
     //     }, 200);
     // }
-
-    animate() {
-        let i = 0
-        setInterval(() => {
-            if(i < 10) {
-                this.playAnimation(this.IMAGES_ALERT);
-            } else if (i < 30) {
-                this.playAnimation(this.IMAGES_ATTACK);
-            } else {
-                this.playAnimation(this.IMAGES_WALKING);
-            }
-            i++;
-
-            if(world.character.x > 1500 && !hadFirstContact) {
-                i = 0;
-                hadFirstContact= true; 
-            }
-        }, 500);
-    }
-}
-
 
 
