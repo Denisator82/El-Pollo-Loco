@@ -6,7 +6,7 @@ class DrawableObject {
     y = 280;
     height = 150;
     width = 100;
-
+    offset = { top: 0, right: 0, bottom: 0, left: 0 }; // Füge die Offset-Eigenschaft hinzu
 
     //loadImage('img/test.png')
     loadImage(path) {

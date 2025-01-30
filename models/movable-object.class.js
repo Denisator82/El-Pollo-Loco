@@ -8,10 +8,10 @@ class MovableObject extends DrawableObject {
     standingTime = 0;
     sleepDelay = 5000;
     offset = {
-        top: 80,
+        top: 90,
         bottom: 10,
-        left: 20,
-        right: 30,
+        left: 40,
+        right: 40,
     }
 
     applyGravity() {

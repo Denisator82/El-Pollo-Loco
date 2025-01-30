@@ -17,6 +17,7 @@ class ChickenMini extends MovableObject {
         this.loadImage(this.IMAGES_WALKING[0]);
         this.loadImages(this.IMAGES_WALKING);
         this.loadImages(this.IMAGES_DEAD);
+        this.offset = { top: 0, right: 0, bottom: 0, left: 0 }; // Offset
 
         this.x = 600 + Math.random() * 1800; // Zahl zwischen 200 und 700
         this.speed = 0.15 + Math.random() * 0.55;

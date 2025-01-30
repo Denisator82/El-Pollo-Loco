@@ -12,6 +12,7 @@ class Coin extends MovableObject {
         super() // Initialisiere die Elternklasse
         this.loadImage(this.IMAGES[0]); //Lade das erste Bild
         this.loadImages(this.IMAGES); //Lade alle Bilder in den Speicher
+        this.offset = { top: 40, right: 40, bottom: 40, left: 40 }; // Offset
         this.x = 200 + Math.random() * 1800;
         this.y = 160 + Math.random() * 120;
         this.animate(); //Startet die animation

@@ -12,6 +12,7 @@ class Bottle extends MovableObject {
         super();
         this.loadImage(this.IMAGES[0]);
         this.loadImages(this.IMAGES);
+        this.offset = { top: 10, right: 15, bottom: 0, left: 20 }; // Beispiel-Offset
         this.x = 200 + Math.random() * 1800;
     }
 
