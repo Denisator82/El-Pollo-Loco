@@ -10,6 +10,7 @@ class StatusBarEndBoss extends DrawableObject {
     ];
 
     percentage = 100
+    visible = false; // Füge die sichtbare Eigenschaft hinzu
 
     constructor(){
         super();
@@ -41,6 +42,12 @@ class StatusBarEndBoss extends DrawableObject {
             return 1;
         } else {
             return 0;
+        }
+    }
+
+    draw(ctx) {
+        if (this.visible) { // Zeichne nur, wenn die Statusleiste sichtbar ist
+            ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
         }
     }
 }

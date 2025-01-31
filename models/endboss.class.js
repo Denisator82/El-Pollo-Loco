@@ -4,6 +4,7 @@ class Endboss extends MovableObject {
     y = 55;
     hadFirstContact = false;
     speed = 20;
+    visible = false
 
     IMAGES_ALERT = [
         'img/img_pollo_locco/img/4_enemie_boss_chicken/2_alert/G5.png',
@@ -53,63 +54,41 @@ class Endboss extends MovableObject {
         this.loadImages(this.IMAGES_ATTACK);
         this.loadImages(this.IMAGES_HURT);
         this.loadImages(this.IMAGES_DEAD);
-        this.x = 2500; // Platzierung vom Endboss auf der Karte
+        this.offset = { top: 80, bottom: 30, left: 40, right: 40};
+        this.x = 3200; // Platzierung vom Endboss auf der Karte
         this.animate();    
     }
 
     animate() {
-        let i = 0
         setInterval(() => {
-            if(i < 10) {
-                this.playAnimation(this.IMAGES_ALERT);
-            } else if (i < 30) {
-                this.playAnimation(this.IMAGES_ATTACK);
-            } else {
-                this.playAnimation(this.IMAGES_WALKING);
-                this.x -=this.speed;
+            if (world.character.x > 2200 && !this.hadFirstContact) {
+                this.hadFirstContact = true;
+                this.startAnimation();
             }
-            i++;
+        }, 1000 / 60); // Überprüfe kontinuierlich auf den ersten Kontakt mit dem Spieler
+    }
 
-            if(world.character.x > 1500 && !hadFirstContact) {
-                i = 0;
-                hadFirstContact= true; 
+    startAnimation() {
+        let i = 0; //Variable um ZUstand der Animation zu verfolgen
+        setInterval(() => {
+            if (i < 10) { // Abspielen der Alert Animation 5Sek.
+                this.playAnimation(this.IMAGES_ALERT);
+            } else if (i === 10) { // Statusbar Anzeigen
+                this.showStatusBar();
+            } else if (i < 30) { // i-Wert 20-30 Attack Animation 10sek.
+                this.playAnimation(this.IMAGES_ATTACK);
+            } else { // i-Wert ist 30 oder größer Walking Animation und bewegung nach links 
+                this.playAnimation(this.IMAGES_WALKING);
+                this.moveLeft();
             }
-        }, 500);
+            i++; // Erhöhung des Wertes bei jedem Intervall
+        }, 500); //Intervall 500 Millisekunden (2x pro Sekunde)
+    }
+
+    showStatusBar() {
+        world.statusBarEndBoss.visible = true;
     }
 }
 
-//In Klärung
-    // animate() {
-    //     this.animateMovement();
-    //     this.animateBehavior();
-    // }
-
-    // animateMovement() {
-    //     setInterval(() => {
-    //         if (this.hadFirstContact) {
-    //             this.moveLeft;
-    //         }
-    //     }, 1000/ 60);
-    // }
-
-    // animateBehavior() {
-    //     let i = 0
-    //     setInterval(() => {
-    //         if(i < 10) {
-    //             this.playAnimation(this.IMAGES_ALERT);
-    //         } else if (i < 30) {
-    //             this.playAnimation(this.IMAGES_ATTACK);
-    //         } else {
-    //             this.playAnimation(this.IMAGES_WALKING);
-    //             this.x -= this.speed;
-    //         }
-    //         i++;
-
-    //         if(world.character.x > 2000 && !this.hadFirstContact) {
-    //             i = 0;
-    //             hadFirstContact= true; 
-    //         }
-    //     }, 200);
-    // }
 
 
