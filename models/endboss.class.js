@@ -55,7 +55,7 @@ class Endboss extends MovableObject {
         this.loadImages(this.IMAGES_HURT);
         this.loadImages(this.IMAGES_DEAD);
         this.offset = { top: 80, bottom: 30, left: 40, right: 40};
-        this.x = 3200; // Platzierung vom Endboss auf der Karte
+        this.x = 3600; // Platzierung vom Endboss auf der Karte
         this.animate();    
     }
 
@@ -75,7 +75,7 @@ class Endboss extends MovableObject {
                 this.playAnimation(this.IMAGES_ALERT);
             } else if (i === 10) { // Statusbar Anzeigen
                 this.showStatusBar();
-            } else if (i < 30) { // i-Wert 20-30 Attack Animation 10sek.
+            } else if (i < 20) { // i-Wert 20-30 Attack Animation 10sek.
                 this.playAnimation(this.IMAGES_ATTACK);
             } else { // i-Wert ist 30 oder größer Walking Animation und bewegung nach links 
                 this.playAnimation(this.IMAGES_WALKING);

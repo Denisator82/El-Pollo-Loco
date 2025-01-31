@@ -62,7 +62,23 @@ class World {
                 this.statusBarBottle.setPercentage(bottlePercentage); // Aktualisiere die Statusleiste basierend auf dem Prozentsatz
             }
         });
+    }
 
+    removeObject(object) {
+        if(object instanceof Coin) {
+            this.level.coins.splice(this.level.coins.indexOf(object), 1);
+        } else if (object instanceof Bottle) {
+            this.level.bottles.splice(this.level.bottles.indexOf(object), 1);
+        }
+    }
+
+    checkCollisionBottleGround(bottle, index) {
+        if (!bottle.isAboveGround()) {
+            bottle.isColliding = true;
+            setTimeout(() => {
+                this.throwableObjects.splice(index, 1)
+            }, 50);
+        }
     }
 
     draw() {
@@ -125,11 +141,5 @@ class World {
         this.ctx.restore();
     }
 
-    removeObject(object) {
-        if(object instanceof Coin) {
-            this.level.coins.splice(this.level.coins.indexOf(object), 1);
-        } else if (object instanceof Bottle) {
-            this.level.bottles.splice(this.level.bottles.indexOf(object), 1);
-        }
-    }
+
 }

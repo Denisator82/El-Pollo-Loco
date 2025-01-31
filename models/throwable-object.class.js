@@ -25,6 +25,7 @@ class ThrowableObject extends MovableObject {
         this.height = 60;
         this.width = 50;
         this.throw();
+        this.animateRotation();
     }
 
     throw() {
@@ -34,4 +35,35 @@ class ThrowableObject extends MovableObject {
             this.x += 10;
         }, 25);
     }
+
+    animateRotation() {
+        setInterval(() => {
+            this.playAnimation(this.IMAGES_ROTATION);
+        }, 100);
+    }
+
+    // animateSplash(){
+    //     this.
+    // }
+    // applyGravity() {
+    //     setInterval(() => {
+    //         if (this.y < 360) { // Anpassen der Bodenhöhe nach Bedarf
+    //             this.y += this.speedY;
+    //             this.speedY -= 1;
+    //         } else {
+    //             this.y = 360; // Flasche am Boden positionieren
+    //             this.speedY = 0;
+    //             this.playSplashAnimation();
+    //             clearInterval(this.intervalId); // Stoppt das horizontale Bewegen
+    //             clearInterval(this.rotationIntervalId); // Stoppt das Rotieren
+    //         }
+    //     }, 25);
+    // }
+
+    // playSplashAnimation() {
+    //     this.splashIntervalId = setInterval(() => {
+    //         this.playAnimation(this.IMAGES_SPLASH);
+    //         clearInterval(this.splashIntervalId); // Stoppt die Splash-Animation nach einmaligem Abspielen
+    //     }, 100);
+    // }
 }
