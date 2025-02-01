@@ -40,33 +40,16 @@ class World {
     }
 
     checkCollisions() {
-    //     this.checkCollisionCharacterEnemy();
-    //     this.checkCollisionCharacterJump();
-    //     this.checkCollisionCharacterCoin();
-    //     this.checkCollisionCharacterBottle();
-    // }
 
-    // checkCollisionCharacterEnemy(){ // check collision Character mit Gegner
+        // Kollisionsprüfung für den Charakter mit Gegnern
         this.level.enemies.forEach( (enemy) => {
             if( this.character.isColliding(enemy)) {
                 this.character.hit();
                 this.statusBar.setPercentage(this.character.energy);
             }
         });
-    
 
-    // checkCollisionCharacterJump(){ // check collision Character mit Sprung auf Gegner
-    //     this.level.enemies.forEach(enemy => {
-    //         if(this.character.isColliding(enemy) && this.character.isAboveGround()) {
-    //             if (!enemy.chickenDead) {
-    //                 this.character.jump();
-    //             };
-    //             enemy.chickenDead = true;
-    //         }
-    //     });
-    // }
-
-    // checkCollisionCharacterCoin(){ // check collision Character mit Coin
+        // Kollisionsprüfung für den Charakter mit Münzen
         this.level.coins.forEach( (coin) => {
             if( this.character.isColliding(coin)){
                 this.character.collectCoin(coin);
@@ -76,13 +59,18 @@ class World {
             }
         });
 
-    // checkCollisionCharacterBottle(){ // check collision Character mit Flasche
+        // Kollisionsprüfung für den Charakter mit Flaschen
         this.level.bottles.forEach((bottle) => {
             if (this.character.isColliding(bottle)) {
                 this.character.collectBottle(bottle);
                 let bottlePercentage = (this.character.bottlesCollected / 8) * 100; // 8 Flaschen entsprechen 100%
                 this.statusBarBottle.setPercentage(bottlePercentage); // Aktualisiere die Statusleiste basierend auf dem Prozentsatz
             }
+        });
+
+        // Kollisionsprüfung für geworfene Flaschen mit dem Boden
+        this.throwableObjects.forEach((bottle) => {
+            this.checkCollisionBottleGround(bottle);
         });
     }
 

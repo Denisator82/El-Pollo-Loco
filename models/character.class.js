@@ -132,6 +132,7 @@ class Character extends MovableObject{
 
         setInterval(() => {
             this.checkCollisions(); //Überprüfe Kollisionen
+            this.jumpOnEnemy(); //Prüfung ob Character auf Gegner springt
         }, 1000/60);
     }
 
@@ -181,5 +182,18 @@ class Character extends MovableObject{
             let bottle = new ThrowableObject(this.x + 100, this.y + 100);
             this.world.throwableObjects.push(bottle);
         }
+    }
+
+      // Neue Methode zum Springen auf Gegner und Besiegen
+    jumpOnEnemy() {
+        this.world.level.enemies.forEach((enemy) => {
+            if (this.isColliding(enemy) && this.isAboveGround()) {
+                // Wenn der Charakter auf dem Gegner landet
+                if (this.y + this.height <= enemy.y + enemy.height / 2) {
+                    enemy.chickenDead = true; // Besiege den Gegner
+                    this.jump(); // Charakter springt weiter
+                }
+            }
+        });
     }
 }
