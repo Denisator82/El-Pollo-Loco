@@ -1,4 +1,4 @@
-class StatusBarEndBoss extends DrawableObject {
+class StatusBarEndboss extends DrawableObject {
 
     IMAGES_HEALTH = [
         'img/img_pollo_locco/img/7_statusbars/2_statusbar_endboss/orange/orange0.png',

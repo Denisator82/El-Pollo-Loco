@@ -55,12 +55,13 @@ class Endboss extends MovableObject {
         this.loadImages(this.IMAGES_HURT);
         this.loadImages(this.IMAGES_DEAD);
         this.offset = { top: 80, bottom: 30, left: 40, right: 40};
-        this.x = 3600; // Platzierung vom Endboss auf der Karte
+        this.x = 3900; // Platzierung vom Endboss auf der Karte
         this.animate();    
     }
 
     animate() {
         setInterval(() => {
+            // console.log('Überprüfe CHarakterposition:', world.character.x);
             if (world.character.x > 2200 && !this.hadFirstContact) {
                 this.hadFirstContact = true;
                 this.startAnimation();
@@ -71,11 +72,12 @@ class Endboss extends MovableObject {
     startAnimation() {
         let i = 0; //Variable um ZUstand der Animation zu verfolgen
         setInterval(() => {
+            console.log('Animation:', i);
             if (i < 10) { // Abspielen der Alert Animation 5Sek.
                 this.playAnimation(this.IMAGES_ALERT);
             } else if (i === 10) { // Statusbar Anzeigen
                 this.showStatusBar();
-            } else if (i < 20) { // i-Wert 20-30 Attack Animation 10sek.
+            } else if (i < 30) { // i-Wert 20-30 Attack Animation 10sek.
                 this.playAnimation(this.IMAGES_ATTACK);
             } else { // i-Wert ist 30 oder größer Walking Animation und bewegung nach links 
                 this.playAnimation(this.IMAGES_WALKING);
@@ -86,6 +88,7 @@ class Endboss extends MovableObject {
     }
 
     showStatusBar() {
+        console.log('Statusleiste anzeigen');
         world.statusBarEndBoss.visible = true;
     }
 }

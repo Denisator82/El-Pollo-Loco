@@ -7,56 +7,31 @@ class MovableObject extends DrawableObject {
     lastHit = 0;
     standingTime = 0;
     sleepDelay = 5000;
-    
+    groundLevel = 175;
 
     applyGravity() {
-        setInterval(() => {
-            if (this.isAboveGround() || this.speedY > 0) {
-                this.y -= this.speedY;
-                this.speedY -= this.acceleration;
-            }else {
-                this.speedY = 0; // reset the vertical speed when the character is on the ground
-            }
-        }, 1000 / 25);
+        if (this.isAboveGround() || this.speedY > 0) {
+            this.y -= this.speedY;
+            this.speedY -= this.acceleration;
+        }else {
+            this.speedY = 0; // reset the vertical speed when the character is on the ground
+        }
     }
 
     isAboveGround(){
         if (this instanceof ThrowableObject) { // Throwable object should always fall
             return true;
         } else {
-            return this.y < 175  ; //Adjust this value to match the ground level in game
+            return this.y < this.groundLevel  ; // groundlevel dynamisch festgelegt
         }
     }
 
-
-    // character.isColliding(chicken);
+    // character.isColliding
     isColliding(mo) {
         return this.x + this.width - this.offset.right> mo.x + mo.offset.left &&
             this.y + this.height - this.offset.bottom> mo.y + mo.offset.top &&
             this.x + this.offset.left < mo.x + mo.width - mo.offset.right &&
             this.y + this.offset.top < mo.y + mo.height - mo.offset.bottom;
-    }
-
-    // collectCoin(coin) {
-    //     if (this.isColliding(coin)) {
-    //         this.world.removeObject(coin); //Entferne die Münze aus der Welt
-    //     }
-    // }
-
-    // collectBottle(bottle) {
-    //     if (this.isColliding(bottle)) {
-    //         this.world.removeObject(bottle); //Entferne die Flasche aus der Welt
-    //     }
-    // }
-
-    checkCollisions(){
-        this.world.coins.array.forEach(coin => {
-            this.collectCoin(coin);
-        });
-
-        this.world.bottles.array.forEach(bottle => {
-            this.collectBottle(bottle);
-        });
     }
 
     hit() {

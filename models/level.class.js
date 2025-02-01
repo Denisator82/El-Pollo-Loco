@@ -1,4 +1,5 @@
 class Level {
+    // endboss = [];
     enemies = [];
     clouds = [];
     coins = [];
@@ -7,10 +8,11 @@ class Level {
     level_end_x = 3600; // Level Ende
 
     constructor(enemies = [], clouds = [], backgroundObjects = [], coins = [], bottles = []){
-        this.coins = coins;
-        this.bottles = bottles;
+        // this.endboss = endboss;
         this.enemies = enemies;
         this.clouds = clouds;
         this.backgroundObjects = backgroundObjects;
+        this.coins = coins;
+        this.bottles = bottles;
     }
 }

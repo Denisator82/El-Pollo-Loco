@@ -25,7 +25,7 @@ class ThrowableObject extends MovableObject {
         this.height = 60;
         this.width = 50;
         this.throw();
-        this.animateRotation();
+        // this.animateRotation();
     }
 
     throw() {
@@ -36,11 +36,11 @@ class ThrowableObject extends MovableObject {
         }, 25);
     }
 
-    animateRotation() {
-        setInterval(() => {
-            this.playAnimation(this.IMAGES_ROTATION);
-        }, 100);
-    }
+    // animateRotation() {
+    //     setInterval(() => {
+    //         this.playAnimation(this.IMAGES_ROTATION);
+    //     }, 100);
+    // }
 
     // animateSplash(){
     //     this.

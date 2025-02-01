@@ -11,6 +11,7 @@ class World {
     statusBarEndBoss = new StatusBarEndBoss();
     throwableObjects = [];
     coinCounter = 0;
+    gameOver = false;
 
     constructor(canvas, keyboard){
         this.ctx = canvas.getContext('2d');
@@ -38,14 +39,34 @@ class World {
         }
     }
 
-    checkCollisions(){
+    checkCollisions() {
+    //     this.checkCollisionCharacterEnemy();
+    //     this.checkCollisionCharacterJump();
+    //     this.checkCollisionCharacterCoin();
+    //     this.checkCollisionCharacterBottle();
+    // }
+
+    // checkCollisionCharacterEnemy(){ // check collision Character mit Gegner
         this.level.enemies.forEach( (enemy) => {
-            if( this.character.isColliding(enemy)){
+            if( this.character.isColliding(enemy)) {
                 this.character.hit();
                 this.statusBar.setPercentage(this.character.energy);
             }
         });
+    
 
+    // checkCollisionCharacterJump(){ // check collision Character mit Sprung auf Gegner
+    //     this.level.enemies.forEach(enemy => {
+    //         if(this.character.isColliding(enemy) && this.character.isAboveGround()) {
+    //             if (!enemy.chickenDead) {
+    //                 this.character.jump();
+    //             };
+    //             enemy.chickenDead = true;
+    //         }
+    //     });
+    // }
+
+    // checkCollisionCharacterCoin(){ // check collision Character mit Coin
         this.level.coins.forEach( (coin) => {
             if( this.character.isColliding(coin)){
                 this.character.collectCoin(coin);
@@ -55,6 +76,7 @@ class World {
             }
         });
 
+    // checkCollisionCharacterBottle(){ // check collision Character mit Flasche
         this.level.bottles.forEach((bottle) => {
             if (this.character.isColliding(bottle)) {
                 this.character.collectBottle(bottle);
@@ -72,11 +94,11 @@ class World {
         }
     }
 
-    checkCollisionBottleGround(bottle, index) {
+    checkCollisionBottleGround(bottle) {
         if (!bottle.isAboveGround()) {
             bottle.isColliding = true;
             setTimeout(() => {
-                this.throwableObjects.splice(index, 1)
+                this.throwableObjects.splice(this.throwableObjects.indexOf(bottle), 1)
             }, 50);
         }
     }
@@ -97,9 +119,11 @@ class World {
         this.ctx.translate(this.camera_x, 0);
 
         this.addToMap(this.character);
+        // this.addObjectsToMap(this.level.endboss);
         this.addObjectsToMap(this.level.enemies);
         this.addObjectsToMap(this.level.coins);
         this.addObjectsToMap(this.level.bottles);
+        
         this.addObjectsToMap(this.throwableObjects);
 
         this.ctx.translate(-this.camera_x, 0);
@@ -140,6 +164,4 @@ class World {
         mo.x = mo.x * -1;
         this.ctx.restore();
     }
-
-
 }
