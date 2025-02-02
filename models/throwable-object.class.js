@@ -1,4 +1,5 @@
 class ThrowableObject extends MovableObject {
+    isColliding = false;
 
     IMAGES_ROTATION = [
         'img/img_pollo_locco/img/6_salsa_bottle/bottle_rotation/1_bottle_rotation.png',
@@ -25,45 +26,29 @@ class ThrowableObject extends MovableObject {
         this.height = 60;
         this.width = 50;
         this.throw();
-        // this.animateRotation();
+        this.animate();
     }
 
     throw() {
         this.speedY = 30;
-        this.applyGravity();
-        setInterval( () => {
-            this.x += 10;
-        }, 25);
+        this.xSpeed = 10;
     }
 
-    // animateRotation() {
-    //     setInterval(() => {
-    //         this.playAnimation(this.IMAGES_ROTATION);
-    //     }, 100);
-    // }
+    animate() {
+        setInterval(() => {
+            // Apply gravity
+            this.applyGravity();
 
-    // animateSplash(){
-    //     this.
-    // }
-    // applyGravity() {
-    //     setInterval(() => {
-    //         if (this.y < 360) { // Anpassen der Bodenhöhe nach Bedarf
-    //             this.y += this.speedY;
-    //             this.speedY -= 1;
-    //         } else {
-    //             this.y = 360; // Flasche am Boden positionieren
-    //             this.speedY = 0;
-    //             this.playSplashAnimation();
-    //             clearInterval(this.intervalId); // Stoppt das horizontale Bewegen
-    //             clearInterval(this.rotationIntervalId); // Stoppt das Rotieren
-    //         }
-    //     }, 25);
-    // }
+            // Move horizontally
+            this.x += this.xSpeed;
 
-    // playSplashAnimation() {
-    //     this.splashIntervalId = setInterval(() => {
-    //         this.playAnimation(this.IMAGES_SPLASH);
-    //         clearInterval(this.splashIntervalId); // Stoppt die Splash-Animation nach einmaligem Abspielen
-    //     }, 100);
-    // }
+            // Rotate while in the air
+            if (this.isAboveGround() && !this.isColliding) {
+                this.playAnimation(this.IMAGES_ROTATION);
+            } else {
+                // Show splash after hitting the ground
+                this.playAnimation(this.IMAGES_SPLASH);
+            }
+        }, 1000 / 60); // Refresh at 60fps
+    }
 }

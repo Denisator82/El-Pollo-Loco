@@ -7,7 +7,6 @@ class MovableObject extends DrawableObject {
     lastHit = 0;
     standingTime = 0;
     sleepDelay = 5000;
-    groundLevel = 175;
 
     applyGravity() {
         if (this.isAboveGround() || this.speedY > 0) {
@@ -22,7 +21,7 @@ class MovableObject extends DrawableObject {
         if (this instanceof ThrowableObject) { // Throwable object should always fall
             return true;
         } else {
-            return this.y < this.groundLevel  ; // groundlevel dynamisch festgelegt
+            return this.y < 175  ;
         }
     }
 
@@ -33,6 +32,9 @@ class MovableObject extends DrawableObject {
             this.x + this.offset.left < mo.x + mo.width - mo.offset.right &&
             this.y + this.offset.top < mo.y + mo.height - mo.offset.bottom;
     }
+
+
+    
 
     hit() {
         this.energy -= 5;

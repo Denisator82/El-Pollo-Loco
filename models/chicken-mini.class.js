@@ -13,8 +13,7 @@ class ChickenMini extends MovableObject {
     ];
 
     constructor(){
-        super();
-        this.loadImage(this.IMAGES_WALKING[0]);
+        super().loadImage(this.IMAGES_WALKING[0]);
         this.loadImages(this.IMAGES_WALKING);
         this.loadImages(this.IMAGES_DEAD);
         this.offset = { top: 0, right: 0, bottom: 0, left: 0 }; // Offset

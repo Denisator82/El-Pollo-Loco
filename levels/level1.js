@@ -11,7 +11,7 @@ let level1;
             new ChickenMini(),
             new ChickenMini(),
             new ChickenMini(),
-            new EndBoss(),
+            new Endboss(),
         ],
         [
             new Cloud(),

@@ -14,8 +14,9 @@ class Chicken extends MovableObject {
     ];
 
     constructor(){
-        super().loadImage('img/img_pollo_locco/img/3_enemies_chicken/chicken_normal/1_walk/1_w.png');
+        super().loadImage(this.IMAGES_WALKING[0]);
         this.loadImages(this.IMAGES_WALKING);
+        this.loadImages(this.IMAGES_DEAD);
         this.offset = { top: 0, right: 0, bottom: 0, left: 0 }; // Offset
 
         this.x = 400 + Math.random() * 2200; // Zahl zwischen 200 und 700

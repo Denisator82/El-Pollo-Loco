@@ -1,10 +1,10 @@
-class EndBoss extends MovableObject {
+class Endboss extends MovableObject {
     height = 400;
     width = 250;
     y = 55;
     hadFirstContact = false;
     speed = 20;
-    visible = false
+    visible = false;
 
     IMAGES_ALERT = [
         'img/img_pollo_locco/img/4_enemie_boss_chicken/2_alert/G5.png',
@@ -55,13 +55,12 @@ class EndBoss extends MovableObject {
         this.loadImages(this.IMAGES_HURT);
         this.loadImages(this.IMAGES_DEAD);
         this.offset = { top: 80, bottom: 30, left: 40, right: 40};
-        this.x = 3900; // Platzierung vom Endboss auf der Karte
+        this.x = 3600; // Platzierung vom Endboss auf der Karte
         this.animate();    
     }
 
     animate() {
         setInterval(() => {
-            // console.log('Überprüfe CHarakterposition:', world.character.x);
             if (world.character.x > 2200 && !this.hadFirstContact) {
                 this.hadFirstContact = true;
                 this.startAnimation();
@@ -72,7 +71,6 @@ class EndBoss extends MovableObject {
     startAnimation() {
         let i = 0; //Variable um ZUstand der Animation zu verfolgen
         setInterval(() => {
-            console.log('Animation:', i);
             if (i < 10) { // Abspielen der Alert Animation 5Sek.
                 this.playAnimation(this.IMAGES_ALERT);
             } else if (i === 10) { // Statusbar Anzeigen
@@ -88,10 +86,8 @@ class EndBoss extends MovableObject {
     }
 
     showStatusBar() {
-        console.log('Statusleiste anzeigen');
         world.statusBarEndBoss.visible = true;
     }
 }
-
 
 

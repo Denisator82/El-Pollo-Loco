@@ -71,7 +71,8 @@ class Character extends MovableObject{
     ];
 
     world;
-    walking_sound = new Audio('audio/running_sand.mp3');
+    walking_sound = new Audio('audio/walking_sound.mp3');
+    jumping_sound = new Audio('audio/jumping_sound.mp3');
     
     constructor(){
         super(); // Oberklasse
@@ -106,6 +107,7 @@ class Character extends MovableObject{
 
             if(this.world.keyboard.SPACE && !this.isAboveGround()) {
                 this.jump();
+                this.jumping_sound.play();
                 this.resetStandingTime();
             }
 
@@ -132,13 +134,13 @@ class Character extends MovableObject{
 
         setInterval(() => {
             this.checkCollisions(); //Überprüfe Kollisionen
-            this.jumpOnEnemy(); //Prüfung ob Character auf Gegner springt
+            // this.jumpOnEnemy(); //Prüfung ob Character auf Gegner springt
         }, 1000/60);
     }
 
     animateStanding(){
         this.playAnimation(this.IMAGES_STANDING);
-        this.standingTime += 50;
+        this.standingTime += 100;
         if (this.standingTime >= this.sleepDelay) {
             this.playAnimation(this.IMAGES_SLEEPING);
         }
@@ -184,16 +186,28 @@ class Character extends MovableObject{
         }
     }
 
-      // Neue Methode zum Springen auf Gegner und Besiegen
-    jumpOnEnemy() {
-        this.world.level.enemies.forEach((enemy) => {
-            if (this.isColliding(enemy) && this.isAboveGround()) {
-                // Wenn der Charakter auf dem Gegner landet
-                if (this.y + this.height <= enemy.y + enemy.height / 2) {
-                    enemy.chickenDead = true; // Besiege den Gegner
-                    this.jump(); // Charakter springt weiter
-                }
+    //   // Neue Methode zum Springen auf Gegner und Besiegen
+    // jumpOnEnemy() {
+    //     this.world.level.enemies.forEach((enemy) => {
+    //         if (this.isColliding(enemy) && this.isAboveGround()) {
+    //             // Wenn der Charakter auf dem Gegner landet
+    //             if (this.y + this.height <= enemy.y + enemy.height / 2) {
+    //                 enemy.chickenDead = true; // Besiege den Gegner
+    //                 this.jump(); // Charakter springt weiter
+    //             }
+    //         }
+    //     });
+    // }
+
+    checkCollisions() {
+        // Überprüfe Kollisionen zwischen dem Charakter und der Welt oder anderen Objekten
+        // z.B. Kollision mit Wänden oder Gegnern:
+        this.level.enemies.forEach(enemy => {
+            if (this.isColliding(enemy)) {
+                console.log('Kollision mit Gegner erkannt!');
+                // Weitere Logik hier
             }
         });
     }
+    
 }

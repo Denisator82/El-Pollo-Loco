@@ -8,15 +8,14 @@ class World {
     statusBar = new StatusBar();
     statusBarBottle = new StatusBarBottle();
     statusBarCoin = new StatusBarCoin();
-    statusBarEndBoss = new StatusBarEndBoss();
+    statusBarEndboss = new StatusBarEndboss();
     throwableObjects = [];
     coinCounter = 0;
-    gameOver = false;
 
     constructor(canvas, keyboard){
         this.ctx = canvas.getContext('2d');
         this.canvas = canvas;
-        this.keyboard = keyboard; 
+        this.keyboard = keyboard;
         this.draw();
         this.setWorld();
         this.run();
@@ -39,8 +38,14 @@ class World {
         }
     }
 
-    checkCollisions() {
+    checkCollisions(){
+        this.checkCollisionsWithEnemies();
+        this.checkCollisionsWithCoins();
+        this.checkCollisionsWithBottles();
+        this.checkCollisionsWithThrowableBottles();
+    }
 
+    checkCollisionsWithEnemies() {
         // Kollisionsprüfung für den Charakter mit Gegnern
         this.level.enemies.forEach( (enemy) => {
             if( this.character.isColliding(enemy)) {
@@ -48,17 +53,21 @@ class World {
                 this.statusBar.setPercentage(this.character.energy);
             }
         });
+    }
 
+    checkCollisionsWithCoins() {
         // Kollisionsprüfung für den Charakter mit Münzen
-        this.level.coins.forEach( (coin) => {
-            if( this.character.isColliding(coin)){
+        this.level.coins.forEach((coin) => {
+            if( this.character.isColliding(coin)) {
                 this.character.collectCoin(coin);
                 this.coinCounter++;
                 let percentage = (this.coinCounter / 10) * 100; // 10 Münzen 100%
                 this.statusBarCoin.setPercentage(percentage); // Aktualisiere die Statusleiste basierend auf dem Prozentsatz
             }
         });
+    }
 
+    checkCollisionsWithBottles() {
         // Kollisionsprüfung für den Charakter mit Flaschen
         this.level.bottles.forEach((bottle) => {
             if (this.character.isColliding(bottle)) {
@@ -67,26 +76,22 @@ class World {
                 this.statusBarBottle.setPercentage(bottlePercentage); // Aktualisiere die Statusleiste basierend auf dem Prozentsatz
             }
         });
+    }
 
+    checkCollisionsWithThrowableBottles() {
         // Kollisionsprüfung für geworfene Flaschen mit dem Boden
         this.throwableObjects.forEach((bottle) => {
             this.checkCollisionBottleGround(bottle);
         });
     }
 
-    removeObject(object) {
-        if(object instanceof Coin) {
-            this.level.coins.splice(this.level.coins.indexOf(object), 1);
-        } else if (object instanceof Bottle) {
-            this.level.bottles.splice(this.level.bottles.indexOf(object), 1);
-        }
-    }
+
 
     checkCollisionBottleGround(bottle) {
         if (!bottle.isAboveGround()) {
             bottle.isColliding = true;
             setTimeout(() => {
-                this.throwableObjects.splice(this.throwableObjects.indexOf(bottle), 1)
+                this.throwableObjects.splice(this.throwableObjects.indexOf(bottle), 1);
             }, 50);
         }
     }
@@ -103,15 +108,13 @@ class World {
         this.addToMap(this.statusBar);
         this.addToMap(this.statusBarBottle);
         this.addToMap(this.statusBarCoin);
-        this.addToMap(this.statusBarEndBoss);
+        this.addToMap(this.statusBarEndboss);
         this.ctx.translate(this.camera_x, 0);
 
         this.addToMap(this.character);
-        // this.addObjectsToMap(this.level.endboss);
         this.addObjectsToMap(this.level.enemies);
         this.addObjectsToMap(this.level.coins);
         this.addObjectsToMap(this.level.bottles);
-        
         this.addObjectsToMap(this.throwableObjects);
 
         this.ctx.translate(-this.camera_x, 0);
@@ -151,5 +154,13 @@ class World {
     flipImageBack(mo){
         mo.x = mo.x * -1;
         this.ctx.restore();
+    }
+
+    removeObject(object) {
+        if (object instanceof Coin) {
+            this.level.coins.splice(this.level.coins.indexOf(object), 1);
+        } else if (object instanceof Bottle) {
+            this.level.bottles.splice(this.level.bottles.indexOf(object), 1);
+        }
     }
 }
