@@ -4,7 +4,7 @@ let level1;
 
     level1 = new Level(
         [
-            new Endboss(),
+            new Endboss()
         ],
         [
             new Chicken(),

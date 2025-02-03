@@ -1,5 +1,5 @@
 class ThrowableObject extends MovableObject {
-    isColliding = false;
+    // isColliding = false;
 
     IMAGES_ROTATION = [
         'img/img_pollo_locco/img/6_salsa_bottle/bottle_rotation/1_bottle_rotation.png',
@@ -26,29 +26,32 @@ class ThrowableObject extends MovableObject {
         this.height = 60;
         this.width = 50;
         this.throw();
-        this.animate();
+        // this.animate();
     }
 
     throw() {
         this.speedY = 30;
-        this.xSpeed = 10;
+        this.applyGravity();
+        setInterval( () => {
+            this.x += 10;
+        }, 25);
     }
 
-    animate() {
-        setInterval(() => {
-            // Apply gravity
-            this.applyGravity();
+    // animate() {
+    //     setInterval(() => {
+    //         // Apply gravity
+    //         this.applyGravity();
 
-            // Move horizontally
-            this.x += this.xSpeed;
+    //         // Move horizontally
+    //         this.x += this.xSpeed;
 
-            // Rotate while in the air
-            if (this.isAboveGround() && !this.isColliding) {
-                this.playAnimation(this.IMAGES_ROTATION);
-            } else {
-                // Show splash after hitting the ground
-                this.playAnimation(this.IMAGES_SPLASH);
-            }
-        }, 1000 / 60); // Refresh at 60fps
-    }
+    //         // Rotate while in the air
+    //         if (this.isAboveGround() && !this.isColliding) {
+    //             this.playAnimation(this.IMAGES_ROTATION);
+    //         } else {
+    //             // Show splash after hitting the ground
+    //             this.playAnimation(this.IMAGES_SPLASH);
+    //         }
+    //     }, 1000 / 60); // Refresh at 60fps
+    // }
 }

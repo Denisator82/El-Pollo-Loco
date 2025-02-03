@@ -134,7 +134,7 @@ class Character extends MovableObject{
     
         setInterval(() => {
             this.checkCollisions(); //Überprüfe Kollisionen
-            this.jumpOnEnemy(); //Prüfung ob Character auf Gegner springt
+            // this.jumpOnEnemy(); //Prüfung ob Character auf Gegner springt
         }, 1000/60);
     }
 
@@ -186,28 +186,28 @@ class Character extends MovableObject{
         }
     }
 
-      // Neue Methode zum Springen auf Gegner und Besiegen
-    jumpOnEnemy() {
-        this.world.level.enemies.forEach((enemy) => {
-            if (this.isColliding(enemy) && this.isAboveGround()) {
-                // Wenn der Charakter auf dem Gegner landet
-                if (this.y + this.height <= enemy.y + enemy.height / 2) {
-                    enemy.chickenDead = true; // Besiege den Gegner
-                    this.jump(); // Charakter springt weiter
-                }
-            }
-        });
-    }
+    //   // Neue Methode zum Springen auf Gegner und Besiegen
+    // jumpOnEnemy() {
+    //     this.world.level.enemies.forEach((enemy) => {
+    //         if (this.isColliding(enemy) && this.isAboveGround()) {
+    //             // Wenn der Charakter auf dem Gegner landet
+    //             if (this.y + this.height <= enemy.y + enemy.height / 2) {
+    //                 enemy.chickenDead = true; // Besiege den Gegner
+    //                 this.jump(); // Charakter springt weiter
+    //             }
+    //         }
+    //     });
+    // }
 
-    checkCollisions() {
-        // Überprüfe Kollisionen zwischen dem Charakter und der Welt oder anderen Objekten
-        // z.B. Kollision mit Wänden oder Gegnern:
-        this.level.enemies.forEach(enemy => {
-            if (this.isColliding(enemy)) {
-                console.log('Kollision mit Gegner erkannt!');
-                // Weitere Logik hier
-            }
-        });
-    }
+    // checkCollisions() {
+    //     // Überprüfe Kollisionen zwischen dem Charakter und der Welt oder anderen Objekten
+    //     // z.B. Kollision mit Wänden oder Gegnern:
+    //     this.level.enemies.forEach(enemy => {
+    //         if (this.isColliding(enemy)) {
+    //             console.log('Kollision mit Gegner erkannt!');
+    //             // Weitere Logik hier
+    //         }
+    //     });
+    // }
     
 }

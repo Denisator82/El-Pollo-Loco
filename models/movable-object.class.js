@@ -9,12 +9,14 @@ class MovableObject extends DrawableObject {
     sleepDelay = 5000;
 
     applyGravity() {
-        if (this.isAboveGround() || this.speedY > 0) {
-            this.y -= this.speedY;
-            this.speedY -= this.acceleration;
-        }else {
-            this.speedY = 0; // reset the vertical speed when the character is on the ground
-        }
+        setInterval(() => {
+            if (this.isAboveGround() || this.speedY > 0) {
+                this.y -= this.speedY;
+                this.speedY -= this.acceleration;
+            }else {
+                this.speedY = 0; // reset the vertical speed when the character is on the ground
+            }
+        }, 1000 / 25);
     }
 
     isAboveGround(){
@@ -33,8 +35,32 @@ class MovableObject extends DrawableObject {
             this.y + this.offset.top < mo.y + mo.height - mo.offset.bottom;
     }
 
+    // Wurden aus der Sicherung hinzugefügt **
 
+    // collectCoin(coin) {
+    //     if (this.isColliding(coin)) {
+    //         this.world.removeObject(coin); //Entferne die Münze aus der Welt
+    //     }
+    // }
+
+    // collectBottle(bottle) {
+    //     if (this.isColliding(bottle)) {
+    //         this.world.removeObject(bottle); //Entferne die Flasche aus der Welt
+    //     }
+    // }
     
+
+    // checkCollisions(){
+    //     this.world.coins.array.forEach(coin => {
+    //         this.collectCoin(coin);
+    //     });
+
+    //     this.world.bottles.array.forEach(bottle => {
+    //         this.collectBottle(bottle);
+    //     });
+    // }
+
+    // **
 
     hit() {
         this.energy -= 5;
