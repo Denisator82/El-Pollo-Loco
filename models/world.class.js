@@ -22,7 +22,7 @@ class World {
     }
 
     setWorld(){
-        this.character.world = this; // es wird nur "this" übergeben damit man die aktuelle Instanz der Welt hat
+        this.character.World = this; // es wird nur "this" übergeben damit man die aktuelle Instanz der Welt hat
     }
 
     run() {
@@ -86,15 +86,23 @@ class World {
     }
 
 
-
     checkCollisionBottleGround(bottle) {
         if (!bottle.isAboveGround()) {
             bottle.isColliding = true;
             setTimeout(() => {
                 this.throwableObjects.splice(this.throwableObjects.indexOf(bottle), 1);
             }, 50);
-        }
+        };
     }
+
+    removeObject(object) {
+        if (object instanceof Coin) {
+            this.level.coins.splice(this.level.coins.indexOf(object), 1);
+        } else if (object instanceof Bottle) {
+            this.level.bottles.splice(this.level.bottles.indexOf(object), 1);
+        };
+    }
+
 
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -112,6 +120,7 @@ class World {
         this.ctx.translate(this.camera_x, 0);
 
         this.addToMap(this.character);
+        this.addObjectsToMap(this.level.endboss);
         this.addObjectsToMap(this.level.enemies);
         this.addObjectsToMap(this.level.coins);
         this.addObjectsToMap(this.level.bottles);
@@ -135,13 +144,13 @@ class World {
     addToMap(mo) {
         if (mo.otherDirection){
             this.flipImage(mo);
-        }
+        };
         mo.draw(this.ctx);
         mo.drawFrame(this.ctx);
 
         if (mo.otherDirection) {
             this.flipImageBack(mo);
-        }
+        };
     }
 
     flipImage(mo){
@@ -156,11 +165,5 @@ class World {
         this.ctx.restore();
     }
 
-    removeObject(object) {
-        if (object instanceof Coin) {
-            this.level.coins.splice(this.level.coins.indexOf(object), 1);
-        } else if (object instanceof Bottle) {
-            this.level.bottles.splice(this.level.bottles.indexOf(object), 1);
-        }
-    }
+
 }

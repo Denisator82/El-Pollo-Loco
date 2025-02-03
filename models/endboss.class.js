@@ -47,6 +47,8 @@ class Endboss extends MovableObject {
         'img/img_pollo_locco/img/4_enemie_boss_chicken/5_dead/G26.png',
     ];
 
+    world;
+
     constructor(){
         super().loadImage(this.IMAGES_ALERT[0]);
         this.loadImages(this.IMAGES_ALERT);
@@ -61,7 +63,7 @@ class Endboss extends MovableObject {
 
     animate() {
         setInterval(() => {
-            if (world.character.x > 2200 && !this.hadFirstContact) {
+            if (this.world.character.x > 2200 && !this.hadFirstContact) {
                 this.hadFirstContact = true;
                 this.startAnimation();
             }
@@ -69,7 +71,7 @@ class Endboss extends MovableObject {
     }
 
     startAnimation() {
-        let i = 0; //Variable um ZUstand der Animation zu verfolgen
+        let i = 0; //Variable um Zustand der Animation zu verfolgen
         setInterval(() => {
             if (i < 10) { // Abspielen der Alert Animation 5Sek.
                 this.playAnimation(this.IMAGES_ALERT);

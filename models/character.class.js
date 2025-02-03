@@ -1,5 +1,5 @@
 class Character extends MovableObject{
-    y = 40;
+    y = 180;
     height = 250;
     width = 120;
     speed = 10;
@@ -39,7 +39,7 @@ class Character extends MovableObject{
         'img/img_pollo_locco/img/2_character_pepe/2_walk/W-23.png',
         'img/img_pollo_locco/img/2_character_pepe/2_walk/W-24.png',
         'img/img_pollo_locco/img/2_character_pepe/2_walk/W-25.png',
-        'img/img_pollo_locco/img/2_character_pepe/2_walk/W-26.png'
+        'img/img_pollo_locco/img/2_character_pepe/2_walk/W-26.png',
     ];
 
     IMAGES_JUMPING = [
@@ -131,10 +131,10 @@ class Character extends MovableObject{
                 this.animateStanding();
             }
         }, 100);
-
+    
         setInterval(() => {
             this.checkCollisions(); //Überprüfe Kollisionen
-            // this.jumpOnEnemy(); //Prüfung ob Character auf Gegner springt
+            this.jumpOnEnemy(); //Prüfung ob Character auf Gegner springt
         }, 1000/60);
     }
 
@@ -186,18 +186,18 @@ class Character extends MovableObject{
         }
     }
 
-    //   // Neue Methode zum Springen auf Gegner und Besiegen
-    // jumpOnEnemy() {
-    //     this.world.level.enemies.forEach((enemy) => {
-    //         if (this.isColliding(enemy) && this.isAboveGround()) {
-    //             // Wenn der Charakter auf dem Gegner landet
-    //             if (this.y + this.height <= enemy.y + enemy.height / 2) {
-    //                 enemy.chickenDead = true; // Besiege den Gegner
-    //                 this.jump(); // Charakter springt weiter
-    //             }
-    //         }
-    //     });
-    // }
+      // Neue Methode zum Springen auf Gegner und Besiegen
+    jumpOnEnemy() {
+        this.world.level.enemies.forEach((enemy) => {
+            if (this.isColliding(enemy) && this.isAboveGround()) {
+                // Wenn der Charakter auf dem Gegner landet
+                if (this.y + this.height <= enemy.y + enemy.height / 2) {
+                    enemy.chickenDead = true; // Besiege den Gegner
+                    this.jump(); // Charakter springt weiter
+                }
+            }
+        });
+    }
 
     checkCollisions() {
         // Überprüfe Kollisionen zwischen dem Charakter und der Welt oder anderen Objekten
