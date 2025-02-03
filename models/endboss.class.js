@@ -73,14 +73,14 @@ class Endboss extends MovableObject {
             }
             i++;
 
-            if(world.character.x > 1500 && !hadFirstContact) {
+            if(world.character.x > 1500 && !this.hadFirstContact) {
                 i = 0;
-                hadFirstContact= true; 
+                this.hadFirstContact= true; 
             }
         }, 500);
     }
 
     showStatusBar() {
-        world.statusBarEndBoss.visible = true;
+        world.statusBarEndboss.visible = true;
     }
 }

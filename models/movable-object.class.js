@@ -7,25 +7,28 @@ class MovableObject extends DrawableObject {
     lastHit = 0;
     standingTime = 0;
     sleepDelay = 5000;
+    groundLevel = 175;
 
     applyGravity() {
-        setInterval(() => {
+        const gravityEffect = () => {
             if (this.isAboveGround() || this.speedY > 0) {
                 this.y -= this.speedY;
                 this.speedY -= this.acceleration;
-            }else {
+            } else {
                 this.speedY = 0; // reset the vertical speed when the character is on the ground
             }
-        }, 1000 / 25);
-    }
+            requestAnimationFrame(gravityEffect);
+        };
+        gravityEffect();
+    }    
 
-    isAboveGround(){
-        if (this instanceof ThrowableObject) { // Throwable object should always fall
+    isAboveGround() {
+        if (this instanceof ThrowableObject) {
             return true;
-        } else {
-            return this.y < 175  ;
         }
+        return this.y < this.groundLevel; // groundLevel könnte eine definierte Konstante sein
     }
+    
 
     // character.isColliding
     isColliding(mo) {

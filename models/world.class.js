@@ -38,38 +38,97 @@ class World {
         }
     }
 
-    checkCollisions(){
-        this.level.enemies.forEach( (enemy) => {
-            if( this.character.isColliding(enemy)){
+    checkCollisions() {
+        this.checkCollisionsWithEnemies();
+        this.checkCollisionsWithCoins();
+        this.checkCollisionsWithBottles();
+    }
+    
+    checkCollisionsWithEnemies() {
+        this.level.enemies.forEach(enemy => {
+            if (this.character.isColliding(enemy)) {
                 this.character.hit();
                 this.statusBar.setPercentage(this.character.energy);
-            }
-        });
-
-        this.level.endboss.forEach( (enemy) => {
-            if( this.character.isColliding(enemy)){
-                this.character.hit();
-                this.statusBar.setPercentage(this.character.energy);
-            }
-        });
-
-        this.level.coins.forEach( (coin) => {
-            if( this.character.isColliding(coin)){
-                this.character.collectCoin(coin);
-                this.coinCounter++;
-                let percentage = (this.coinCounter / 10) * 100; // 10 Münzen 100%
-                this.statusBarCoin.setPercentage(percentage); // Aktualisiere die Statusleiste basierend auf dem Prozentsatz
-            }
-        });
-
-        this.level.bottles.forEach((bottle) => {
-            if (this.character.isColliding(bottle)) {
-                this.character.collectBottle(bottle);
-                let bottlePercentage = (this.character.bottlesCollected / 8) * 100; // 8 Flaschen entsprechen 100%
-                this.statusBarBottle.setPercentage(bottlePercentage); // Aktualisiere die Statusleiste basierend auf dem Prozentsatz
             }
         });
     }
+    
+    checkCollisionsWithCoins() {
+        this.level.coins.forEach(coin => {
+            if (this.character.isColliding(coin)) {
+                this.character.collectCoin(coin);
+                this.coinCounter++;
+                let percentage = (this.coinCounter / 10) * 100;
+                this.statusBarCoin.setPercentage(percentage);
+            }
+        });
+    }
+    
+    checkCollisionsWithBottles() {
+        this.level.bottles.forEach(bottle => {
+            if (this.character.isColliding(bottle)) {
+                this.character.collectBottle(bottle);
+                let bottlePercentage = (this.character.bottlesCollected / 8) * 100;
+                this.statusBarBottle.setPercentage(bottlePercentage);
+            }
+        });
+    }
+    
+    removeObject(object) {
+        if (object instanceof Coin) {
+            const index = this.level.coins.indexOf(object);
+            if (index > -1) {
+                this.level.coins.splice(index, 1);
+            }
+        } else if (object instanceof Bottle) {
+            const index = this.level.bottles.indexOf(object);
+            if (index > -1) {
+                this.level.bottles.splice(index, 1);
+            }
+        }
+    }
+    
+
+    // checkCollisions(){
+    //     this.level.enemies.forEach( (enemy) => {
+    //         if( this.character.isColliding(enemy)){
+    //             this.character.hit();
+    //             this.statusBar.setPercentage(this.character.energy);
+    //         }
+    //     });
+
+    //     this.level.endboss.forEach( (enemy) => {
+    //         if( this.character.isColliding(enemy)){
+    //             this.character.hit();
+    //             this.statusBar.setPercentage(this.character.energy);
+    //         }
+    //     });
+
+    //     this.level.coins.forEach( (coin) => {
+    //         if( this.character.isColliding(coin)){
+    //             this.character.collectCoin(coin);
+    //             this.coinCounter++;
+    //             let percentage = (this.coinCounter / 10) * 100; // 10 Münzen 100%
+    //             this.statusBarCoin.setPercentage(percentage); // Aktualisiere die Statusleiste basierend auf dem Prozentsatz
+    //         }
+    //     });
+
+    //     this.level.bottles.forEach((bottle) => {
+    //         if (this.character.isColliding(bottle)) {
+    //             this.character.collectBottle(bottle);
+    //             let bottlePercentage = (this.character.bottlesCollected / 8) * 100; // 8 Flaschen entsprechen 100%
+    //             this.statusBarBottle.setPercentage(bottlePercentage); // Aktualisiere die Statusleiste basierend auf dem Prozentsatz
+    //         }
+    //     });
+    // }
+
+    // removeObject(object) {
+    //     if(object instanceof Coin) {
+    //         this.level.coins.splice(this.level.coins.indexOf(object), 1);
+    //     } else if (object instanceof Bottle) {
+    //         this.level.bottles.splice(this.level.bottles.indexOf(object), 1);
+    //     }
+    // }
 
         // checkCollisions(){
     //     this.checkCollisionsWithEnemies();
@@ -135,6 +194,10 @@ class World {
         this.addObjectsToMap(this.level.backgroundObjects);
         this.addObjectsToMap(this.level.clouds);
 
+        // ---- Überprüfe Kollision und andere Lokiken----
+        this.checkCollisions();
+        this.checkThrowObjects();
+
         this.ctx.translate(-this.camera_x, 0);
         // ------ Space for fixed objects ------
         this.addToMap(this.statusBar);
@@ -143,9 +206,8 @@ class World {
         this.addToMap(this.statusBarEndboss);
         this.ctx.translate(this.camera_x, 0);
 
-        
-        this.addObjectsToMap(this.level.endboss);
         this.addToMap(this.character);
+        this.addObjectsToMap(this.level.endboss);
         this.addObjectsToMap(this.level.enemies);
         this.addObjectsToMap(this.level.coins);
         this.addObjectsToMap(this.level.bottles);
@@ -153,12 +215,17 @@ class World {
 
         this.ctx.translate(-this.camera_x, 0);
 
-        //Draw() wird immer wieder eingefügt 
-        let self = this;
-        requestAnimationFrame(function() {
-            self.draw();
+        requestAnimationFrame(() => {
+
+            this.draw();
         });
     }
+    //     //Draw() wird immer wieder eingefügt 
+    //     let self = this;
+    //     requestAnimationFrame(function() {
+    //         self.draw();
+    //     });
+    // }
 
     addObjectsToMap(objects){
         objects.forEach(o => {
@@ -190,11 +257,5 @@ class World {
         this.ctx.restore();
     }
 
-    removeObject(object) {
-        if(object instanceof Coin) {
-            this.level.coins.splice(this.level.coins.indexOf(object), 1);
-        } else if (object instanceof Bottle) {
-            this.level.bottles.splice(this.level.bottles.indexOf(object), 1);
-        }
-    }
+
 }
