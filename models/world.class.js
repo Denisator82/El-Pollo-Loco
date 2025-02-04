@@ -16,7 +16,9 @@ class World {
     statusBarEndboss = new StatusBarEndboss();
     throwableObjects = [];
     coinCounter = 0;
-
+    gameOver = false;
+    chickenDead_sound = new Audio('audio/chickenDead_sound.mp3');
+    
     /**
      * Initializes the World class.
      * Sets up the canvas context, the canvas element, and the keyboard input.
@@ -44,12 +46,16 @@ class World {
 
     /**
     * Starts the interval for the game.
-    * Continuously checks for collisions and manages throwable objects every 200 milliseconds.
+    * Continuously checks for collisions every 25 milliseconds.
+    * Continuously checks for manages throwable objects every 200 milliseconds.
     */
     run() {
         setInterval(() => {
             this.checkCollisions();
+        },25);
+        setInterval(() => {
             this.checkThrowObjects();
+            // this.checkCollisionThrowableObject();
         }, 200);
     }
 
@@ -68,18 +74,32 @@ class World {
      * Calls methods th check for collisions with enemies, coins and bottles.
      */
     checkCollisions() {
-        this.checkCollisionsWithEnemies();
-        this.checkCollisionsWithCoins();
-        this.checkCollisionsWithBottles();
+        this.checkCollisionsCharacterWithEnemies();
+        this.checkCollisionsCharacterWithEndboss();
+        this.checkCollisionsCharacterWithCoins();
+        this.checkCollisionsCharacterWithBottles();
     }
     
     /**
      * Checks collision between character and enemies.
      * If a collision is detected, the character takes a hit and the status bar is updated.
      */
-    checkCollisionsWithEnemies() {
+    checkCollisionsCharacterWithEnemies() {
         this.level.enemies.forEach(enemy => {
-            if (this.character.isColliding(enemy)) {
+            if (this.character.isColliding(enemy) && !enemy.chickenIsDead) {
+                this.character.hit();
+                this.statusBar.setPercentage(this.character.energy);
+            }
+        });
+    }
+
+    /**
+     * Checks collision between character and endboss.
+     * If a collision is detected, the character takes a hit and the status bar is updated.
+     */
+    checkCollisionsCharacterWithEndboss() {
+        this.level.endboss.forEach(endboss => {
+            if (this.character.isColliding(endboss)) {
                 this.character.hit();
                 this.statusBar.setPercentage(this.character.energy);
             }
@@ -91,7 +111,7 @@ class World {
      * If a collision is detected, the coin is collected, the coin counter is incremented,
      * and the coin status bar is updated.
      */
-    checkCollisionsWithCoins() {
+    checkCollisionsCharacterWithCoins() {
         this.level.coins.forEach(coin => {
             if (this.character.isColliding(coin)) {
                 this.character.collectCoin(coin);
@@ -108,7 +128,7 @@ class World {
      * the number of collected bottles is updated, 
      * and the bottle status bar is updated based on the collected percentage.
      */
-    checkCollisionsWithBottles() {
+    checkCollisionsCharacterWithBottles() {
         this.level.bottles.forEach(bottle => {
             if (this.character.isColliding(bottle)) {
                 this.character.collectBottle(bottle);
@@ -137,6 +157,60 @@ class World {
         }
     }
 
+
+    // /**
+    //  * checks collisions of the bottles
+    //  * 
+    //  */
+    //     checkCollisionThrowableObject() {
+    //         this.checkCollisionBottleFinalboss();
+    //         this.checkCollisionBottleGround();
+    //     }
+
+    // /**
+    //  * checks collision between bottle and final boss
+    //  * 
+    //  * @param {object} bottle 
+    //  * @param {number} index 
+    //  */
+    //     checkCollisionBottleFinalboss() {
+    //         this.level.bottle.forEach(bottle => {
+    //             if (this.endboss.isColliding(bottle)) {
+    //                 this.endboss.hit();
+    //                 this.statusBarEndboss.setPercentage(this.endboss.energy);
+    //             }
+    //         }, 200);
+    //     }
+
+        //     if (this.level.bottle.isColliding(endboss)) {
+        //         console.log('Enboss getroffen'); //Log in der Konsole
+        //         this.level.endboss.hitFinalBoss();
+        //         this.statusBarEndboss.setPercentage(this.level.endboss.energyFinalBoss);
+        //         bottle.isColliding = true;
+        //         setTimeout(() => {
+        //             this.throwableObjects.splice(index, 1)
+        //         }, 200);
+        //     };
+        // }
+
+
+
+    // /**
+    //  * checks collision between bottle and ground
+    //  * 
+    //  * @param {object} bottle 
+    //  * @param {number} index 
+    //  */
+    //     checkCollisionBottleGround(bottle, index) {
+    //         if (!bottle.isAboveGround()) {
+    //             console.log('Flasche hat den Boden erreicht'); //Log in der Konsole
+    //             bottle.isColliding = true;
+    //             setTimeout(() => {
+    //                 this.throwableObjects.splice(index, 1)
+    //             }, 50);
+    //         };
+    //     }
+
     /**
      * Draws the entire game frame by frame.
      * Clears the canvas, translates the context based on camera position,
@@ -150,10 +224,6 @@ class World {
         this.ctx.translate(this.camera_x, 0);
         this.addObjectsToMap(this.level.backgroundObjects);
         this.addObjectsToMap(this.level.clouds);
-
-        // ---- Überprüfe Kollision und andere Logiken ----
-        this.checkCollisions();
-        this.checkThrowObjects();
 
         // Reset the translation for fixed objects
         this.ctx.translate(-this.camera_x, 0);
@@ -200,13 +270,13 @@ class World {
     addToMap(mo) {
         if (mo.otherDirection) {
             this.flipImage(mo);
-        }
+        };
         mo.draw(this.ctx);
         mo.drawFrame(this.ctx);
 
         if (mo.otherDirection) {
             this.flipImageBack(mo);
-        }
+        };
     }
 
     /**
@@ -229,102 +299,3 @@ class World {
         this.ctx.restore();
     }
 }
-
-/*Muss geprüft werden 03.02.2025***/
-    // checkCollisions(){
-    //     this.level.enemies.forEach( (enemy) => {
-    //         if( this.character.isColliding(enemy)){
-    //             this.character.hit();
-    //             this.statusBar.setPercentage(this.character.energy);
-    //         }
-    //     });
-
-    //     this.level.endboss.forEach( (enemy) => {
-    //         if( this.character.isColliding(enemy)){
-    //             this.character.hit();
-    //             this.statusBar.setPercentage(this.character.energy);
-    //         }
-    //     });
-
-    //     this.level.coins.forEach( (coin) => {
-    //         if( this.character.isColliding(coin)){
-    //             this.character.collectCoin(coin);
-    //             this.coinCounter++;
-    //             let percentage = (this.coinCounter / 10) * 100; // 10 Münzen 100%
-    //             this.statusBarCoin.setPercentage(percentage); // Aktualisiere die Statusleiste basierend auf dem Prozentsatz
-    //         }
-    //     });
-
-    //     this.level.bottles.forEach((bottle) => {
-    //         if (this.character.isColliding(bottle)) {
-    //             this.character.collectBottle(bottle);
-    //             let bottlePercentage = (this.character.bottlesCollected / 8) * 100; // 8 Flaschen entsprechen 100%
-    //             this.statusBarBottle.setPercentage(bottlePercentage); // Aktualisiere die Statusleiste basierend auf dem Prozentsatz
-    //         }
-    //     });
-    // }
-
-    // removeObject(object) {
-    //     if(object instanceof Coin) {
-    //         this.level.coins.splice(this.level.coins.indexOf(object), 1);
-    //     } else if (object instanceof Bottle) {
-    //         this.level.bottles.splice(this.level.bottles.indexOf(object), 1);
-    //     }
-    // }
-
-        // checkCollisions(){
-    //     this.checkCollisionsWithEnemies();
-    //     this.checkCollisionsWithCoins();
-    //     this.checkCollisionsWithBottles();
-    //     this.checkCollisionsWithThrowableBottles();
-    // }
-
-    // checkCollisionsWithEnemies() {
-    //     // Kollisionsprüfung für den Charakter mit Gegnern
-    //     this.level.enemies.forEach( (enemy) => {
-    //         if( this.character.isColliding(enemy)) {
-    //             this.character.hit();
-    //             this.statusBar.setPercentage(this.character.energy);
-    //         }
-    //     });
-    // }
-
-    // checkCollisionsWithCoins() {
-    //     // Kollisionsprüfung für den Charakter mit Münzen
-    //     this.level.coins.forEach((coin) => {
-    //         if( this.character.isColliding(coin)) {
-    //             this.character.collectCoin(coin);
-    //             this.coinCounter++;
-    //             let percentage = (this.coinCounter / 10) * 100; // 10 Münzen 100%
-    //             this.statusBarCoin.setPercentage(percentage); // Aktualisiere die Statusleiste basierend auf dem Prozentsatz
-    //         }
-    //     });
-    // }
-
-    // checkCollisionsWithBottles() {
-    //     // Kollisionsprüfung für den Charakter mit Flaschen
-    //     this.level.bottles.forEach((bottle) => {
-    //         if (this.character.isColliding(bottle)) {
-    //             this.character.collectBottle(bottle);
-    //             let bottlePercentage = (this.character.bottlesCollected / 8) * 100; // 8 Flaschen entsprechen 100%
-    //             this.statusBarBottle.setPercentage(bottlePercentage); // Aktualisiere die Statusleiste basierend auf dem Prozentsatz
-    //         }
-    //     });
-    // }
-
-    // checkCollisionsWithThrowableBottles() {
-    //     // Kollisionsprüfung für geworfene Flaschen mit dem Boden
-    //     this.throwableObjects.forEach((bottle) => {
-    //         this.checkCollisionBottleGround(bottle);
-    //     });
-    // }
-
-
-    // checkCollisionBottleGround(bottle) {
-    //     if (!bottle.isAboveGround()) {
-    //         bottle.isColliding = true;
-    //         setTimeout(() => {
-    //             this.throwableObjects.splice(this.throwableObjects.indexOf(bottle), 1);
-    //         }, 50);
-    //     };
-    // }

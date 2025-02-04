@@ -39,10 +39,10 @@ class ThrowableObject extends MovableObject {
         this.loadImages(this.IMAGES_SPLASH);
         this.x = x;
         this.y = y;
-        this.height = 60;
-        this.width = 50;
+        this.height = 80;
+        this.width = 80;
         this.throw();
-        // this.animate();
+        this.animate();
     }
 
     /**
@@ -50,32 +50,28 @@ class ThrowableObject extends MovableObject {
      * Updates the horizontal position at regular intervals to simulate the throw movement.
      */
     throw() {
-        this.speedY = 35;
-        this.applyGravity();
+        this.speedY = 20;
+        if (!this.isColliding) {
+            this.applyGravity();
+            setInterval(() => {
+                this.x += 10;
+            }, 25);   
+        }       
         setInterval(() => {
-            this.x += 20;
-        }, 25);
+            this.animate();
+        }, 100);
+    }
+
+    /**
+     * Animates the bottle.
+     * If the bottle is above ground and not colliding, plays the rotation animation.
+     * Otherwise, plays the splash animation.
+     */
+    animate() {
+        if (this.isAboveGround() && !this.isColliding) {
+            this.playAnimation(this.IMAGES_ROTATION);
+        } else {
+            this.playAnimation(this.IMAGES_SPLASH);
+        }
     }
 }
-
-
-
-
-
-    // animate() {
-    //     setInterval(() => {
-    //         // Apply gravity
-    //         this.applyGravity();
-
-    //         // Move horizontally
-    //         this.x += this.xSpeed;
-
-    //         // Rotate while in the air
-    //         if (this.isAboveGround() && !this.isColliding) {
-    //             this.playAnimation(this.IMAGES_ROTATION);
-    //         } else {
-    //             // Show splash after hitting the ground
-    //             this.playAnimation(this.IMAGES_SPLASH);
-    //         }
-    //     }, 1000 / 60); // Refresh at 60fps
-    // }

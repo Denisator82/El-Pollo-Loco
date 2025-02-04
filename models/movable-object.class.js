@@ -11,7 +11,7 @@ class MovableObject extends DrawableObject {
     energy = 100; // Energy level of the object
     lastHit = 0; // Timestamp of the last hit
     standingTime = 0; // Time the object has been standing still
-    sleepDelay = 5000; // Delay before the object goes to sleep
+    sleepDelay = 6000; // Delay before the object goes to sleep
     groundLevel = 175; // Y-coordinate for the ground level
 
     /**
@@ -32,19 +32,19 @@ class MovableObject extends DrawableObject {
         gravityEffect();
     }
 
-/**
- * Checks if the object is above the ground level.
- * If the object is an instance of ThrowableObject, always returns true.
- * Otherwise, returns true if the object's y-position is less than the ground level.
- * 
- * @returns {boolean} - True if the object is above the ground, otherwise false.
- */
-isAboveGround() {
-    if (this instanceof ThrowableObject) {
-        return true;
+    /**
+     * Checks if the object is above the ground level.
+     * If the object is an instance of ThrowableObject, always returns true.
+     * Otherwise, returns true if the object's y-position is less than the ground level.
+     * 
+     * @returns {boolean} - True if the object is above the ground, otherwise false.
+     */
+    isAboveGround() {
+        if (this instanceof ThrowableObject) {
+            return true;
+        }
+        return this.y < this.groundLevel; // groundLevel könnte eine definierte Konstante sein
     }
-    return this.y < this.groundLevel; // groundLevel könnte eine definierte Konstante sein
-}
 
     /**
      * Checks if the character is colliding with another movable object.
@@ -60,39 +60,7 @@ isAboveGround() {
             this.y + this.offset.top < mo.y + mo.height - mo.offset.bottom;
     }
 
-    /**
-     * Reduces the character's energy by a fixed amount (5) when hit.
-     * If energy falls below 0, it is set to 0. Otherwise, updates the timestamp of the last hit.
-     */
-    hit() {
-        this.energy -= 5;
-        if (this.energy < 0) {
-            this.energy = 0;
-        } else {
-            this.lastHit = new Date().getTime();
-        }
-    }
 
-    /**
-     * Checks if the character is currently hurt.
-     * Calculates the time passed since the last hit in seconds.
-     * 
-     * @returns {boolean} - True if the character was hit within the last second, otherwise false.
-     */
-    isHurt() {
-        let timepassed = new Date().getTime() - this.lastHit; // Difference in ms
-        timepassed = timepassed / 1000; // Difference in s
-        return timepassed < 1;
-    }
-
-    /**
-     * Checks if the character is dead.
-     * 
-     * @returns {boolean} - True if the character's energy is 0, otherwise false.
-     */
-    isDead() {
-        return this.energy == 0;
-    }
 
     /**
      * Plays the animation by cycling through a list of images.
@@ -110,26 +78,12 @@ isAboveGround() {
     }
 
     /**
-     * Moves the object to the right by increasing its x-coordinate by its speed.
+     * let the chickens move left
+     * 
      */
-    moveRight() {
-        this.x += this.speed;
-    }
-
-    /**
-     * Moves the object to the left by decreasing its x-coordinate by its speed.
-     */
-    moveLeft() {
+    moveChicken() {
+    if (!this.chickenIsDead) {
         this.x -= this.speed;
-    }
-
-    /**
-     * Makes the character jump by setting its vertical speed.
-     * Checks if the character is on the ground before allowing the jump.
-     */
-    jump() {
-        if (!this.isAboveGround()) {
-            this.speedY = 25;
         }
     }
 }

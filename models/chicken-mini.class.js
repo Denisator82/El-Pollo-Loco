@@ -6,6 +6,7 @@ class ChickenMini extends MovableObject {
     y = 360; // Y-coordinate of the chicken
     height = 60; // Height of the chicken
     width = 60; // Width of the chicken
+    chickenIsDead = false;
 
     // Images for the walking state of the small chicken
     IMAGES_WALKING = [
@@ -27,7 +28,6 @@ class ChickenMini extends MovableObject {
     constructor() {
         super().loadImage(this.IMAGES_WALKING[0]); // Load the initial walking image
         this.loadImages(this.IMAGES_WALKING); // Load all walking images
-        this.loadImages(this.IMAGES_DEAD); // Load all dead images
         this.offset = { top: 0, right: 0, bottom: 0, left: 0 }; // Set the offset for collision detection
 
         // Set the initial x-coordinate randomly between 600 and 2400
@@ -40,17 +40,55 @@ class ChickenMini extends MovableObject {
     }
 
     /**
-     * Animates the small chicken by moving it to the left and playing the walking animation.
+     * animations from chicken
+     * 
+     */
+    chickenAnimation() {
+        if (!this.chickenIsDead) {
+            this.chickenAnimationWalk();
+        }
+        else {
+            this.chickenAnimationDead();
+        }      
+    }
+
+
+    /**
+     * animation at walking
+     * 
+     */
+    chickenAnimationWalk() {
+        this.playAnimation(this.IMAGES_WALKING);
+    }
+
+
+    /**
+     * animation at death
+     * 
+     */
+    chickenAnimationDead() {
+        this.loadImage(this.IMAGES_DEAD);
+        if (this.musicCounter === 0) {
+            this.playSound(world.chickenDead_music);
+        }
+        this.musicCounter++;
+        setTimeout(() => {
+            this.IMAGES_DEAD = [];
+        }, 500);
+    }
+
+
+    /**
+     * animates the chicken
+     * 
      */
     animate() {
-        // Move the chicken to the left at approximately 60 frames per second
-        setInterval(() => {
-            this.moveLeft();
+        setInterval( () => {
+            this.moveChicken();
         }, 1000 / 60);
-        
-        // Play the walking animation at 5 frames per second
-        setInterval(() => {
-            this.playAnimation(this.IMAGES_WALKING);
+
+        setInterval(() =>{
+            this.chickenAnimation();
         }, 200);
     }
 }

@@ -12,6 +12,7 @@ class DrawableObject {
     height = 150; // Height of the object
     width = 100; // Width of the object
     offset = { top: 0, right: 0, bottom: 0, left: 0 }; // Offset for collision detection
+    musicCounter = 0;
 
     /**
      * Loads an image from the specified path and assigns it to the object's img property.

@@ -6,6 +6,9 @@ class Chicken extends MovableObject {
     y = 340; // Y-coordinate of the chicken
     height = 80; // Height of the chicken
     width = 80; // Width of the chicken
+    chickenIsDead = false;
+
+    
 
     // Images for the walking state of the normal chicken
     IMAGES_WALKING = [
@@ -45,12 +48,24 @@ class Chicken extends MovableObject {
     animate() {
         // Move the chicken to the left at approximately 60 frames per second
         setInterval(() => {
-            this.moveLeft();
+            this.moveChicken();
         }, 1000 / 60);
         
         // Play the walking animation at 5 frames per second
         setInterval(() => {
-            this.playAnimation(this.IMAGES_WALKING);
+            if (!this.chickenIsDead) {
+                this.playAnimation(this.IMAGES_WALKING);
+            }
+            else {
+                this.loadImage(this.IMAGES_DEAD);
+                if (this.musicCounter === 0) {
+                    this.playSound(chickenDead_sound);
+                }
+                this.musicCounter++;
+                setTimeout(() => {
+                    this.IMAGES_DEAD = [];
+                }, 500);
+            }
         }, 200);
     }
 }

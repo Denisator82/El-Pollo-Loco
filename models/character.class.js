@@ -7,7 +7,7 @@ class Character extends MovableObject {
     y = 180; // Y-coordinate of the character
     height = 250; // Height of the character
     width = 120; // Width of the character
-    speed = 10; // Speed of the character
+    speed = 5; // Speed of the character
     coinsCollected = 0; // Number of coins collected by the character
     bottlesCollected = 0; // Number of bottles collected by the character
 
@@ -122,14 +122,71 @@ class Character extends MovableObject {
         this.applyGravity();
 
         // Start the animation
-        this.animate();
+        this.animateCharacter();
     }
 
+    /**
+     * Reduces the character's energy by a fixed amount (5) when hit.
+     * If energy falls below 0, it is set to 0. Otherwise, updates the timestamp of the last hit.
+     */
+    hit() {
+        this.energy -= 1;
+        if (this.energy < 0) {
+            this.energy = 0;
+        } else {
+            this.lastHit = new Date().getTime();
+        }
+    }
+    
+    /**
+     * Checks if the character is currently hurt.
+     * Calculates the time passed since the last hit in seconds.
+     * 
+     * @returns {boolean} - True if the character was hit within the last second, otherwise false.
+     */
+    isHurt() {
+        let timepassed = new Date().getTime() - this.lastHit; // Difference in ms
+        timepassed = timepassed / 1000; // Difference in s
+        return timepassed < 1;
+    }
+    
+    /**
+     * Checks if the character is dead.
+     * 
+     * @returns {boolean} - True if the character's energy is 0, otherwise false.
+     */
+    isDead() {
+        return this.energy === 0;
+    }
+    
+    /**
+     * Moves the object to the right by increasing its x-coordinate by its speed.
+     */
+    moveRight() {
+        this.x += this.speed;
+    }
+    
+    /**
+     * Moves the object to the left by decreasing its x-coordinate by its speed.
+     */
+    moveLeft() {
+        this.x -= this.speed;
+    }
+    
+    /**
+     * Makes the character jump by setting its vertical speed.
+     * Checks if the character is on the ground before allowing the jump.
+     */
+    jump() {
+        if (!this.isAboveGround()) {
+            this.speedY = 25;
+        }
+    }
 
     /**
      * Animates the character by handling movement, jumping, and playing the appropriate animations.
      */
-    animate() {
+    animateCharacter() {
         // Primary animation loop running at approximately 60 frames per second
         setInterval(() => {
             this.walking_sound.pause(); // Pause the walking sound initially
@@ -254,30 +311,11 @@ class Character extends MovableObject {
         }
     }
 
-    /**
-     * Makes the character jump on an enemy and defeat it.
-     */
-    jumpOnEnemy() {
-        this.world.level.enemies.forEach((enemy) => {
-            if (this.isColliding(enemy) && this.isAboveGround()) {
-                // If the character lands on the enemy
-                if (this.y + this.height <= enemy.y + enemy.height / 2) {
-                    enemy.chickenDead = true; // Defeat the enemy
-                    this.jump(); // Make the character jump further
-                }
-            }
-        });
-    }
-
-    /**
-     * Checks for collisions between the character and the world or other objects.
-     * For example, collision with walls or enemies.
-     */
-    checkCollisions() {
-        this.level.enemies.forEach((enemy) => {
-            if (this.isColliding(enemy)) {
-                console.log('Kollision mit Gegner erkannt!'); // Log collision with an enemy
-            }
-        });
+    jumpOnEnemy(enemy) {
+        console.log('Auf den Gegner gesprungen!');
+        enemy.health -= 10;
+        if (enemy.health <= 0) {
+            enemy.isDead = true;
+        }
     }
 }
