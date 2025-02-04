@@ -1,11 +1,19 @@
-class Character extends MovableObject{
-    y = 180;
-    height = 250;
-    width = 120;
-    speed = 10;
-    coinsCollected = 0;
-    bottlesCollected = 0;
-    
+/**
+ * Represents the main character in the game.
+ * Inherits from MovableObject and includes properties for dimensions, speed,
+ * and collected items such as coins and bottles.
+ */
+class Character extends MovableObject {
+    y = 180; // Y-coordinate of the character
+    height = 250; // Height of the character
+    width = 120; // Width of the character
+    speed = 10; // Speed of the character
+    coinsCollected = 0; // Number of coins collected by the character
+    bottlesCollected = 0; // Number of bottles collected by the character
+
+    /**
+     * Images for the standing state of the character
+     */
     IMAGES_STANDING = [
         'img/img_pollo_locco/img/2_character_pepe/1_idle/idle/I-1.png',
         'img/img_pollo_locco/img/2_character_pepe/1_idle/idle/I-2.png',
@@ -19,6 +27,9 @@ class Character extends MovableObject{
         'img/img_pollo_locco/img/2_character_pepe/1_idle/idle/I-10.png',
     ];
 
+    /**
+     * Images for the sleeping state of the character
+     */
     IMAGES_SLEEPING = [
         'img/img_pollo_locco/img/2_character_pepe/1_idle/long_idle/I-11.png',
         'img/img_pollo_locco/img/2_character_pepe/1_idle/long_idle/I-12.png',
@@ -32,6 +43,9 @@ class Character extends MovableObject{
         'img/img_pollo_locco/img/2_character_pepe/1_idle/long_idle/I-20.png',
     ];
 
+    /**
+     * Images for the walking state of the character
+     */
     IMAGES_WALKING = [
         'img/img_pollo_locco/img/2_character_pepe/2_walk/W-21.png',
         'img/img_pollo_locco/img/2_character_pepe/2_walk/W-22.png',
@@ -41,6 +55,9 @@ class Character extends MovableObject{
         'img/img_pollo_locco/img/2_character_pepe/2_walk/W-26.png',
     ];
 
+    /**
+     * Images for the jumping state of the character
+     */
     IMAGES_JUMPING = [
         'img/img_pollo_locco/img/2_character_pepe/3_jump/J-31.png',
         'img/img_pollo_locco/img/2_character_pepe/3_jump/J-32.png',
@@ -53,6 +70,9 @@ class Character extends MovableObject{
         'img/img_pollo_locco/img/2_character_pepe/3_jump/J-39.png'
     ];
 
+    /**
+     * Images for the dead state of the character
+     */
     IMAGES_DEAD = [
         'img/img_pollo_locco/img/2_character_pepe/5_dead/D-51.png',
         'img/img_pollo_locco/img/2_character_pepe/5_dead/D-52.png',
@@ -63,144 +83,201 @@ class Character extends MovableObject{
         'img/img_pollo_locco/img/2_character_pepe/5_dead/D-57.png'
     ];
 
+    /**
+     * Images for the hurt state of the character
+     */
     IMAGES_HURT = [
         'img/img_pollo_locco/img/2_character_pepe/4_hurt/H-41.png',
         'img/img_pollo_locco/img/2_character_pepe/4_hurt/H-42.png',
         'img/img_pollo_locco/img/2_character_pepe/4_hurt/H-43.png'
     ];
 
-    world;
-    walking_sound = new Audio('audio/walking_sound.mp3');
-    jumping_sound = new Audio('audio/jumping_sound.mp3');
-    
-    constructor(){
-        super(); // Oberklasse
-        this.loadImage(this.IMAGES_STANDING[0]); // Zugriff auf das erste Bild was zu sehen ist
-        this.loadImages(this.IMAGES_STANDING); // Lade alle Bilder aus Standing
+    world; // Reference to the game world
+    walking_sound = new Audio('audio/walking_sound.mp3'); // Sound for walking
+    jumping_sound = new Audio('audio/jumping_sound.mp3'); // Sound for jumping
+
+    /**
+     * Initializes the Character class.
+     * Loads the initial image, sets the offsets for collision detection,
+     * applies gravity, and starts the animation.
+     */
+    constructor() {
+        super(); // Call the parent class constructor
+
+        // Load the initial standing image
+        this.loadImage(this.IMAGES_STANDING[0]);
+
+        // Load all images for various states
+        this.loadImages(this.IMAGES_STANDING);
         this.loadImages(this.IMAGES_SLEEPING);
         this.loadImages(this.IMAGES_WALKING);
         this.loadImages(this.IMAGES_JUMPING);
         this.loadImages(this.IMAGES_DEAD);
         this.loadImages(this.IMAGES_HURT);
-        this.offset = { top: 100, right: 30, bottom: 10, left: 20 }; //Offset
+
+        // Set the offset for collision detection
+        this.offset = { top: 100, right: 30, bottom: 10, left: 20 };
+
+        // Apply gravity to the character
         this.applyGravity();
+
+        // Start the animation
         this.animate();
     }
 
-    animate(){
+
+    /**
+     * Animates the character by handling movement, jumping, and playing the appropriate animations.
+     */
+    animate() {
+        // Primary animation loop running at approximately 60 frames per second
         setInterval(() => {
-            this.walking_sound.pause();
-            if(this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
+            this.walking_sound.pause(); // Pause the walking sound initially
+
+            // Move the character to the right if the RIGHT key is pressed and the character hasn't reached the level end
+            if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
                 this.moveRight();
                 this.otherDirection = false;
-                this.walking_sound.play();
-                this.resetStandingTime();
+                this.walking_sound.play(); // Play the walking sound
+                this.resetStandingTime(); // Reset the standing time counter
             }
 
-            if(this.world.keyboard.LEFT && this.x > 0) {
+            // Move the character to the left if the LEFT key is pressed and the character is within the level bounds
+            if (this.world.keyboard.LEFT && this.x > 0) {
                 this.moveLeft();
-                this.otherDirection = true; 
-                this.walking_sound.play();
-                this.resetStandingTime();
+                this.otherDirection = true;
+                this.walking_sound.play(); // Play the walking sound
+                this.resetStandingTime(); // Reset the standing time counter
             }
 
-            if(this.world.keyboard.SPACE && !this.isAboveGround()) {
+            // Make the character jump if the SPACE key is pressed and the character is on the ground
+            if (this.world.keyboard.SPACE && !this.isAboveGround()) {
                 this.jump();
-                this.jumping_sound.play();
-                this.resetStandingTime();
+                this.jumping_sound.play(); // Play the jumping sound
+                this.resetStandingTime(); // Reset the standing time counter
             }
 
+            // Update the camera position based on the character's x position
             this.world.camera_x = -this.x + 100;
-        }, 1000 / 60);
+        }, 1000 / 60); // Run at 60 frames per second
 
+        // Secondary animation loop running at approximately 10 frames per second
         setInterval(() => {
             if (this.isDead()) {
-                this.playAnimation(this.IMAGES_DEAD);
-                this.resetStandingTime();
-            } else if(this.isHurt()) {
-                this.playAnimation(this.IMAGES_HURT);
-                this.resetStandingTime();
+                this.playAnimation(this.IMAGES_DEAD); // Play the dead animation if the character is dead
+                this.resetStandingTime(); // Reset the standing time counter
+            } else if (this.isHurt()) {
+                this.playAnimation(this.IMAGES_HURT); // Play the hurt animation if the character is hurt
+                this.resetStandingTime(); // Reset the standing time counter
             } else if (this.isAboveGround()) {
-                this.playAnimation(this.IMAGES_JUMPING);
-                this.resetStandingTime();
+                this.playAnimation(this.IMAGES_JUMPING); // Play the jumping animation if the character is in the air
+                this.resetStandingTime(); // Reset the standing time counter
             } else if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
-                this.playAnimation(this.IMAGES_WALKING);
-                this.resetStandingTime();
+                this.playAnimation(this.IMAGES_WALKING); // Play the walking animation if moving left or right
+                this.resetStandingTime(); // Reset the standing time counter
             } else {
-                this.animateStanding();
+                this.animateStanding(); // Play the standing animation if no other conditions are met
             }
-        }, 100);
+        }, 100); // Run at 10 frames per second
     }
 
-    animateStanding(){
-        this.playAnimation(this.IMAGES_STANDING);
-        this.standingTime += 100;
+    /**
+     * Plays the standing animation for the character.
+     * If the character stands still for a duration exceeding the sleep delay,
+     * it plays the sleeping animation.
+     */
+    animateStanding() {
+        this.playAnimation(this.IMAGES_STANDING); // Play the standing animation
+        this.standingTime += 100; // Increment the standing time by 100 ms
         if (this.standingTime >= this.sleepDelay) {
-            this.playAnimation(this.IMAGES_SLEEPING);
+            this.playAnimation(this.IMAGES_SLEEPING); // Play the sleeping animation if standing time exceeds the sleep delay
         }
     }
 
+    /**
+     * Resets the standing time counter to 0.
+     */
     resetStandingTime() {
         this.standingTime = 0;
     }
-    
+
+    /**
+     * Collects a coin and updates the coin status.
+     * @param {Object} coin - The coin object to be collected.
+     */
     collectCoin(coin) {
-        this.coinsCollected++;
-        this.world.removeObject(coin);
-        this.updateCoinStatus();
+        this.coinsCollected++; // Increment the collected coins counter
+        this.world.removeObject(coin); // Remove the coin from the world
+        this.updateCoinStatus(); // Update the coin status
     }
 
-    updateCoinStatus(){
-        //1 Stufe pro 2 Münzen
+    /**
+     * Updates the coin status bar based on the number of collected coins.
+     */
+    updateCoinStatus() {
+        // 1 level per 2 coins
         const coinsPerLevel = 2;
         const level = Math.floor(this.coinsCollected / coinsPerLevel);
         const percentage = (level / 5) * 100;
-        this.world.statusBarCoin.setPercentage(percentage);
+        this.world.statusBarCoin.setPercentage(percentage); // Set the percentage for the coin status bar
     }
 
+    /**
+     * Collects a bottle and updates the bottle status.
+     * @param {Object} bottle - The bottle object to be collected.
+     */
     collectBottle(bottle) {
-        this.bottlesCollected++;
-        this.world.removeObject(bottle);
-        this.updateBottleStatus();
+        this.bottlesCollected++; // Increment the collected bottles counter
+        this.world.removeObject(bottle); // Remove the bottle from the world
+        this.updateBottleStatus(); // Update the bottle status
     }
 
-    updateBottleStatus(){
-        // 1 Stufe pro 8 Flaschen
+    /**
+     * Updates the bottle status bar based on the number of collected bottles.
+     */
+    updateBottleStatus() {
+        // 1 level per 8 bottles
         const bottlesPerLevel = 8;
         const percentage = (this.bottlesCollected / bottlesPerLevel) * 100;
-        this.world.statusBarBottle.setPercentage(percentage);
+        this.world.statusBarBottle.setPercentage(percentage); // Set the percentage for the bottle status bar
     }
 
+    /**
+     * Throws a bottle if available and updates the bottle status.
+     */
     throwBottle() {
         if (this.bottlesCollected > 0) {
-            this.bottlesCollected--;
-            this.updateBottleStatus();
-            let bottle = new ThrowableObject(this.x + 100, this.y + 100);
-            this.world.throwableObjects.push(bottle);
+            this.bottlesCollected--; // Decrement the collected bottles counter
+            this.updateBottleStatus(); // Update the bottle status
+            let bottle = new ThrowableObject(this.x + 100, this.y + 100); // Create a new throwable object
+            this.world.throwableObjects.push(bottle); // Add the throwable object to the world
         }
     }
 
-      // Neue Methode zum Springen auf Gegner und Besiegen
+    /**
+     * Makes the character jump on an enemy and defeat it.
+     */
     jumpOnEnemy() {
         this.world.level.enemies.forEach((enemy) => {
             if (this.isColliding(enemy) && this.isAboveGround()) {
-                // Wenn der Charakter auf dem Gegner landet
+                // If the character lands on the enemy
                 if (this.y + this.height <= enemy.y + enemy.height / 2) {
-                    enemy.chickenDead = true; // Besiege den Gegner
-                    this.jump(); // Charakter springt weiter
+                    enemy.chickenDead = true; // Defeat the enemy
+                    this.jump(); // Make the character jump further
                 }
             }
         });
     }
 
+    /**
+     * Checks for collisions between the character and the world or other objects.
+     * For example, collision with walls or enemies.
+     */
     checkCollisions() {
-        // Überprüfe Kollisionen zwischen dem Charakter und der Welt oder anderen Objekten
-        // z.B. Kollision mit Wänden oder Gegnern:
-        this.level.enemies.forEach(enemy => {
+        this.level.enemies.forEach((enemy) => {
             if (this.isColliding(enemy)) {
-                console.log('Kollision mit Gegner erkannt!');
+                console.log('Kollision mit Gegner erkannt!'); // Log collision with an enemy
             }
         });
     }
-    
 }
