@@ -17,7 +17,10 @@ class World {
     throwableObjects = [];
     coinCounter = 0;
     gameOver = false;
+    background_music = new Audio('audio/game_music.mp3');
+
     chickenDead_sound = new Audio('audio/chickenDead_sound.mp3');
+    
     
     /**
      * Initializes the World class.
@@ -28,9 +31,9 @@ class World {
      * @param {Object} keyboard - The keyboard input handler.
      */
     constructor(canvas, keyboard) {
-        this.ctx = canvas.getContext('2d');
         this.canvas = canvas;
-        this.keyboard = keyboard; 
+        this.ctx = canvas.getContext('2d');
+        this.keyboard = keyboard;
         this.draw();
         this.setWorld();
         this.run();

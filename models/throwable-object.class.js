@@ -44,7 +44,7 @@ class ThrowableObject extends MovableObject {
         this.throw();
         this.animate();
     }
-
+    
     /**
      * Throws the object by setting its initial vertical speed and applying gravity.
      * Updates the horizontal position at regular intervals to simulate the throw movement.
@@ -62,6 +62,24 @@ class ThrowableObject extends MovableObject {
         }, 100);
     }
 
+    // throw() {
+    //     this.speedY = 20;
+    //     this.applyGravity();
+        
+    //     this.animate(); // Animation starten, solange die Flasche fliegt
+        
+    //     this.throwInterval = setInterval(() => {
+    //         this.x += 10;
+            
+    //         if (!this.isAboveGround()) {
+    //             clearInterval(this.throwInterval);
+    //             this.break(); // Flasche zerbricht, wenn sie den Boden erreicht
+    //         }
+    //     }, 25);
+    // }
+    
+    
+
     /**
      * Animates the bottle.
      * If the bottle is above ground and not colliding, plays the rotation animation.
@@ -74,4 +92,18 @@ class ThrowableObject extends MovableObject {
             this.playAnimation(this.IMAGES_SPLASH);
         }
     }
+    
+
+    // /**
+    //  * Bricht die Flasche beim Aufprall.
+    //  * Spielt die Splash-Animation und entfernt das Objekt nach kurzer Zeit.
+    //  */
+    // break() {
+    //     this.isColliding = true;
+    //     this.animate(); // Wechselt zur Splash-Animation
+        
+    //     setTimeout(() => {
+    //         this.removeFromWorld(); // Entfernt das Objekt nach der Animation
+    //     }, 500);
+    // }  
 }

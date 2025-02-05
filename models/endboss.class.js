@@ -8,8 +8,10 @@ class Endboss extends MovableObject {
     y = 55; // Y-coordinate of the end boss
     i = 0;
     hadFirstContact = false; // Indicates if the first contact has occurred
-    speed = 20; // Speed of the end boss
+    speed = 2; // Speed of the end boss
     visible = false; // Visibility status of the end boss
+    health = 100; // Energy of the end boss
+
 
     // Images for the alert state of the end boss
     IMAGES_ALERT = [
@@ -73,7 +75,10 @@ class Endboss extends MovableObject {
         this.loadImages(this.IMAGES_DEAD);
 
         // Set the initial x-coordinate of the end boss on the map
-        this.x = 800; //Für den Test auf 800 gesetzt
+        this.x = 2800;
+        
+        //new Attribute
+        this.lastHitEndboss = 0;
 
         // Start the animation method
         this.animate();    
@@ -84,12 +89,12 @@ class Endboss extends MovableObject {
      * 
      */
     hitEndboss() {
-        this.energyFinalBoss -= 10;    
-        if (this.energyFinalBoss < 0) {
-            this.energyFinalBoss = 0;
+        this.health -= 10;    
+        if (this.health < 0) {
+            this.health = 0;
         }
         else {
-            this.lastHitFinalBoss = new Date().getTime();
+            this.lastHitEndboss = new Date().getTime();
         }
     }
 
@@ -97,10 +102,15 @@ class Endboss extends MovableObject {
      * 
      * @returns if the last hit was 1 second ago or not
      */
+    //Alternative:
+    // isHurtEndboss() {
+    //     let timepassed = new Date().getTime() - this.lastHitEndboss;
+    //     timepassed = timepassed / 1000;
+    //     return timepassed < 1;
+    // }
+
     isHurtEndboss() {
-        let timepassed = new Date().getTime() - this.lastHitFinalBoss;
-        timepassed = timepassed / 1000;
-        return timepassed < 1;
+        return (Date.now() - this.lastHitEndboss) / 1000 < 1;
     }
     
     /**
@@ -108,11 +118,11 @@ class Endboss extends MovableObject {
      * @returns if the energy is 0 
      */
     isDeadEndboss() {
-        return this.energyFinalBoss == 0;
-    }
+        return this.health == 0;
+    }    
 
     /**
-     * animation of the final boss
+     * animation of the end boss
      * 
      */
     endbossAnimation() {
@@ -120,10 +130,11 @@ class Endboss extends MovableObject {
             this.endbossAnimationDead();
         }
         else if (this.isHurtEndboss()) {
-            this.finalBossAnimationHurt();
+            this.endbossAnimationHurt();
         }        
         else if (this.i < 15) {
-            this.endbossAnimationAlert();     
+            this.endbossAnimationAlert();
+            this.showStatusBar();
         }
         else if (this.i < 30) {
             this.endbossAnimationAttack();
@@ -143,11 +154,6 @@ class Endboss extends MovableObject {
         this.playAnimation(this.IMAGES_DEAD);
         world.gameOver = true;
         world.background_music.pause()
-        setTimeout(() => {
-            this.clearAllIntervals();
-            this.playSound(world.win_sound);
-            gameOverWin();
-        }, 1500);
     }
 
 
@@ -159,7 +165,6 @@ class Endboss extends MovableObject {
         this.playAnimation(this.IMAGES_HURT);
     }
 
-
     /**
      * animation at alert
      * 
@@ -168,7 +173,6 @@ class Endboss extends MovableObject {
         this.playAnimation(this.IMAGES_ALERT); 
     }
 
-
     /**
      * animation at attack
      * 
@@ -176,19 +180,17 @@ class Endboss extends MovableObject {
     endbossAnimationAttack() {
         this.playAnimation(this.IMAGES_ATTACK);
     }
-    
 
     /**
      * animation at walking
      * 
      */
     endbossAnimationWalk() {
-        this.playAnimation(this.IMAGES_WALK);
+        this.playAnimation(this.IMAGES_WALKING);
     }
 
-
     /**
-     * checks if the character had first contact with the final boss
+     * checks if the character had first contact with the end boss
      * 
      */
     endbossFirstContact() {
@@ -199,7 +201,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * animates the final boss
+     * animates the endboss
      * 
      */
     animate() {
@@ -213,7 +215,6 @@ class Endboss extends MovableObject {
         }, 1000 / 60);
         setInterval(() => {
             if (this.isHurtEndboss()) {
-                this.playSound(world.finalbossHurt_sound);
             }
         }, 100);
     }
@@ -235,13 +236,13 @@ class Endboss extends MovableObject {
     //     let i = 0;
     //     // Calls the function every 500 milliseconds
     //     setInterval(() => {
-    //         if(i < 5) {
+    //         if(i < 10) {
     //             // Plays the alert animation when i is less than 10
     //             this.playAnimation(this.IMAGES_ALERT);
-    //         } else if (i === 5) { 
+    //         } else if (i === 10) { 
     //             // Displays the status bar when i equals 10
     //             this.showStatusBar();
-    //         } else if (i < 15) {
+    //         } else if (i < 20) {
     //             // Plays the attack animation when i is between 11 and 29
     //             this.playAnimation(this.IMAGES_ATTACK);
     //         } else {
@@ -256,9 +257,9 @@ class Endboss extends MovableObject {
     //         // Resets the counter i to 0 and marks the first contact 
     //         // as true when the character's x position is greater than 1500 
     //         // and the first contact has not occurred
-    //         if(world.character.x > 400 && !this.hadFirstContact) {// Für Test auf 400 gesetzt
+    //         if(world.character.x > 1450 && !this.hadFirstContact) {// Für Test auf 400 gesetzt
     //             i = 0;
-    //             this.hadFirstContact = true; 
+    //             this.hadFirstContact = true;
     //         }
     //     }, 500);
     // }

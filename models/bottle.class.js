@@ -5,7 +5,7 @@
 class Bottle extends MovableObject {
     width = 80; // Width of the bottle
     height = 80; // Height of the bottle
-    // y = 350; // Y-coordinate of the bottle
+    y = 350; // Y-coordinate of the bottle
     isThrow = false; 
 
     // Image paths for the bottle

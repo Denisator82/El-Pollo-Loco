@@ -22,8 +22,8 @@ class MovableObject extends DrawableObject {
     applyGravity() {
         const gravityEffect = () => {
             if (this.isAboveGround() || this.speedY > 0) {
-                this.y -= this.speedY;
-                this.speedY -= this.acceleration;
+                    this.y -= this.speedY;
+                    this.speedY -= this.acceleration;
             } else {
                 this.speedY = 0; // reset the vertical speed when the character is on the ground
             }
@@ -31,6 +31,92 @@ class MovableObject extends DrawableObject {
         };
         gravityEffect();
     }
+
+    //Version:2
+    // applyGravity() {
+    //     if (this.gravityInterval) return; // Verhindert mehrfaches Starten
+    
+    //     const gravityEffect = () => {
+    //         if (this.isAboveGround() || this.speedY > 0) {
+    //             this.y += this.speedY;
+    //             this.speedY += this.acceleration;
+    //         } else {
+    //             this.y = this.groundLevel; // Objekt auf Bodenhöhe setzen
+    //             this.speedY = 0; // Vertikale Geschwindigkeit stoppen
+    //         }
+    //         this.gravityInterval = requestAnimationFrame(gravityEffect);
+    //     };
+    //     this.gravityInterval = requestAnimationFrame(gravityEffect);
+    // }
+    
+    //Version:3
+    // applyGravity() {
+    //     if (this.gravityInterval) return; // Verhindert mehrfaches Starten
+    
+    //     const gravityEffect = () => {
+    //         if (this.isAboveGround()) {
+    //             this.y += this.speedY;
+    //             this.speedY -= this.acceleration;
+    //         } else {
+    //             this.y = this.groundLevel;  // Stoppe das Objekt genau am Boden
+    //             this.speedY = 0;
+    //             this.isColliding = true; // ✅ Jetzt erkennt die Flasche den Boden
+    //             this.break(); // ✅ Rufe die Zerbrechen-Animation auf
+    //         }
+    //         this.gravityInterval = requestAnimationFrame(gravityEffect);
+    //     };
+    //     this.gravityInterval = requestAnimationFrame(gravityEffect);
+    // }
+    
+    //Version:4
+    // applyGravity() {
+    //     if (this.gravityInterval) return; // Verhindert mehrfaches Starten
+    
+    //     const gravityEffect = () => {
+    //         if (this.isAboveGround()) {
+    //             this.y += this.speedY;
+    //             this.speedY -= this.acceleration;
+    //             this.animate();  // ✅ Hier Rotation-Animation starten
+    //         } else {
+    //             this.y = this.groundLevel; 
+    //             this.speedY = 0;
+    //             this.isColliding = true;
+    //             this.break();  // ✅ Flasche zerbricht und spielt Splash-Animation
+    //         }
+    //         this.gravityInterval = requestAnimationFrame(gravityEffect);
+    //     };
+    //     this.gravityInterval = requestAnimationFrame(gravityEffect);
+    // }
+    
+    // applyGravity() {
+    //     if (this.gravityInterval) return; // Verhindert mehrfaches Starten
+        
+    //     const gravityEffect = () => {
+    //         if (this.isAboveGround()) {
+    //             this.y += this.speedY;
+    //             this.speedY -= this.acceleration;
+    //             this.animate();  // Rotation-Animation starten
+    //         } else {
+    //             this.y = this.groundLevel; 
+    //             this.speedY = 0;
+    //             this.isColliding = true;
+                
+    //             // Stelle sicher, dass break() nur für ThrowableObject aufgerufen wird
+    //             if (this instanceof ThrowableObject) {
+    //                 this.break();  // Flasche zerbricht und spielt Splash-Animation
+    //             }
+    //         }
+    //         this.gravityInterval = requestAnimationFrame(gravityEffect);
+    //     };
+    //     gravityEffect();
+    // }
+
+    // stopGravity() {
+    //     if (this.gravityInterval) {
+    //         cancelAnimationFrame(this.gravityInterval);
+    //         this.gravityInterval = null;
+    //     }
+    // }
 
     /**
      * Checks if the object is above the ground level.
@@ -85,5 +171,9 @@ class MovableObject extends DrawableObject {
     if (!this.chickenIsDead) {
         this.x -= this.speed;
         }
+    }
+
+    moveLeft() {
+        this.x -= this.speed;
     }
 }
