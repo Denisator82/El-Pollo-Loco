@@ -87,18 +87,33 @@ class World {
     }
     
 
+    // /**
+    //  * checks if the character jumps on an enemy
+    //  * 
+    //  */
+    // checkCollisionsCharacterJumpOnEnemy() {
+    //     this.level.enemies.forEach(enemy => {
+    //         if (this.character.isColliding(enemy) && this.character.isAboveGround() && !enemy.chickenIsDead) {
+    //             this.character.jump();
+    //             enemy.chickenIsDead = true;
+    //         }
+    //     });
+    // }
+
     /**
-     * checks if the character jumps on an enemy
-     * 
+     * Checks if the character jumps on an enemy.
      */
     checkCollisionsCharacterJumpOnEnemy() {
         this.level.enemies.forEach(enemy => {
             if (this.character.isColliding(enemy) && this.character.isAboveGround() && !enemy.chickenIsDead) {
-                this.character.jump();
-                enemy.chickenIsDead = true;
+                if (this.character.x + this.character.width < enemy.x + enemy.width) {
+                    this.character.jump();
+                    enemy.chickenIsDead = true;
+                }
             }
         });
     }
+
 
     /**
      * Checks collision between character and enemies.

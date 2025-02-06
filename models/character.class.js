@@ -174,10 +174,10 @@ class Character extends MovableObject {
         this.x -= this.speed;
     }
     
-    /**
-     * Makes the character jump by setting its vertical speed.
-     * Checks if the character is on the ground before allowing the jump.
-     */
+    // /**
+    //  * Makes the character jump by setting its vertical speed.
+    //  * Checks if the character is on the ground before allowing the jump.
+    //  */
     jump() {
         if (!this.isAboveGround()) {
             this.speedY = 25;
@@ -311,12 +311,13 @@ class Character extends MovableObject {
             this.world.throwableObjects.push(bottle); // Add the throwable object to the world
         }
     }
-
-    jumpOnEnemy(enemy) {
-        console.log('Auf den Gegner gesprungen!');
-        enemy.health -= 10;
-        if (enemy.health <= 0) {
-            enemy.isDead = true;
-        }
-    }
 }
+    //Absprache wo diese Aktion eher rein soll:
+    //
+    // jumpOnEnemy(enemy) {
+    //     console.log('Auf den Gegner gesprungen!');
+    //     enemy.health -= 10;
+    //     if (enemy.health <= 0) {
+    //         enemy.isDead = true;
+    //     }
+    // }

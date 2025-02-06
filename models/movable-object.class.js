@@ -6,7 +6,7 @@
 class MovableObject extends DrawableObject {
     speed = 0.55; // Horizontal movement speed
     otherDirection = false; // Indicates if the object is moving in the opposite direction
-    speedY = 5; // Vertical speed for jumping or falling
+    speedY = 2; // Vertical speed for jumping or falling
     acceleration = 3.0; // Acceleration for gravity
     energy = 100; // Energy level of the object
     lastHit = 0; // Timestamp of the last hit
@@ -31,92 +31,6 @@ class MovableObject extends DrawableObject {
         };
         gravityEffect();
     }
-
-    //Version:2
-    // applyGravity() {
-    //     if (this.gravityInterval) return; // Verhindert mehrfaches Starten
-    
-    //     const gravityEffect = () => {
-    //         if (this.isAboveGround() || this.speedY > 0) {
-    //             this.y += this.speedY;
-    //             this.speedY += this.acceleration;
-    //         } else {
-    //             this.y = this.groundLevel; // Objekt auf Bodenhöhe setzen
-    //             this.speedY = 0; // Vertikale Geschwindigkeit stoppen
-    //         }
-    //         this.gravityInterval = requestAnimationFrame(gravityEffect);
-    //     };
-    //     this.gravityInterval = requestAnimationFrame(gravityEffect);
-    // }
-    
-    //Version:3
-    // applyGravity() {
-    //     if (this.gravityInterval) return; // Verhindert mehrfaches Starten
-    
-    //     const gravityEffect = () => {
-    //         if (this.isAboveGround()) {
-    //             this.y += this.speedY;
-    //             this.speedY -= this.acceleration;
-    //         } else {
-    //             this.y = this.groundLevel;  // Stoppe das Objekt genau am Boden
-    //             this.speedY = 0;
-    //             this.isColliding = true; // ✅ Jetzt erkennt die Flasche den Boden
-    //             this.break(); // ✅ Rufe die Zerbrechen-Animation auf
-    //         }
-    //         this.gravityInterval = requestAnimationFrame(gravityEffect);
-    //     };
-    //     this.gravityInterval = requestAnimationFrame(gravityEffect);
-    // }
-    
-    //Version:4
-    // applyGravity() {
-    //     if (this.gravityInterval) return; // Verhindert mehrfaches Starten
-    
-    //     const gravityEffect = () => {
-    //         if (this.isAboveGround()) {
-    //             this.y += this.speedY;
-    //             this.speedY -= this.acceleration;
-    //             this.animate();  // ✅ Hier Rotation-Animation starten
-    //         } else {
-    //             this.y = this.groundLevel; 
-    //             this.speedY = 0;
-    //             this.isColliding = true;
-    //             this.break();  // ✅ Flasche zerbricht und spielt Splash-Animation
-    //         }
-    //         this.gravityInterval = requestAnimationFrame(gravityEffect);
-    //     };
-    //     this.gravityInterval = requestAnimationFrame(gravityEffect);
-    // }
-    
-    // applyGravity() {
-    //     if (this.gravityInterval) return; // Verhindert mehrfaches Starten
-        
-    //     const gravityEffect = () => {
-    //         if (this.isAboveGround()) {
-    //             this.y += this.speedY;
-    //             this.speedY -= this.acceleration;
-    //             this.animate();  // Rotation-Animation starten
-    //         } else {
-    //             this.y = this.groundLevel; 
-    //             this.speedY = 0;
-    //             this.isColliding = true;
-                
-    //             // Stelle sicher, dass break() nur für ThrowableObject aufgerufen wird
-    //             if (this instanceof ThrowableObject) {
-    //                 this.break();  // Flasche zerbricht und spielt Splash-Animation
-    //             }
-    //         }
-    //         this.gravityInterval = requestAnimationFrame(gravityEffect);
-    //     };
-    //     gravityEffect();
-    // }
-
-    // stopGravity() {
-    //     if (this.gravityInterval) {
-    //         cancelAnimationFrame(this.gravityInterval);
-    //         this.gravityInterval = null;
-    //     }
-    // }
 
     /**
      * Checks if the object is above the ground level.

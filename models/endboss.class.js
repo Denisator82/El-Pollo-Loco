@@ -75,7 +75,7 @@ class Endboss extends MovableObject {
         this.loadImages(this.IMAGES_DEAD);
 
         // Set the initial x-coordinate of the end boss on the map
-        this.x = 2800;
+        this.x = 3900;
         
         //new Attribute
         this.lastHitEndboss = 0;
@@ -85,8 +85,7 @@ class Endboss extends MovableObject {
     }
 
     /**
-     * drains energy from the target
-     * 
+     * Drains energy from the target by decreasing health.
      */
     hitEndboss() {
         this.health -= 10;    
@@ -99,125 +98,87 @@ class Endboss extends MovableObject {
     }
 
     /**
+     * Checks if the last hit occurred within the last second.
      * 
-     * @returns if the last hit was 1 second ago or not
+     * @returns {boolean} True if the last hit was within 1 second, otherwise false
      */
     isHurtEndboss() {
         return (Date.now() - this.lastHitEndboss) / 1000 < 1;
     }
 
-    // //Alternative:
-    // isHurtEndboss() {
-    //     let timepassed = new Date().getTime() - this.lastHitEndboss;
-    //     timepassed = timepassed / 1000;
-    //     return timepassed < 1;
-    // }
     
     /**
+     * Checks if the end boss's health is zero.
      * 
-     * @returns if the energy is 0 
+     * @returns {boolean} True if the health is zero, otherwise false
      */
     isDeadEndboss() {
         return this.health == 0;
     }    
 
-    // /**
-    //  * animation of the end boss
-    //  * 
-    //  */
-    // endbossAnimation() {
-    //     if (this.isDeadEndboss()) {
-    //         this.endbossAnimationDead();
-    //     }
-    //     else if (this.isHurtEndboss()) {
-    //         this.endbossAnimationHurt();
-    //     }        
-    //     else if (this.i < 15) {
-    //         this.endbossAnimationAlert();
-    //         this.showStatusBar();
-    //     }
-    //     else if (this.i < 30) {
-    //         this.endbossAnimationAttack();
-    //     }
-    //     else {        
-    //         this.endbossAnimationWalk();
-    //     }
-    //     this.i++;    
-    //     this.endbossFirstContact();   
-    // }
-
+    /**
+     * Handles the animation of the end boss based on its state.
+     */
     endbossAnimation() {
-        if (!this.hadFirstContact) return; // Endboss bleibt inaktiv, bis First Contact passiert
+        if (!this.hadFirstContact) return; // End boss remains inactive until first contact occurs
         
         if (this.isDeadEndboss()) {
             this.endbossAnimationDead();
-        }
-        else if (this.isHurtEndboss()) {
+        } else if (this.isHurtEndboss()) {
             this.endbossAnimationHurt();
-        }        
-        else if (this.i < this.IMAGES_ALERT.length) { 
+        } else if (this.i < this.IMAGES_ALERT.length) { 
             this.endbossAnimationAlert();
-        }
-        else if (this.i === this.IMAGES_ALERT.length) {
-            this.showStatusBar(); // Statusbar wird erst nach Alert angezeigt
-        }
-        else if (this.i < this.IMAGES_ALERT.length + this.IMAGES_ATTACK.length) {
+        } else if (this.i === this.IMAGES_ALERT.length) {
+            this.showStatusBar(); // Status bar is shown after alert
+        } else if (this.i < this.IMAGES_ALERT.length + this.IMAGES_ATTACK.length) {
             this.endbossAnimationAttack();
-        }
-        else {        
+        } else {        
             this.endbossAnimationWalk();
         }
-        this.i++;   
+        this.i++;
     }
     
     
 
     /**
-     * animation at death
-     * 
+     * Handles the animation when the end boss is dead.
      */
     endbossAnimationDead() {
         this.playAnimation(this.IMAGES_DEAD);
         world.gameOver = true;
-        world.background_music.pause()
+        world.background_music.pause();
     }
 
-
     /**
-     * animation at hurt
-     * 
+     * Handles the animation when the end boss is hurt.
      */
     endbossAnimationHurt() {
         this.playAnimation(this.IMAGES_HURT);
     }
 
     /**
-     * animation at alert
-     * 
+     * Handles the animation when the end boss is on alert.
      */
     endbossAnimationAlert() {
         this.playAnimation(this.IMAGES_ALERT); 
     }
 
     /**
-     * animation at attack
-     * 
+     * Handles the animation when the end boss is attacking.
      */
     endbossAnimationAttack() {
         this.playAnimation(this.IMAGES_ATTACK);
     }
 
     /**
-     * animation at walking
-     * 
+     * Handles the animation when the end boss is walking.
      */
     endbossAnimationWalk() {
         this.playAnimation(this.IMAGES_WALKING);
     }
 
     /**
-     * checks if the character had first contact with the end boss
-     * 
+     * Checks if the character had the first contact with the end boss.
      */
     endbossFirstContact() {
         if (world.character.x > this.x - 400 && !this.hadFirstContact) { 
@@ -225,34 +186,17 @@ class Endboss extends MovableObject {
             this.hadFirstContact = true;
         }
     }
-    
 
     /**
-     * animates the endboss
-     * 
+     * Starts the animations and movements of the end boss.
      */
-    // animate() {
-    //     setInterval(() => {
-    //         this.endbossAnimation();            
-    //     }, 200);
-    //     setInterval(() => {
-    //         if (this.hadFirstContact && this.i > 30 && !this.isDeadEndboss() && !this.isHurtEndboss()) {
-    //             this.x -= this.speed;    
-    //         }        
-    //     }, 1000 / 60);
-    //     setInterval(() => {
-    //         if (this.isHurtEndboss()) {
-    //         }
-    //     }, 100);
-    // }
-
     animate() {
         setInterval(() => {
             this.endbossFirstContact(); // Prüft regelmäßig den First Contact
             if (this.hadFirstContact) {
                 this.endbossAnimation(); // Startet Animation erst nach First Contact
             }
-        }, 200);
+        }, 500);
     
         setInterval(() => {
             if (this.hadFirstContact && this.i > this.IMAGES_ALERT.length + this.IMAGES_ATTACK.length && !this.isDeadEndboss() && !this.isHurtEndboss()) {
@@ -270,39 +214,3 @@ class Endboss extends MovableObject {
         world.statusBarEndboss.visible = true;
     }
 }
-
-    // /**
-    //  * Animates the character by playing different animations 
-    //  * based on the value of the counter i and specific conditions.
-    //  */
-    // animate() {
-    //     let i = 0;
-    //     // Calls the function every 500 milliseconds
-    //     setInterval(() => {
-    //         if(i < 10) {
-    //             // Plays the alert animation when i is less than 10
-    //             this.playAnimation(this.IMAGES_ALERT);
-    //         } else if (i === 10) { 
-    //             // Displays the status bar when i equals 10
-    //             this.showStatusBar();
-    //         } else if (i < 20) {
-    //             // Plays the attack animation when i is between 11 and 29
-    //             this.playAnimation(this.IMAGES_ATTACK);
-    //         } else {
-    //             // Plays the walking animation when i is 30 or greater
-    //             // and decreases the x position by the speed
-    //             this.playAnimation(this.IMAGES_WALKING);
-    //             this.x -= this.speed;
-    //         }
-    //         // Increments the counter i by 1 in each iteration
-    //         i++;
-
-    //         // Resets the counter i to 0 and marks the first contact 
-    //         // as true when the character's x position is greater than 1500 
-    //         // and the first contact has not occurred
-    //         if(world.character.x > 1450 && !this.hadFirstContact) {// Für Test auf 400 gesetzt
-    //             i = 0;
-    //             this.hadFirstContact = true;
-    //         }
-    //     }, 500);
-    // }
