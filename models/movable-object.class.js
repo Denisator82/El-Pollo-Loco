@@ -6,8 +6,8 @@
 class MovableObject extends DrawableObject {
     speed = 0.55; // Horizontal movement speed
     otherDirection = false; // Indicates if the object is moving in the opposite direction
-    speedY = 2; // Vertical speed for jumping or falling
-    acceleration = 3.0; // Acceleration for gravity
+    speedY = 1; // Vertical speed for jumping or falling
+    acceleration = 2.0; // Acceleration for gravity
     energy = 100; // Energy level of the object
     lastHit = 0; // Timestamp of the last hit
     standingTime = 0; // Time the object has been standing still
@@ -15,22 +15,26 @@ class MovableObject extends DrawableObject {
     groundLevel = 175; // Y-coordinate for the ground level
 
     /**
-     * Applies gravity to the object by continuously adjusting its vertical position.
-     * Creates a gravity effect that decreases the y-position and vertical speed
-     * until the object is on the ground. Uses requestAnimationFrame for smooth animation.
+     * Simulates gravity by continuously adjusting the object's vertical position.
+     * The object falls downward as long as it is above the ground or has remaining vertical speed.
+     * The fall speed is limited to prevent excessive acceleration.
+     * Once the object reaches the ground, its position is set precisely to avoid floating point inaccuracies.
+     * Uses requestAnimationFrame for smooth animation.
      */
     applyGravity() {
         const gravityEffect = () => {
             if (this.isAboveGround() || this.speedY > 0) {
-                    this.y -= this.speedY;
-                    this.speedY -= this.acceleration;
+                this.y -= this.speedY;
+                this.speedY = Math.max(this.speedY - this.acceleration, -20); // Limit fall speed
             } else {
-                this.speedY = 0; // reset the vertical speed when the character is on the ground
+                this.speedY = 0; 
+                this.y = Math.round(this.groundLevel); // Ensure precise ground position
             }
             requestAnimationFrame(gravityEffect);
         };
         gravityEffect();
     }
+
 
     /**
      * Checks if the object is above the ground level.

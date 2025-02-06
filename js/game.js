@@ -12,10 +12,21 @@ let keyboard = new Keyboard();
 /**
  * Initializes the game by setting up the canvas and creating a new world instance.
  * Retrieves the canvas element from the DOM and initializes the world with the canvas and keyboard input.
+ * Initializes the first level of the game.
  */
 function init() {
     canvas = document.getElementById('canvas');
+    initLevel(); // Initialisiert das erste Level
     world = new World(canvas, keyboard);
+}
+
+/**
+ * Function to start the game.
+ * Hides the start screen and initializes the game.
+ */
+function startGame() {
+    document.querySelector('.start-screen').style.display = 'none';
+    init();
 }
 
 /**

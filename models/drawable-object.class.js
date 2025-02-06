@@ -44,22 +44,22 @@ class DrawableObject {
         if (this instanceof Character || this instanceof Chicken || this instanceof ChickenMini || this instanceof Coin || this instanceof Bottle || this instanceof Endboss) {
             // Draw the original bounding box in blue
             ctx.beginPath();
-            ctx.lineWidth = '5';
-            ctx.strokeStyle = 'blue';
-            ctx.rect(this.x, this.y, this.width, this.height);
+            // ctx.lineWidth = '5';
+            // ctx.strokeStyle = 'blue';
+            // ctx.rect(this.x, this.y, this.width, this.height);
             ctx.stroke();
 
-            // Draw the offset bounding box in red
-            ctx.beginPath();
-            ctx.lineWidth = '3';
-            ctx.strokeStyle = 'red';
-            ctx.rect(
-                this.x + this.offset.left,
-                this.y + this.offset.top,
-                this.width - this.offset.left - this.offset.right,
-                this.height - this.offset.top - this.offset.bottom
-            );
-            ctx.stroke();
+            // // Draw the offset bounding box in red
+            // ctx.beginPath();
+            // ctx.lineWidth = '3';
+            // ctx.strokeStyle = 'red';
+            // ctx.rect(
+            //     this.x + this.offset.left,
+            //     this.y + this.offset.top,
+            //     this.width - this.offset.left - this.offset.right,
+            //     this.height - this.offset.top - this.offset.bottom
+            // );
+            // ctx.stroke();
         }
     }
 

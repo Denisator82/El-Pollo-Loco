@@ -10,7 +10,7 @@ class Character extends MovableObject {
     speed = 5; // Speed of the character
     coinsCollected = 0; // Number of coins collected by the character
     bottlesCollected = 0; // Number of bottles collected by the character
-    world; // Reference to the game world
+    world; // Reference to the game world (initialize as needed)
     walking_sound = new Audio('audio/walking_sound.mp3'); // Sound for walking
     jumping_sound = new Audio('audio/jumping_sound.mp3'); // Sound for jumping
 
@@ -95,12 +95,9 @@ class Character extends MovableObject {
         'img/img_pollo_locco/img/2_character_pepe/4_hurt/H-43.png'
     ];
 
-    
-
     /**
-     * Initializes the Character class.
-     * Loads the initial image, sets the offsets for collision detection,
-     * applies gravity, and starts the animation.
+     * Initializes the Character class, loads the initial image, sets collision offsets,
+     * applies gravity, and begins animation.
      */
     constructor() {
         super(); // Call the parent class constructor
@@ -126,8 +123,8 @@ class Character extends MovableObject {
         this.animateCharacter();
     }
 
-    /**
-     * Reduces the character's energy by a fixed amount (5) when hit.
+     /**
+     * Reduces the character's energy by a fixed amount (1) when hit.
      * If energy falls below 0, it is set to 0. Otherwise, updates the timestamp of the last hit.
      */
     hit() {
@@ -141,9 +138,7 @@ class Character extends MovableObject {
     
     /**
      * Checks if the character is currently hurt.
-     * Calculates the time passed since the last hit in seconds.
-     * 
-     * @returns {boolean} - True if the character was hit within the last second, otherwise false.
+     * Returns true if the character was hit within the last second.
      */
     isHurt() {
         let timepassed = new Date().getTime() - this.lastHit; // Difference in ms
@@ -153,46 +148,44 @@ class Character extends MovableObject {
     
     /**
      * Checks if the character is dead.
-     * 
-     * @returns {boolean} - True if the character's energy is 0, otherwise false.
+     * Returns true if the character's energy is 0, otherwise false.
      */
     isDead() {
         return this.energy === 0;
     }
     
     /**
-     * Moves the object to the right by increasing its x-coordinate by its speed.
+     * Moves the character to the right.
      */
     moveRight() {
         this.x += this.speed;
     }
     
     /**
-     * Moves the object to the left by decreasing its x-coordinate by its speed.
+     * Moves the character to the left.
      */
     moveLeft() {
         this.x -= this.speed;
     }
     
-    // /**
-    //  * Makes the character jump by setting its vertical speed.
-    //  * Checks if the character is on the ground before allowing the jump.
-    //  */
+    /**
+     * Makes the character jump if not already above the ground.
+     */
     jump() {
         if (!this.isAboveGround()) {
-            this.speedY = 25;
+            this.speedY = 30; // Apply vertical speed to simulate jump
         }
     }
 
     /**
-     * Animates the character by handling movement, jumping, and playing the appropriate animations.
+     * Animates the character based on its state (walking, jumping, etc.).
+     * Handles character movement and sound effects.
      */
     animateCharacter() {
         // Primary animation loop running at approximately 60 frames per second
         setInterval(() => {
             this.walking_sound.pause(); // Pause the walking sound initially
 
-            // Move the character to the right if the RIGHT key is pressed and the character hasn't reached the level end
             if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
                 this.moveRight();
                 this.otherDirection = false;
@@ -200,7 +193,6 @@ class Character extends MovableObject {
                 this.resetStandingTime(); // Reset the standing time counter
             }
 
-            // Move the character to the left if the LEFT key is pressed and the character is within the level bounds
             if (this.world.keyboard.LEFT && this.x > 0) {
                 this.moveLeft();
                 this.otherDirection = true;
@@ -208,7 +200,6 @@ class Character extends MovableObject {
                 this.resetStandingTime(); // Reset the standing time counter
             }
 
-            // Make the character jump if the SPACE key is pressed and the character is on the ground
             if (this.world.keyboard.SPACE && !this.isAboveGround()) {
                 this.jump();
                 this.jumping_sound.play(); // Play the jumping sound
@@ -219,20 +210,19 @@ class Character extends MovableObject {
             this.world.camera_x = -this.x + 100;
         }, 1000 / 60); // Run at 60 frames per second
 
-        // Secondary animation loop running at approximately 10 frames per second
+        // Secondary animation loop (approx. 10 FPS)
         setInterval(() => {
             if (this.isDead()) {
                 this.playAnimation(this.IMAGES_DEAD); // Play the dead animation if the character is dead
-                this.resetStandingTime(); // Reset the standing time counter
-            } else if (this.isHurt()) {
+                this.resetStandingTime();
                 this.playAnimation(this.IMAGES_HURT); // Play the hurt animation if the character is hurt
-                this.resetStandingTime(); // Reset the standing time counter
+                this.resetStandingTime();
             } else if (this.isAboveGround()) {
                 this.playAnimation(this.IMAGES_JUMPING); // Play the jumping animation if the character is in the air
-                this.resetStandingTime(); // Reset the standing time counter
+                this.resetStandingTime();
             } else if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
                 this.playAnimation(this.IMAGES_WALKING); // Play the walking animation if moving left or right
-                this.resetStandingTime(); // Reset the standing time counter
+                this.resetStandingTime();
             } else {
                 this.animateStanding(); // Play the standing animation if no other conditions are met
             }
@@ -245,10 +235,13 @@ class Character extends MovableObject {
      * it plays the sleeping animation.
      */
     animateStanding() {
-        this.playAnimation(this.IMAGES_STANDING); // Play the standing animation
-        this.standingTime += 100; // Increment the standing time by 100 ms
+         // Play the standing animation
+        this.playAnimation(this.IMAGES_STANDING);
+         // Increment the standing time by 100 ms
+        this.standingTime += 100;
+        // If the character has been standing for longer than the sleep delay, switch to the sleeping animation
         if (this.standingTime >= this.sleepDelay) {
-            this.playAnimation(this.IMAGES_SLEEPING); // Play the sleeping animation if standing time exceeds the sleep delay
+            this.playAnimation(this.IMAGES_SLEEPING);
         }
     }
 
@@ -312,12 +305,3 @@ class Character extends MovableObject {
         }
     }
 }
-    //Absprache wo diese Aktion eher rein soll:
-    //
-    // jumpOnEnemy(enemy) {
-    //     console.log('Auf den Gegner gesprungen!');
-    //     enemy.health -= 10;
-    //     if (enemy.health <= 0) {
-    //         enemy.isDead = true;
-    //     }
-    // }

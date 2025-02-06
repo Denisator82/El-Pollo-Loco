@@ -14,6 +14,9 @@ body {
     align-items: center;
 }
 
+h1 {
+    z-index: 1001;
+}
 
 canvas {
     background-color: black;
@@ -21,6 +24,7 @@ canvas {
     padding: 10px;
     border: 5px;
     border-radius: 5px;
+    z-index: 500;
 }
 
 .title {
@@ -30,16 +34,43 @@ canvas {
     font-size: 94px
 }
 
+.start-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('img/background_1920x1080/desert01.png');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover; /* Das Bild wird über die gesamte Seite skaliert */
+    z-index: 1000;
+}
 
-/*Smartphones ----------*/
-@media only screen and (max-width: 720px){
+
+.start-screen button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 10px 20px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 2px solid #000;
+    border-radius: 5px;
+}
+
+
+/* Smartphones */
+@media only screen and (max-width: 720px) {
     canvas {
         width: 100%;
     }
 }
 
-/*Smartphones ----------*/
-@media only screen and (max-height: 480px){
+/* Smartphones */
+@media only screen and (max-height: 480px) {
     canvas {
         height: 100vh;
     }

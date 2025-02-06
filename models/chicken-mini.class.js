@@ -6,7 +6,8 @@ class ChickenMini extends MovableObject {
     y = 360; // Y-coordinate of the chicken
     height = 60; // Height of the chicken
     width = 60; // Width of the chicken
-    chickenIsDead = false;
+    chickenIsDead = false; // Flag to check if the chicken is dead
+    chickenDead_sound = new Audio('audio/chickenDead_sound.mp3'); // Sound played when the chicken dies
 
     // Images for the walking state of the small chicken
     IMAGES_WALKING = [
@@ -31,63 +32,61 @@ class ChickenMini extends MovableObject {
         this.offset = { top: 0, right: 0, bottom: 0, left: 0 }; // Set the offset for collision detection
 
         // Set the initial x-coordinate randomly between 600 and 2400
-        this.x = 600 + Math.random() * 1800; 
+        this.x = 600 + Math.random() * 1800;
 
         // Set the speed of the chicken randomly between 0.15 and 0.7
-        this.speed = 0.15 + Math.random() * 0.55; 
-        
+        this.speed = 0.15 + Math.random() * 0.55;
+
         this.animate(); // Start the animation
     }
 
     /**
-     * animations from chicken
-     * 
+     * Handles the animation of the chicken.
+     * Switches between walking and dead animations depending on the chicken's state.
      */
     chickenAnimation() {
         if (!this.chickenIsDead) {
-            this.chickenAnimationWalk();
+            this.chickenAnimationWalk(); // If the chicken is not dead, animate walking
+        } else {
+            this.chickenAnimationDead(); // If the chicken is dead, animate death
         }
-        else {
-            this.chickenAnimationDead();
-        }      
     }
 
-
     /**
-     * animation at walking
-     * 
+     * Animation for walking.
+     * Plays the walking animation of the chicken.
      */
     chickenAnimationWalk() {
-        this.playAnimation(this.IMAGES_WALKING);
+        this.playAnimation(this.IMAGES_WALKING); // Play the walking images in sequence
     }
 
-
     /**
-     * animation at death
-     * 
+     * Animation for death.
+     * Switches to the dead image and plays the death sound once.
      */
     chickenAnimationDead() {
-        this.loadImage(this.IMAGES_DEAD);
+        this.loadImage(this.IMAGES_DEAD); // Load the dead image
         if (this.musicCounter === 0) {
-            this.playSound(world.chickenDead_sound);
+            this.chickenDead_sound.play(); // Play the death sound once
         }
-        this.musicCounter++;
+        this.musicCounter++; // Increment the counter to prevent sound from playing repeatedly
         setTimeout(() => {
-            this.IMAGES_DEAD = [];
+            this.IMAGES_DEAD = []; // Clear the dead images after a short delay
         }, 500);
     }
 
-
     /**
-     * animates the chicken
-     * 
+     * Starts the animation for the chicken.
+     * Moves the chicken and animates it at regular intervals.
      */
     animate() {
-        setInterval( () => {
+        // Move the chicken every 1/60th of a second (60 frames per second)
+        setInterval(() => {
             this.moveChicken();
         }, 1000 / 60);
 
-        setInterval(() =>{
+        // Run the chicken animation every 200 milliseconds
+        setInterval(() => {
             this.chickenAnimation();
         }, 200);
     }

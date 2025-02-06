@@ -5,14 +5,13 @@
  */
 let level1;
 
-// function initLevel() {
-
-    /**
-     * Initializes the first level (level1) with arrays of game objects.
-     * 
-     * @type {Level} level1 - The first level instance of the game.
-     * Includes arrays for the endboss, enemies, clouds, background objects, coins, and bottles.
-     */
+/**
+ * Initializes the first level (level1) with arrays of game objects.
+ * 
+ * @type {Level} level1 - The first level instance of the game.
+ * Includes arrays for the endboss, enemies, clouds, background objects, coins, and bottles.
+ */
+function initLevel() {
     level1 = new Level(
         [
             new Endboss() // Endboss object
@@ -90,5 +89,4 @@ let level1;
             new Bottle(),
         ],
     );
-
-// }
+}

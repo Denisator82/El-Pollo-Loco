@@ -7,7 +7,7 @@ class Chicken extends MovableObject {
     height = 80; // Height of the chicken
     width = 80; // Width of the chicken
     chickenIsDead = false;
-
+    chickenDead_sound = new Audio('audio/chickenDead_sound.mp3');
     
 
     // Images for the walking state of the normal chicken
@@ -59,7 +59,7 @@ class Chicken extends MovableObject {
             else {
                 this.loadImage(this.IMAGES_DEAD);
                 if (this.musicCounter === 0) {
-                    this.playSound(chickenDead_sound);
+                    this.chickenDead_sound.play();
                 }
                 this.musicCounter++;
                 setTimeout(() => {
