@@ -10,6 +10,9 @@ class Character extends MovableObject {
     speed = 5; // Speed of the character
     coinsCollected = 0; // Number of coins collected by the character
     bottlesCollected = 0; // Number of bottles collected by the character
+    world; // Reference to the game world
+    walking_sound = new Audio('audio/walking_sound.mp3'); // Sound for walking
+    jumping_sound = new Audio('audio/jumping_sound.mp3'); // Sound for jumping
 
     /**
      * Images for the standing state of the character
@@ -92,9 +95,7 @@ class Character extends MovableObject {
         'img/img_pollo_locco/img/2_character_pepe/4_hurt/H-43.png'
     ];
 
-    world; // Reference to the game world
-    walking_sound = new Audio('audio/walking_sound.mp3'); // Sound for walking
-    jumping_sound = new Audio('audio/jumping_sound.mp3'); // Sound for jumping
+    
 
     /**
      * Initializes the Character class.

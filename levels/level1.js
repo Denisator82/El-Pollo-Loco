@@ -18,14 +18,14 @@ let level1;
             new Endboss() // Endboss object
         ],
         [
-            new Chicken(),
-            new Chicken(),
-            new Chicken(),
-            new Chicken(),
-            new ChickenMini(),
-            new ChickenMini(),
-            new ChickenMini(),
-            new ChickenMini(),
+            // new Chicken(),
+            // new Chicken(),
+            // new Chicken(),
+            // new Chicken(),
+            // new ChickenMini(),
+            // new ChickenMini(),
+            // new ChickenMini(),
+            // new ChickenMini(),
         ],
         [
             new Cloud(),

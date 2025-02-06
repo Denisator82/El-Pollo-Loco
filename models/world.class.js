@@ -16,9 +16,9 @@ class World {
     statusBarEndboss = new StatusBarEndboss();
     throwableObjects = [];
     coinCounter = 0;
+    lastThrowTime = 0; // Neue Variable in der Klasse
     gameOver = false;
     background_music = new Audio('audio/game_music.mp3');
-
     chickenDead_sound = new Audio('audio/chickenDead_sound.mp3');
     
     
@@ -58,7 +58,7 @@ class World {
         },25);
         setInterval(() => {
             this.checkThrowObjects();
-            // this.checkCollisionThrowableObject();
+            this.checkCollisionThrowableObject();
         }, 200);
     }
 
@@ -67,22 +67,39 @@ class World {
     * If the SHIFT key is pressed, the character throws a bottle.
     */
     checkThrowObjects() {
-        if (this.keyboard.SHIFT) {
+        let now = Date.now();
+        if (this.keyboard.SHIFT && now - this.lastThrowTime > 500) { // 500ms Cooldown
             this.character.throwBottle();
+            this.lastThrowTime = now;
         }
-    }
+    }    
 
     /**
      * Checks all collisions in the game.
      * Calls methods th check for collisions with enemies, coins and bottles.
      */
     checkCollisions() {
+        this.checkCollisionsCharacterJumpOnEnemy();
         this.checkCollisionsCharacterWithEnemies();
         this.checkCollisionsCharacterWithEndboss();
         this.checkCollisionsCharacterWithCoins();
         this.checkCollisionsCharacterWithBottles();
     }
     
+
+    /**
+     * checks if the character jumps on an enemy
+     * 
+     */
+    checkCollisionsCharacterJumpOnEnemy() {
+        this.level.enemies.forEach(enemy => {
+            if (this.character.isColliding(enemy) && this.character.isAboveGround() && !enemy.chickenIsDead) {
+                this.character.jump();
+                enemy.chickenIsDead = true;
+            }
+        });
+    }
+
     /**
      * Checks collision between character and enemies.
      * If a collision is detected, the character takes a hit and the status bar is updated.
@@ -160,59 +177,51 @@ class World {
         }
     }
 
+    /**
+     * checks collisions of the bottles
+     * 
+     */
+        checkCollisionThrowableObject() {
+            this.checkCollisionBottleEndboss();
+            this.checkCollisionBottleGround();
+        }
 
-    // /**
-    //  * checks collisions of the bottles
-    //  * 
-    //  */
-    //     checkCollisionThrowableObject() {
-    //         this.checkCollisionBottleFinalboss();
-    //         this.checkCollisionBottleGround();
-    //     }
+    /**
+     * checks collision between bottle and end boss
+     * 
+     * @param {object} bottle 
+     * @param {number} index 
+     */
+    checkCollisionBottleEndboss() {
+        this.throwableObjects.forEach((bottle, index) => {
+            if (this.level.endboss[0].isColliding(bottle)) {
+                this.level.endboss[0].hitEndboss();
+                this.statusBarEndboss.setPercentage(this.level.endboss.health);
+                bottle.isColliding = true;
+                setTimeout(() => {
+                    this.throwableObjects.splice(index, 1);  // Sicherstellen, dass der Index aus der richtigen Liste stammt
+                }, 200);
+            }
+        });
+    }
 
-    // /**
-    //  * checks collision between bottle and final boss
-    //  * 
-    //  * @param {object} bottle 
-    //  * @param {number} index 
-    //  */
-    //     checkCollisionBottleFinalboss() {
-    //         this.level.bottle.forEach(bottle => {
-    //             if (this.endboss.isColliding(bottle)) {
-    //                 this.endboss.hit();
-    //                 this.statusBarEndboss.setPercentage(this.endboss.energy);
-    //             }
-    //         }, 200);
-    //     }
-
-        //     if (this.level.bottle.isColliding(endboss)) {
-        //         console.log('Enboss getroffen'); //Log in der Konsole
-        //         this.level.endboss.hitFinalBoss();
-        //         this.statusBarEndboss.setPercentage(this.level.endboss.energyFinalBoss);
-        //         bottle.isColliding = true;
-        //         setTimeout(() => {
-        //             this.throwableObjects.splice(index, 1)
-        //         }, 200);
-        //     };
-        // }
-
-
-
-    // /**
-    //  * checks collision between bottle and ground
-    //  * 
-    //  * @param {object} bottle 
-    //  * @param {number} index 
-    //  */
-    //     checkCollisionBottleGround(bottle, index) {
-    //         if (!bottle.isAboveGround()) {
-    //             console.log('Flasche hat den Boden erreicht'); //Log in der Konsole
-    //             bottle.isColliding = true;
-    //             setTimeout(() => {
-    //                 this.throwableObjects.splice(index, 1)
-    //             }, 50);
-    //         };
-    //     }
+    /**
+     * checks collision between bottle and ground
+     * 
+     * @param {object} bottle 
+     * @param {number} index 
+     */
+    checkCollisionBottleGround() {
+        this.throwableObjects.forEach((bottle, index) => {
+            if (!bottle.isAboveGround()) {
+                console.log('Flasche hat den Boden erreicht'); // Log in der Konsole
+                bottle.isColliding = true;
+                setTimeout(() => {
+                    this.throwableObjects.splice(index, 1);
+                }, 50);
+            }
+        });
+    }
 
     /**
      * Draws the entire game frame by frame.
