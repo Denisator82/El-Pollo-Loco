@@ -123,7 +123,7 @@ class Character extends MovableObject {
         this.animateCharacter();
     }
 
-     /**
+    /**
      * Reduces the character's energy by a fixed amount (1) when hit.
      * If energy falls below 0, it is set to 0. Otherwise, updates the timestamp of the last hit.
      */

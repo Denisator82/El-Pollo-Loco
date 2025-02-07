@@ -197,7 +197,7 @@ class World {
         this.throwableObjects.forEach((bottle, index) => {
             if (this.level.endboss[0].isColliding(bottle)) {
                 this.level.endboss[0].hitEndboss();
-                this.statusBarEndboss.setPercentage(this.level.endboss.health);
+                this.statusBarEndboss.setPercentage(this.level.endboss[0].health);
                 bottle.isColliding = true;
                 setTimeout(() => {
                     this.throwableObjects.splice(index, 1);  // Sicherstellen, dass der Index aus der richtigen Liste stammt

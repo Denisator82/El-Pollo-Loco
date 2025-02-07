@@ -55,6 +55,8 @@ backgroundMusic.setVolume(0.3);
 
 const walking_sound = new Audio('audio/walking_sound.mp3'); // Sound for walking
 const jumping_sound = new Audio('audio/jumping_sound.mp3'); // Sound for jumping
+const chickenDead_sound = new Audio('audio/chickenDead_sound.mp3'); // Sound for Cheicken Dead
+const game_music = new Audio('audio/game_music.mp3'); // Music for Background
 
 
 // Sound-Klasse importieren
