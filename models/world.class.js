@@ -22,6 +22,7 @@ class World {
     chickenDead_sound = new Audio('audio/chickenDead_sound.mp3');
     lose_sound = new Audio('audio/lose_sound02.mp3');
     
+    
     /**
      * Initializes the World class.
      * Sets up the canvas context, the canvas element, and the keyboard input.
@@ -37,8 +38,7 @@ class World {
         this.setWorld();
         this.draw();
         this.run();
-
-    }
+        }
 
     /**
      * Allows the character to access all information about the world.
@@ -46,6 +46,11 @@ class World {
      */
     setWorld() {
         this.character.world = this; // es wird nur "this" übergeben damit man die aktuelle Instanz der Welt hat  
+    //     if (!isMuted) {
+    //         this.background_music.loop = true;
+    //         this.background_music.volume = 0.3;    
+    //         this.background_music.play();    
+    //     }
     }
 
     /**
@@ -124,6 +129,10 @@ class World {
             if (this.character.isColliding(endboss)) {
                 this.character.hit();
                 this.statusBar.setPercentage(this.character.energy);
+                this.gameOver = true;
+                this.character.walking_sound.pause();
+                gameOverLose();
+                this.level.endboss[0].playSound(this.lose_sound);
             }
         });
     }

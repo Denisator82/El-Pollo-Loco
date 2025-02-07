@@ -12,6 +12,7 @@ class Endboss extends MovableObject {
     visible = false; // Visibility status of the end boss
     health = 100; // Energy of the end boss
     world;
+    endboss_music = new Audio('audio/endboss_music.mp3');
 
     // Images for the alert state of the end boss
     IMAGES_ALERT = [
@@ -134,6 +135,7 @@ class Endboss extends MovableObject {
             this.endbossAnimationAttack();
         } else {        
             this.endbossAnimationWalk();
+            // this.endboss_music.play(); 
         }
         this.i++;
     }

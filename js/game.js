@@ -28,7 +28,6 @@ function startGame() {
     document.querySelector('.start-screen').style.display = 'none';
     init();
 }
-
 /**
  * Listens for keydown events and updates the keyboard state accordingly.
  * Sets the corresponding keyboard property to true when the key is pressed.
@@ -92,3 +91,15 @@ window.addEventListener("keyup", (e) => {
         keyboard.SHIFT = false;
     }
 });
+
+function gameOverLose() {
+    document.getElementById("gameOverLose").classList.remove("d-none");
+}
+
+function gameOverWin() {
+    document.getElementById("gameOverWin").classList.remove("d-none");
+}
+
+function restartGame() {
+    location.reload(); // Lädt die Seite neu
+}

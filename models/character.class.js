@@ -210,7 +210,7 @@ class Character extends MovableObject {
             this.world.camera_x = -this.x + 100;
         }, 1000 / 60); // Run at 60 frames per second
 
-        // Secondary animation loop (approx. 10 FPS)
+        // // Secondary animation loop (approx. 10 FPS)
         setInterval(() => {
             if (this.isDead()) {
                 this.playAnimation(this.IMAGES_DEAD); // Play the dead animation if the character is dead

@@ -10,7 +10,6 @@ body {
     padding: 0;
     font-family: 'Fredericka the Great', cursive;
     height: 100vh;
-    width: 100vw;
     background-image: url('img/background_1920x1080/desert01.png');
     background-position: center;
     background-repeat: no-repeat;
@@ -65,8 +64,16 @@ canvas {
     z-index: 1000;
 }
 
+.gameOverWin {
+    background-image: url('img/img_pollo_locco/img/9_intro_outro_screens/win/win_1.png');
+}
 
-.start-screen button {
+.gameOverLose {
+    background-image: url('img/img_pollo_locco/img/9_intro_outro_screens/game_over/game over.png');
+}
+
+
+button {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -77,6 +84,46 @@ canvas {
     background-color: rgba(255, 255, 255, 0.8);
     border: 2px solid #000;
     border-radius: 5px;
+}
+
+.game-over {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8); /* Dunkler Hintergrund */
+}
+
+.game-over img {
+    width: 50%;
+    max-width: 500px;
+}
+
+.game-over button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 18px;
+    border: none;
+    background-color: #ff0000;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.game-over button:hover {
+    background-color: #cc0000;
+}
+
+.d-none {
+    display: none;
 }
 
 

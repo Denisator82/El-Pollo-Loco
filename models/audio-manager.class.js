@@ -1,81 +1,59 @@
 class AudioManager {
     constructor() {
         this.sounds = {};
-        this.music = null;
         this.isMuted = false;
+        this.backgroundMusic = null;
+        this.defaultVolume = 0.5; // Standardlautstärke (50%)
     }
 
-    /**
-     * Lädt und speichert einen Sound.
-     * @param {string} name - Der Name des Sounds.
-     * @param {string} src - Die Datei-URL des Sounds.
-     */
-    addSound(name, src) {
-        this.sounds[name] = new Audio(src);
+    addSound(name, src, volume = this.defaultVolume) {
+        const sound = new Audio(src);
+        sound.volume = volume; // Setze die Lautstärke für den Sound
+        this.sounds[name] = sound;
     }
 
-    /**
-     * Lädt und speichert die Hintergrundmusik.
-     */
-    setBackgroundMusic() {
-        this.music = new Audio("audio/game_music.mp3");
-        this.music.loop = true;
+    setBackgroundMusic(src, volume = this.defaultVolume) {
+        this.backgroundMusic = new Audio(src);
+        this.backgroundMusic.loop = true;
+        this.backgroundMusic.volume = volume; // Setze die Lautstärke der Hintergrundmusik
     }
 
-    /**
-     * Spielt einen Sound mit optionaler Lautstärke.
-     * @param {string} name - Der Name des Sounds.
-     * @param {number} volume - Lautstärke (Standard: 1.0).
-     */
-    playSound(name, volume = 1.0) {
+    playSound(name) {
         if (!this.isMuted && this.sounds[name]) {
-            let sound = this.sounds[name].cloneNode();
-            sound.volume = volume;
-            sound.play();
+            this.sounds[name].play();
         }
     }
 
-    /**
-     * Startet die Hintergrundmusik mit optionaler Lautstärke.
-     * @param {number} volume - Lautstärke (Standard: 1.0).
-     */
-    playMusic(volume = 1.0) {
-        if (this.music && !this.isMuted) {
-            this.music.volume = volume;
-            this.music.play();
+    playBackgroundMusic() {
+        if (this.backgroundMusic && !this.isMuted) {
+            this.backgroundMusic.play();
         }
     }
 
-    /**
-     * Stoppt die Hintergrundmusik.
-     */
-    stopMusic() {
-        if (this.music) {
-            this.music.pause();
-        }
-    }
-
-    /**
-     * Schaltet den Sound an oder aus.
-     */
     toggleMute() {
         this.isMuted = !this.isMuted;
-        if (this.music) this.music.muted = this.isMuted;
-        this.updateSoundButton();
-    }
-
-    /**
-     * Aktualisiert das Sound-Icon im UI.
-     */
-    updateSoundButton() {
-        const soundButton = document.getElementById("soundToggle");
-        soundButton.src = this.isMuted ? "./img/icons/mute.png" : "./img/icons/sound.png";
+        if (this.isMuted) {
+            for (let sound in this.sounds) {
+                this.sounds[sound].pause();
+            }
+            if (this.backgroundMusic) {
+                this.backgroundMusic.pause();
+            }
+        } else {
+            if (this.backgroundMusic) {
+                this.backgroundMusic.play();
+            }
+        }
     }
 }
 
-// 🎬 Beispielnutzung im Spiel
-const audioManager = new AudioManager();
-audioManager.addSound("jump", "audio/jump.mp3");
-audioManager.setBackgroundMusic("audio/game_music.mp3");
+// // 🎬 Beispielnutzung im Spiel
+// const audioManager = new AudioManager();
+// audioManager.addSound("jump", "audio/jump.mp3", 0.7); // 70% Lautstärke für den Sprung-Sound
+// audioManager.addSound("chickenDead", "audio/chickenDead_sound.mp3", 0.5); // 50% Lautstärke für den Tod-Sound
+// audioManager.addSound("lose", "audio/lose_sound02.mp3", 0.8); // 80% Lautstärke für den Verlust-Sound
+// audioManager.addSound("walking", "audio/walking_sound.mp3", 0.6); // 60% Lautstärke für das Gehen
+
+// audioManager.setBackgroundMusic("audio/game_music.mp3", 0.1); // 30% Lautstärke für die Hintergrundmusik
 
 window.toggleSound = () => audioManager.toggleMute();
