@@ -7,7 +7,7 @@ class MovableObject extends DrawableObject {
     speed = 0.55; // Horizontal movement speed
     otherDirection = false; // Indicates if the object is moving in the opposite direction
     speedY = 1; // Vertical speed for jumping or falling
-    acceleration = 2.0; // Acceleration for gravity
+    acceleration = 1.0; // Acceleration for gravity
     energy = 100; // Energy level of the object
     lastHit = 0; // Timestamp of the last hit
     standingTime = 0; // Time the object has been standing still

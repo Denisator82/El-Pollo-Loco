@@ -173,7 +173,7 @@ class Character extends MovableObject {
      */
     jump() {
         if (!this.isAboveGround()) {
-            this.speedY = 30; // Apply vertical speed to simulate jump
+            this.speedY = 15; // Apply vertical speed to simulate jump
         }
     }
 
@@ -237,8 +237,8 @@ class Character extends MovableObject {
     animateStanding() {
          // Play the standing animation
         this.playAnimation(this.IMAGES_STANDING);
-         // Increment the standing time by 100 ms
-        this.standingTime += 100;
+         // Increment the standing time by 65 ms
+        this.standingTime += 65;
         // If the character has been standing for longer than the sleep delay, switch to the sleeping animation
         if (this.standingTime >= this.sleepDelay) {
             this.playAnimation(this.IMAGES_SLEEPING);

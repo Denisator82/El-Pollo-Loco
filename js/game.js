@@ -16,7 +16,7 @@ let keyboard = new Keyboard();
  */
 function init() {
     canvas = document.getElementById('canvas');
-    initLevel(); // Initialisiert das erste Level
+    initLevel(); // Initialisiert das erste Level 
     world = new World(canvas, keyboard);
 }
 

@@ -25,6 +25,17 @@ h1 {
     z-index: 1001;
 }
 
+p {
+    color: whitesmoke;
+}
+
+.control {
+    width: 740px;
+    display: flex;
+    justify-content: space-around;
+}
+
+
 canvas {
     background-color: black;
     display: block;

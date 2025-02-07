@@ -20,7 +20,7 @@ class World {
     gameOver = false;
     background_music = new Audio('audio/game_music.mp3');
     chickenDead_sound = new Audio('audio/chickenDead_sound.mp3');
-    
+    lose_sound = new Audio('audio/lose_sound02.mp3');
     
     /**
      * Initializes the World class.
@@ -34,9 +34,10 @@ class World {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         this.keyboard = keyboard;
-        this.draw();
         this.setWorld();
+        this.draw();
         this.run();
+
     }
 
     /**
@@ -44,7 +45,7 @@ class World {
      * Sets the current world instance to the character.
      */
     setWorld() {
-        this.character.world = this; // es wird nur "this" übergeben damit man die aktuelle Instanz der Welt hat
+        this.character.world = this; // es wird nur "this" übergeben damit man die aktuelle Instanz der Welt hat  
     }
 
     /**
@@ -68,7 +69,7 @@ class World {
     */
     checkThrowObjects() {
         let now = Date.now();
-        if (this.keyboard.SHIFT && now - this.lastThrowTime > 500) { // 500ms Cooldown
+        if (this.keyboard.SHIFT && now - this.lastThrowTime > 850) { // 850ms Cooldown
             this.character.throwBottle();
             this.lastThrowTime = now;
         }
