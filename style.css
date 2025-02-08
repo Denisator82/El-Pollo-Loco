@@ -92,7 +92,7 @@ button:hover {
     scale: 1.1;
 }
 
-#miniBtns, #rotateDevice {
+#rotateDevice {
     display: flex;
     position: absolute;
 }
@@ -101,11 +101,70 @@ button:hover {
     cursor: pointer;
 }
 
-#leftMobile-container, #rightMobile-container {
+#miniBtns {
+    position: absolute;
+    top: 15px;
+    right: 30px;
+    gap: 8px;
+}
+
+#miniBtns img {
+    width: 30px;
+    height: 30px;
+}
+
+#miniBtns img:hover {
+    scale: 1.2;
+    cursor: pointer;
+}
+
+#throw_button {
+    width: 100px;
+    height: 100px;
+}
+
+/* #container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* optional: um die inneren Container vertikal zu zentrieren
+    width: 100%;
+} */
+
+/* #leftMobile-container, #rightMobile-container {
     position: absolute;
     bottom: 10px;
     left: 30px;
     gap: 16px;
+} */
+
+#container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* optional: um die inneren Container vertikal zu zentrieren */
+    position: absolute;
+    width: 600px;
+    bottom: 10px;
+    left: 0; /* Setze den linken Abstand des Containers */
+    padding: 0 30px; /* Padding für Abstand vom Rand */
+}
+
+#leftMobile-container, #rightMobile-container {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+#leftMobile-container {
+    justify-content: flex-start; /* optional: um sicherzustellen, dass Inhalte linksbündig sind */
+}
+
+#rightMobile-container {
+    justify-content: flex-end; /* optional: um sicherzustellen, dass Inhalte rechtsbündig sind */
+}
+
+.mobile-btns {
+    width: 30px;
+    height: 30px;
 }
 
 #rotateDevice {
