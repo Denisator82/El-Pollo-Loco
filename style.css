@@ -10,7 +10,17 @@ body {
     padding: 0;
     font-family: 'Fredericka the Great', cursive;
     height: 100vh;
-    background-image: url('img/background_1920x1080/desert01.png');
+    overflow: hidden;
+}
+
+h1 {
+    font-size: 10vh;
+    text-shadow: 2px 6px 8px rgba(0, 0, 0, 0.2);
+    margin: 0;
+}
+
+#mainSection {
+    background-image: url('img/background/desert01.png');
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -18,125 +28,131 @@ body {
     justify-content: center;
     flex-direction: column;
     align-items: center;
+    height: 100vh;
 }
 
-h1 {
-    z-index: 1001;
+.fullscreen-mode { 
+    width: 100vw; 
+    height: 100vh; 
+    aspect-ratio: 420/720; 
+    object-fit: contain; 
 }
 
-p {
-    color: whitesmoke;
-}
-
-.control {
-    width: 740px;
-    display: flex;
-    justify-content: space-around;
-}
-
-
-canvas {
-    background-color: black;
-    display: block;
-    padding: 10px;
-    border: 5px;
-    border-radius: 5px;
-    z-index: 500;
-}
-
-.title {
-    margin-top: 0px;
-    margin-bottom: 25px;
+#content {
+    position: relative;
+    height: 420px;
+    width: 720px;
     text-align: center;
-    font-size: 94px
 }
 
-.start-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
+#startScreen, #gameOverWin, #gameOverLose {
+    border-radius: 20px;
     width: 100%;
     height: 100%;
-    background-image: url('img/background_1920x1080/desert01.png');
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover; /* Das Bild wird über die gesamte Seite skaliert */
-    z-index: 1000;
-}
-
-.gameOverWin {
-    background-image: url('img/img_pollo_locco/img/9_intro_outro_screens/win/win_1.png');
-}
-
-.gameOverLose {
-    background-image: url('img/img_pollo_locco/img/9_intro_outro_screens/game_over/game over.png');
-}
-
-
-button {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 10px 20px;
-    font-size: 1.5rem;
-    cursor: pointer;
-    background-color: rgba(255, 255, 255, 0.8);
-    border: 2px solid #000;
-    border-radius: 5px;
-}
-
-.game-over {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1000;
-    text-align: center;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8); /* Dunkler Hintergrund */
+    position: absolute;
+    background-position: center;
+    background-size: cover;
 }
 
-.game-over img {
-    width: 50%;
-    max-width: 500px;
+#startScreen {
+    background-image: url('img/img/9_intro_outro_screens/start/startscreen_1.png');
 }
 
-.game-over button {
-    margin-top: 20px;
-    padding: 10px 20px;
-    font-size: 18px;
-    border: none;
-    background-color: #ff0000;
-    color: white;
-    cursor: pointer;
-    border-radius: 5px;
+#gameOverWin {
+    background-image: url('img/img/9_intro_outro_screens/win/win_1.png');
 }
 
-.game-over button:hover {
-    background-color: #cc0000;
+#gameOverLose {
+    background-image: url('img/img/9_intro_outro_screens/game_over/game over.png');
 }
 
-.d-none {
+#gameOverWin, #gameOverLose, #canvasContent, #rotateDevice, #leftMobile-container, #rightMobile-container {
     display: none;
 }
 
+canvas {
+    background-color: black;
+    margin-bottom: 100px;
+    border-radius: 20px;
+}
 
-/* Smartphones */
-@media only screen and (max-width: 720px) {
-    canvas {
-        width: 100%;
+button {
+    font-family: 'Fredericka the Great';
+    font-size: 38px;
+    background-color: #FFCC33;
+    padding: 10px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+button:hover {
+    scale: 1.1;
+}
+
+#miniBtns, #rotateDevice {
+    display: flex;
+    position: absolute;
+}
+
+#miniBtns img, #left_button, #right_button, #jump_button, #throw_button {
+    cursor: pointer;
+}
+
+#leftMobile-container, #rightMobile-container {
+    position: absolute;
+    bottom: 10px;
+    left: 30px;
+    gap: 16px;
+}
+
+#rotateDevice {
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+    position: absolute;
+}
+
+@media only screen and (max-width: 1024px) {
+    #leftMobile-container, 
+    #rightMobile-container {
+        display: flex;
     }
 }
 
-/* Smartphones */
+/* Smartphones*/
+@media only screen and (max-width: 720px) {
+    #content {
+        width: 100vw;
+    }
+}
+
+@media only screen and (max-width: 650px) {
+    
+    .rotateDevice {
+        top: 0;
+        left: 0;
+        display: flex;
+    }   
+}
+
+@media only screen and (max-height: 530px) {
+    h1 {
+        display: none;
+    }
+}
+
+@media only screen and (max-width: 360px) {
+    h1 {
+        display: none;
+    }
+}
+
+/*Smartphones*/
 @media only screen and (max-height: 480px) {
-    canvas {
+    #content {
         height: 100vh;
     }
 }

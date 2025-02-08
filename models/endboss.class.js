@@ -140,8 +140,14 @@ class Endboss extends MovableObject {
         this.i++;
     }
     
+        /**
+     * Shows the status bar for the end boss.
+     * Makes the status bar of the end boss visible.
+     */
+        showStatusBar() {
+            world.statusBarEndboss.visible = true;
+        }
     
-
     /**
      * Handles the animation when the end boss is dead.
      */
@@ -205,14 +211,5 @@ class Endboss extends MovableObject {
                 this.x -= this.speed; // Endboss bewegt sich nach dem Alarm und Attack
             }        
         }, 1000 / 60);
-    }
-    
-
-    /**
-     * Shows the status bar for the end boss.
-     * Makes the status bar of the end boss visible.
-     */
-    showStatusBar() {
-        world.statusBarEndboss.visible = true;
     }
 }

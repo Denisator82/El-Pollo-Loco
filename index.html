@@ -28,35 +28,42 @@
     <script src="./levels/level1.js"></script>
     <script src="./js/game.js"></script>
 </head>
-<body onload="init()">
-    <h1 class="title">El Pollo Loco</h1>
-
-    
-    <div id="start-screen">
-        <button onclick="startGame()">Spiel Starten</button>
-    </div>
-    <div id="gameOverWin" class="game-over d-none">
-        <img src="img/img_pollo_locco/img/9_intro_outro_screens/win/win_2.png" alt="You Win!">
-        <button onclick="restartGame()">RESTART</button>
-    </div>
-    
-    <div id="gameOverLose" class="game-over d-none">
-        <img src="img/img_pollo_locco/img/9_intro_outro_screens/game_over/oh no you lost!.png" alt="Game Over">
-        <button onclick="restartGame()">RESTART</button>
-    </div>
-    <canvas id="canvas" width="720" height="480">
-    
-    </canvas>
-    <div class="control">
-        <p>Walk-Left = A</p>
-        <p>Walk-Right = D</p>
-        <p>Jump = Space</p>
-        <p>Throw = Shift</p>
-    </div>
-    <div class="win-screen">
-
-    </div>
-    
+<body onload="initMobile()">
+    <section id="mainSection">
+        <h1>El Pollo loco</h1>
+        <div id="content">
+            <div id="startScreen">
+                <button onclick="startGame()">START</button>
+            </div>
+            <div id="gameOverWin">
+                <button onclick="restartGame()">RESTART</button>
+            </div>
+            <div id="gameOverLose">
+                <button onclick="restartGame()">RESTART</button>
+            </div>
+            <div id="help"></div>
+            <div id="canvasContent">
+                <canvas id="canvas" width="720px" height="420px"></canvas>
+            </div>
+            <div id="miniBtns">
+                <img id="audio" src="XYZ" alt="" onclick="toggleMute()">
+                <img id="fullscreen" src="XYZ" alt="" onclick="toggleFullscreen()">
+                <img id="settings" src="XYZ" alt="" onclick="showHelpPage()">
+            </div>
+            <div id="leftMobile-container">
+                <img id="left_button" class="mobile-btns" src="img/10_extras/pfeiltaste.png" alt="">
+                <img id="right_button" class="mobile-btns" src="img/10_extras/pfeiltaste.png" alt="">
+            </div>
+            <div id="rightMobile-container">
+                <img id="jump_button" class="mobile-btns" src="img/10_extras/pfeiltaste.png" alt="">
+                <img id="throw_button" class="mobile-btns" src="img/6_salsa_bottle/bottle_rotation/1_bottle_rotation.png" alt="">
+            </div>
+            <div id="rotateDevice">
+                <span>Please rotate your device</span>
+            </div>
+        </div>
+    </section>
 </body>
+
 </html>
 
