@@ -6,12 +6,12 @@ class StatusBarCoin extends DrawableObject {
 
     // Images for the coin status bar based on percentage
     IMAGES = [
-        'img/img_pollo_locco/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/0.png',
-        'img/img_pollo_locco/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/20.png',
-        'img/img_pollo_locco/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/40.png',
-        'img/img_pollo_locco/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/60.png',
-        'img/img_pollo_locco/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/80.png',
-        'img/img_pollo_locco/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/100.png',
+        'img/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/0.png',
+        'img/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/20.png',
+        'img/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/40.png',
+        'img/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/60.png',
+        'img/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/80.png',
+        'img/img/7_statusbars/1_statusbar/1_statusbar_coin/orange/100.png',
     ];
 
     percentage = 0; // Initial percentage of the status bar

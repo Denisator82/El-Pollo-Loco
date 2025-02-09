@@ -34,22 +34,22 @@ h1 {
 .fullscreen-mode { 
     width: 100vw; 
     height: 100vh; 
-    aspect-ratio: 420/720; 
+    aspect-ratio: 480/720; 
     object-fit: contain; 
 }
 
 #content {
     position: relative;
-    height: 420px;
+    height: 480px;
     width: 720px;
     text-align: center;
 }
 
-#startScreen, #gameOverWin, #gameOverLose {
+#startScreen, #gameWin, #gameLose {
     border-radius: 20px;
     width: 100%;
     height: 100%;
-    display: flex;
+    /* display: flex; */
     justify-content: center;
     align-items: center;
     position: absolute;
@@ -57,26 +57,29 @@ h1 {
     background-size: cover;
 }
 
+#gameWin, #gameLose {
+    z-index: -1; /* Unsichtbar nach hinten verschieben */
+    opacity: 0;   /* Vollständig transparent machen */
+    transition: opacity 0.5s ease-in-out;
+}
+
 #startScreen {
     background-image: url('img/img/9_intro_outro_screens/start/startscreen_1.png');
 }
 
-#gameOverWin {
+#gameWin {
     background-image: url('img/img/9_intro_outro_screens/win/win_1.png');
 }
 
-#gameOverLose {
+#gameLose {
     background-image: url('img/img/9_intro_outro_screens/game_over/game over.png');
-}
-
-#gameOverWin, #gameOverLose, #canvasContent, #rotateDevice, #leftMobile-container, #rightMobile-container {
-    display: none;
 }
 
 canvas {
     background-color: black;
     margin-bottom: 100px;
     border-radius: 20px;
+    z-index: 500;
 }
 
 button {
@@ -85,16 +88,12 @@ button {
     background-color: #FFCC33;
     padding: 10px;
     border-radius: 20px;
+    margin-top: 25px;
     cursor: pointer;
 }
 
 button:hover {
     scale: 1.1;
-}
-
-#rotateDevice {
-    display: flex;
-    position: absolute;
 }
 
 #miniBtns img, #left_button, #right_button, #jump_button, #throw_button {
@@ -123,61 +122,27 @@ button:hover {
     height: 60px;
 }
 
-/* #container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center; /* optional: um die inneren Container vertikal zu zentrieren
-    width: 100%;
-} */
-
-/* #leftMobile-container, #rightMobile-container {
-    position: absolute;
-    bottom: 10px;
-    left: 30px;
-    gap: 16px;
-} */
-
-#container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center; /* optional: um die inneren Container vertikal zu zentrieren */
-    position: absolute;
-    width: 600px;
-    bottom: 10px;
-    left: 0; /* Setze den linken Abstand des Containers */
-    padding: 0 30px; /* Padding für Abstand vom Rand */
-}
-
-#leftMobile-container, #rightMobile-container {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
-#leftMobile-container {
-    justify-content: flex-start; /* optional: um sicherzustellen, dass Inhalte linksbündig sind */
-}
-
-#rightMobile-container {
-    justify-content: flex-end; /* optional: um sicherzustellen, dass Inhalte rechtsbündig sind */
-}
-
 .mobile-btns {
     width: 50px;
     height: 50px;
 }
 
-#rotateDevice {
-    justify-content: center;
-    align-items: center;
-    border-radius: 20px;
-    position: absolute;
+.show {
+    z-index: 100; /* Ganz nach vorne bringen */
+    opacity: 1;   /* Sichtbar machen */
 }
 
-@media only screen and (max-width: 1024px) {
-    #leftMobile-container, 
-    #rightMobile-container {
-        display: flex;
+.hidden {
+    display: none;
+}
+
+@media only screen and (max-wi: 840px) {
+    h1 {
+        display: none;
+    }
+
+    .layout {
+        display: none;
     }
 }
 
@@ -185,6 +150,22 @@ button:hover {
 @media only screen and (max-width: 720px) {
     #content {
         width: 100vw;
+    }
+
+    canvas {
+        width: 100%;
+    }
+
+    #startScreen img {
+        width: 100vw;
+    }
+
+    h1 {
+        display: none;
+    }
+
+    .layout {
+        display: none;
     }
 }
 
@@ -210,8 +191,58 @@ button:hover {
 }
 
 /*Smartphones*/
-@media only screen and (max-height: 480px) {
+@media only screen and (max-height: 420px) {
     #content {
         height: 100vh;
+    }
+
+    canvas {
+        height: 100vh;
+    }
+
+    #startScreen img {
+        height: 100vh;
+    }
+
+    .layout {
+        display: none;
+    }
+
+    h1 {
+        display: none;
+    }
+}
+
+@media (hover: none) and (orientation: landscape) {
+    #leftMobile-container {
+        display: block;
+        position: absolute;
+        top: 80%;
+        right: 70%;
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+        padding: 5px;
+    }
+
+    #rightMobile-container {
+        display: block;
+        position: absolute;
+        top: 80%;
+        right: 5%;
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+        padding: 5px;
+    }
+}
+
+@media (hover: none) and (orientation: portrait) {
+    #rotateDevice {
+        display: block;
     }
 }

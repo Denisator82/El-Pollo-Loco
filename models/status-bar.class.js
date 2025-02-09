@@ -6,12 +6,12 @@ class StatusBar extends DrawableObject {
 
     // Images for the health status bar based on percentage
     IMAGES_HEALTH = [
-        'img/img_pollo_locco/img/7_statusbars/1_statusbar/2_statusbar_health/green/0.png', // 0
-        'img/img_pollo_locco/img/7_statusbars/1_statusbar/2_statusbar_health/green/20.png',
-        'img/img_pollo_locco/img/7_statusbars/1_statusbar/2_statusbar_health/green/40.png',
-        'img/img_pollo_locco/img/7_statusbars/1_statusbar/2_statusbar_health/green/60.png',
-        'img/img_pollo_locco/img/7_statusbars/1_statusbar/2_statusbar_health/green/80.png',
-        'img/img_pollo_locco/img/7_statusbars/1_statusbar/2_statusbar_health/green/100.png' // 5
+        'img/img/7_statusbars/1_statusbar/2_statusbar_health/green/0.png', // 0
+        'img/img/7_statusbars/1_statusbar/2_statusbar_health/green/20.png',
+        'img/img/7_statusbars/1_statusbar/2_statusbar_health/green/40.png',
+        'img/img/7_statusbars/1_statusbar/2_statusbar_health/green/60.png',
+        'img/img/7_statusbars/1_statusbar/2_statusbar_health/green/80.png',
+        'img/img/7_statusbars/1_statusbar/2_statusbar_health/green/100.png' // 5
     ];
 
     percentage = 100; // Initial health percentage of the status bar

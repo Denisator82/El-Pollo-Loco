@@ -10,7 +10,7 @@ class Bottle extends MovableObject {
 
     // Image paths for the bottle
     IMAGES = [
-        'img/img_pollo_locco/img/6_salsa_bottle/1_salsa_bottle_on_ground.png'
+        'img/img/6_salsa_bottle/1_salsa_bottle_on_ground.png'
     ];
 
     /**

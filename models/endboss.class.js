@@ -12,52 +12,51 @@ class Endboss extends MovableObject {
     visible = false; // Visibility status of the end boss
     health = 100; // Energy of the end boss
     world;
-    endboss_music = new Audio('audio/endboss_music.mp3');
 
     // Images for the alert state of the end boss
     IMAGES_ALERT = [
-        'img/img_pollo_locco/img/4_enemie_boss_chicken/2_alert/G5.png',
-        'img/img_pollo_locco/img/4_enemie_boss_chicken/2_alert/G6.png',
-        'img/img_pollo_locco/img/4_enemie_boss_chicken/2_alert/G7.png',
-        'img/img_pollo_locco/img/4_enemie_boss_chicken/2_alert/G8.png',
-        'img/img_pollo_locco/img/4_enemie_boss_chicken/2_alert/G9.png',
-        'img/img_pollo_locco/img/4_enemie_boss_chicken/2_alert/G10.png',
-        'img/img_pollo_locco/img/4_enemie_boss_chicken/2_alert/G11.png',
-        'img/img_pollo_locco/img/4_enemie_boss_chicken/2_alert/G12.png'
+        'img/img/4_enemie_boss_chicken/2_alert/G5.png',
+        'img/img/4_enemie_boss_chicken/2_alert/G6.png',
+        'img/img/4_enemie_boss_chicken/2_alert/G7.png',
+        'img/img/4_enemie_boss_chicken/2_alert/G8.png',
+        'img/img/4_enemie_boss_chicken/2_alert/G9.png',
+        'img/img/4_enemie_boss_chicken/2_alert/G10.png',
+        'img/img/4_enemie_boss_chicken/2_alert/G11.png',
+        'img/img/4_enemie_boss_chicken/2_alert/G12.png'
     ];
 
     // Images for the walking state of the end boss
     IMAGES_WALKING = [
-        'img/img_pollo_locco/img/4_enemie_boss_chicken/1_walk/G1.png',
-        'img/img_pollo_locco/img/4_enemie_boss_chicken/1_walk/G2.png',
-        'img/img_pollo_locco/img/4_enemie_boss_chicken/1_walk/G3.png',
-        'img/img_pollo_locco/img/4_enemie_boss_chicken/1_walk/G4.png',
+        'img/img/4_enemie_boss_chicken/1_walk/G1.png',
+        'img/img/4_enemie_boss_chicken/1_walk/G2.png',
+        'img/img/4_enemie_boss_chicken/1_walk/G3.png',
+        'img/img/4_enemie_boss_chicken/1_walk/G4.png',
     ];
 
     // Images for the attack state of the end boss
     IMAGES_ATTACK = [
-        'img/img_pollo_locco/img/4_enemie_boss_chicken/3_attack/G13.png',
-        'img/img_pollo_locco/img/4_enemie_boss_chicken/3_attack/G14.png',
-        'img/img_pollo_locco/img/4_enemie_boss_chicken/3_attack/G15.png',
-        'img/img_pollo_locco/img/4_enemie_boss_chicken/3_attack/G16.png',
-        'img/img_pollo_locco/img/4_enemie_boss_chicken/3_attack/G17.png',
-        'img/img_pollo_locco/img/4_enemie_boss_chicken/3_attack/G18.png',
-        'img/img_pollo_locco/img/4_enemie_boss_chicken/3_attack/G19.png',
-        'img/img_pollo_locco/img/4_enemie_boss_chicken/3_attack/G20.png',
+        'img/img/4_enemie_boss_chicken/3_attack/G13.png',
+        'img/img/4_enemie_boss_chicken/3_attack/G14.png',
+        'img/img/4_enemie_boss_chicken/3_attack/G15.png',
+        'img/img/4_enemie_boss_chicken/3_attack/G16.png',
+        'img/img/4_enemie_boss_chicken/3_attack/G17.png',
+        'img/img/4_enemie_boss_chicken/3_attack/G18.png',
+        'img/img/4_enemie_boss_chicken/3_attack/G19.png',
+        'img/img/4_enemie_boss_chicken/3_attack/G20.png',
     ];
 
     // Images for the hurt state of the end boss
     IMAGES_HURT = [
-        'img/img_pollo_locco/img/4_enemie_boss_chicken/4_hurt/G21.png',
-        'img/img_pollo_locco/img/4_enemie_boss_chicken/4_hurt/G22.png',
-        'img/img_pollo_locco/img/4_enemie_boss_chicken/4_hurt/G23.png',
+        'img/img/4_enemie_boss_chicken/4_hurt/G21.png',
+        'img/img/4_enemie_boss_chicken/4_hurt/G22.png',
+        'img/img/4_enemie_boss_chicken/4_hurt/G23.png',
     ];
 
     // Images for the dead state of the end boss
     IMAGES_DEAD = [
-        'img/img_pollo_locco/img/4_enemie_boss_chicken/5_dead/G24.png',
-        'img/img_pollo_locco/img/4_enemie_boss_chicken/5_dead/G25.png',
-        'img/img_pollo_locco/img/4_enemie_boss_chicken/5_dead/G26.png',
+        'img/img/4_enemie_boss_chicken/5_dead/G24.png',
+        'img/img/4_enemie_boss_chicken/5_dead/G25.png',
+        'img/img/4_enemie_boss_chicken/5_dead/G26.png',
     ];
 
     /**
@@ -121,8 +120,14 @@ class Endboss extends MovableObject {
      * Handles the animation of the end boss based on its state.
      */
     endbossAnimation() {
-        if (!this.hadFirstContact) return; // End boss remains inactive until first contact occurs
-        
+        if (!this.hadFirstContact) return; // The end boss remains inactive until the first contact occurs
+
+        // Show the status bar before the alert starts
+        if (this.i === 0) {
+            this.showStatusBar(); // The status bar is shown immediately
+        }
+
+        // Handle the end boss animation based on its state
         if (this.isDeadEndboss()) {
             this.endbossAnimationDead();
         } else if (this.isHurtEndboss()) {
@@ -130,16 +135,16 @@ class Endboss extends MovableObject {
         } else if (this.i < this.IMAGES_ALERT.length) { 
             this.endbossAnimationAlert();
         } else if (this.i === this.IMAGES_ALERT.length) {
-            this.showStatusBar(); // Status bar is shown after alert
+            // Optional: Add additional actions here after the alert
         } else if (this.i < this.IMAGES_ALERT.length + this.IMAGES_ATTACK.length) {
             this.endbossAnimationAttack();
         } else {        
             this.endbossAnimationWalk();
-            // this.endboss_music.play(); 
         }
-        this.i++;
+
+        this.i++; // Increment i after each step
     }
-    
+
         /**
      * Shows the status bar for the end boss.
      * Makes the status bar of the end boss visible.

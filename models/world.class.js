@@ -18,9 +18,15 @@ class World {
     coinCounter = 0;
     lastThrowTime = 0; // Neue Variable in der Klasse
     gameOver = false;
-    background_music = new Audio('audio/game_music.mp3');
+    background_music = new Audio('audio/background_music.mp3');
+    bottleBroke_sound = new Audio('audio/bottleBroke_sound.mp3');
     chickenDead_sound = new Audio('audio/chickenDead_sound.mp3');
+    endboss_music = new Audio('audio/endboss_music.mp3');
+    game_over = new Audio ('audio/game_over.mp3');
+    jumping_sound = new Audio ('audio/jumping_sound.mp3');
     lose_sound = new Audio('audio/lose_sound02.mp3');
+    walking_sound = new Audio('audio/walking_sound.mp3');
+
     
     
     /**
@@ -46,11 +52,6 @@ class World {
      */
     setWorld() {
         this.character.world = this; // es wird nur "this" übergeben damit man die aktuelle Instanz der Welt hat  
-    //     if (!isMuted) {
-    //         this.background_music.loop = true;
-    //         this.background_music.volume = 0.3;    
-    //         this.background_music.play();    
-    //     }
     }
 
     /**
@@ -127,12 +128,11 @@ class World {
     checkCollisionsCharacterWithEndboss() {
         this.level.endboss.forEach(endboss => {
             if (this.character.isColliding(endboss)) {
-                this.character.hit();
-                this.statusBar.setPercentage(this.character.energy);
+                // this.character.hit();
+                // this.statusBar.setPercentage(this.character.energy);
                 this.gameOver = true;
-                this.character.walking_sound.pause();
-                gameOverLose();
-                this.level.endboss[0].playSound(this.lose_sound);
+                // this.character.walking_sound.pause();
+                gameLose();
             }
         });
     }

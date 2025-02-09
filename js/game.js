@@ -1,16 +1,66 @@
 /**
  * Declares the global variables used in the game.
- * 
- * @type {HTMLCanvasElement} canvas - The canvas element for rendering the game.
- * @type {World} world - The instance of the game world.
- * @type {Keyboard} keyboard - The instance of the keyboard input handler.
  */
 let canvas;
 let world;
 let keyboard = new Keyboard();
-let isLoading = false;
 let isMuted = false;
 let fullscreen = false;
+
+/**
+ * Initializes the page without starting the game automatically.
+ */
+function initPage() {
+    console.log("Seite geladen, aber Spiel startet erst nach Klick auf 'START'");
+}
+
+/**
+ * Sets up a new game world.
+ */
+function newGame() {
+    canvas = document.getElementById('canvas');
+    initLevel(); 
+    world = new World(canvas, keyboard);
+}
+
+/**
+ * Starts the game by hiding the start screen and initializing the game.
+ */
+function startGame() {
+    console.log("startGame wurde aufgerufen!");
+    
+    document.getElementById("startScreen").classList.add("hidden");
+    document.getElementById("canvasContent").classList.remove("hidden"); // Canvas-Container anzeigen
+    
+    newGame();
+}
+
+
+/**
+ * Displays the game over screen.
+ */
+function gameLose() {
+    document.getElementById("gameLose").classList.add("show");
+    world.lose_sound.play();
+}
+
+/**
+ * Displays the win screen.
+ */
+function gameWin() {
+    document.getElementById("gameWin").classList.add("show");
+}
+
+/**
+ * Restarts the game and resets the UI.
+ */
+function restartGame() {
+    document.getElementById("gameWin").classList.remove("show");
+    document.getElementById("gameLose").classList.remove("show");
+    document.getElementById("startScreen").classList.remove("hidden"); 
+    newGame();
+}
+
 
 /**
  * Listens for keydown events and updates the keyboard state accordingly.
@@ -76,87 +126,18 @@ window.addEventListener("keyup", (e) => {
     }
 });
 
-/**
- * initialize mobile press events
- * 
- */
+// /**
+//  * initialize mobile press events
+//  * 
+//  */
 function initMobile() {
     mobileKeyPressEvents();
     mobileKeyReleaseEvents();
 }
 
-
-/**
- * Function to start the game.
- * Hides the start screen and initializes the game.
- */
-function startGame() {//function init()
-    document.getElementById("startScreen").classList.add("d-none");
-    document.getElementById("loading").classList.remove("d-none");
-    if (!isLoading) {
-        newGame().then(() => {
-            setTimeout(() => {
-                isLoading = true;
-                showGame();
-            }, 3000);
-        });
-    }
-}
-
-/**
- * Sets a new World in the canvas
- */
-function newGame() {
-    canvas = document.getElementById("canvas");
-    return initLevel().then(() => {
-        world = new World(canvas, keyboard);
-    });
-}
-
-/**
- * Removes the loading view and shows the game
- */
-function showGame() {
-    document.getElementById("loading").classList.add("d-none");
-    document.getElementById("canvasContent").classList.remove("d-none");
-    document.getElementById("leftMobile-container").classList.remove("d-none");
-    document.getElementById("rightMobile-container").classList.remove("d-none");
-}
-
-/*
- *shows the lose screen
- */
-function gameOverLose() {
-    document.getElementById("gameOverLose").classList.remove("d-none");
-}
-
-/**
- * shows the win screen
- */
-function gameOverWin() {
-    document.getElementById("gameOverWin").classList.remove("d-none");
-}
-
-/**
- * Restarts the game
- */
-function restartGame() {
-    document.getElementById('gameOverWin').classList.add("d-none");
-    document.getElementById('gameOverLose').classList.add("d-none");
-    document.getElementById('loading').classList.remove("d-none");
-    document.getElementById('leftMobile-container').classList.add("d-none");
-    document.getElementById('rightMobile-container').classList.add("d-none");
-    newGame();
-    setTimeout(() => {
-        document.getElementById('loading').classList.add("d-none");
-        document.getElementById('leftMobile-container').classList.remove("d-none");
-        document.getElementById('rightMobile-container').classList.remove("d-none");
-    }, 1000);
-}
-
-/**
- * Sets the key to true after pressing them (mobile)
- */
+// /**
+//  * Sets the key to true after pressing them (mobile)
+//  */
 function mobileKeyPressEvents() {
     const leftButton = document.getElementById('left_button');
     leftButton.addEventListener('touchstart', (e) => {
@@ -180,9 +161,9 @@ function mobileKeyPressEvents() {
     });
 }
 
-/**
- * Sets the key to false after releasing them (mobile)
- */
+// /**
+//  * Sets the key to false after releasing them (mobile)
+//  */
 function mobileKeyReleaseEvents() {
     const leftButton = document.getElementById('left_button');
     leftButton.addEventListener('touchend', () => {
@@ -201,7 +182,3 @@ function mobileKeyReleaseEvents() {
         keyboard.SHIFT = false;
     });
 }
-
-
-
-

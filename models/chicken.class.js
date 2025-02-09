@@ -12,14 +12,14 @@ class Chicken extends MovableObject {
 
     // Images for the walking state of the normal chicken
     IMAGES_WALKING = [
-        'img/img_pollo_locco/img/3_enemies_chicken/chicken_normal/1_walk/1_w.png',
-        'img/img_pollo_locco/img/3_enemies_chicken/chicken_normal/1_walk/2_w.png',
-        'img/img_pollo_locco/img/3_enemies_chicken/chicken_normal/1_walk/3_w.png'
+        'img/img/3_enemies_chicken/chicken_normal/1_walk/1_w.png',
+        'img/img/3_enemies_chicken/chicken_normal/1_walk/2_w.png',
+        'img/img/3_enemies_chicken/chicken_normal/1_walk/3_w.png'
     ];
 
     // Images for the dead state of the normal chicken
     IMAGES_DEAD = [
-        'img/img_pollo_locco/img/3_enemies_chicken/chicken_normal/2_dead/dead.png'
+        'img/img/3_enemies_chicken/chicken_normal/2_dead/dead.png'
     ];
 
     /**

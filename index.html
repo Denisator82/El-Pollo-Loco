@@ -6,6 +6,8 @@
     <link rel="icon" type="image/x-icon" href="./img/favicon/sombrero.png">
     <link rel="stylesheet" href="style.css">
     <title>El_Pollo_Loco</title>
+
+    <!-- JavaScript-Dateien -->
     <script src="./models/audio-manager.class.js"></script>
     <script src="./models/drawable-object.class.js"></script>
     <script src="./models/movable-object.class.js"></script>
@@ -30,42 +32,54 @@
 </head>
 <body onload="initMobile()">
     <section id="mainSection">
-        <h1>El Pollo loco</h1>
+        <h1>El Pollo Loco</h1>
         <div id="content">
+            
+            <!-- Startbildschirm: Ist beim Laden sichtbar -->
             <div id="startScreen">
                 <button onclick="startGame()">START</button>
             </div>
-            <div id="gameOverWin">
+
+            <!-- Gewinn- und Verlustbildschirm (anfangs versteckt) -->
+            <div id="gameWin" class="show">
                 <button onclick="restartGame()">RESTART</button>
             </div>
-            <div id="gameOverLose">
+            <div id="gameLose" class="show">
                 <button onclick="restartGame()">RESTART</button>
             </div>
-            <div id="help"></div>
-            <div id="canvasContent">
-                <canvas id="canvas" width="720px" height="420px"></canvas>
+
+            <!-- Hilfe-Seite (anfangs versteckt) -->
+            <div id="help" class="hidden"></div>
+
+            <!-- Das Spiel-Canvas (anfangs versteckt) -->
+            <div id="canvasContent" class="hidden">
+                <canvas id="canvas" width="720px" height="480px"></canvas>
             </div>
+
             <div id="miniBtns">
                 <img id="audio" src="img/img/10_extras/volume-up-fill.svg" alt="" onclick="toggleMute()">
                 <img id="fullscreen" src="img/img/10_extras/arrows-fullscreen.svg" alt="" onclick="toggleFullscreen()">
                 <img id="settings" src="img/img/10_extras/gear.svg" alt="" onclick="showHelpPage()">
             </div>
-            <div id="container">
-                <div id="leftMobile-container">
-                    <img id="left_button" class="mobile-btns" src="img/img/10_extras/arrow-left-square.svg" alt="">
-                    <img id="right_button" class="mobile-btns" src="img/img/10_extras/arrow-right-square.svg" alt="">
-                </div>
-                <div id="rightMobile-container">
-                    <img id="jump_button" class="mobile-btns" src="img/img/10_extras/arrow-up-square.svg" alt="">
-                    <img id="throw_button" class="mobile-btns" src="img/img/10_extras/salsa_bottle_Icon.png" alt="">
-                </div>
+
+            <!-- Mobile Steuerung (anfangs versteckt) -->
+            <div id="leftMobile-container" class="hidden">
+                <img id="left_button" class="mobile-btns" src="img/img/10_extras/arrow-left-square.svg" alt="">
+                <img id="right_button" class="mobile-btns" src="img/img/10_extras/arrow-right-square.svg" alt="">
             </div>
-            <div id="rotateDevice">
+            <div id="rightMobile-container" class="hidden">
+                <img id="jump_button" class="mobile-btns" src="img/img/10_extras/arrow-up-square.svg" alt="">
+                <img id="throw_button" class="mobile-btns" src="img/img/10_extras/salsa_bottle_Icon.png" alt="">
+            </div>
+
+            <!-- Dreh-Hinweis für mobile Geräte (anfangs versteckt) -->
+            <div id="rotateDevice" class="hidden">
                 <span>Please rotate your device</span>
             </div>
+
         </div>
     </section>
 </body>
-
 </html>
+
 

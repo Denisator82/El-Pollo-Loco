@@ -6,12 +6,12 @@ class StatusBarEndboss extends DrawableObject {
 
     // Images for the health status bar of the end boss based on percentage
     IMAGES_HEALTH = [
-        'img/img_pollo_locco/img/7_statusbars/2_statusbar_endboss/orange/orange0.png',
-        'img/img_pollo_locco/img/7_statusbars/2_statusbar_endboss/orange/orange20.png',
-        'img/img_pollo_locco/img/7_statusbars/2_statusbar_endboss/orange/orange40.png',
-        'img/img_pollo_locco/img/7_statusbars/2_statusbar_endboss/orange/orange60.png',
-        'img/img_pollo_locco/img/7_statusbars/2_statusbar_endboss/orange/orange80.png',
-        'img/img_pollo_locco/img/7_statusbars/2_statusbar_endboss/orange/orange100.png',
+        'img/img/7_statusbars/2_statusbar_endboss/orange/orange0.png',
+        'img/img/7_statusbars/2_statusbar_endboss/orange/orange20.png',
+        'img/img/7_statusbars/2_statusbar_endboss/orange/orange40.png',
+        'img/img/7_statusbars/2_statusbar_endboss/orange/orange60.png',
+        'img/img/7_statusbars/2_statusbar_endboss/orange/orange80.png',
+        'img/img/7_statusbars/2_statusbar_endboss/orange/orange100.png',
     ];
 
     percentage = 100; // Initial health percentage of the end boss
@@ -26,7 +26,7 @@ class StatusBarEndboss extends DrawableObject {
         super(); // Call the parent class constructor
         this.loadImages(this.IMAGES_HEALTH); // Load all images for the health status bar
         this.x = 500; // Set the initial x-coordinate of the status bar
-        this.y = 10; // Set the initial y-coordinate of the status bar
+        this.y = 45; // Set the initial y-coordinate of the status bar
         this.width = 200; // Set the width of the status bar
         this.height = 50; // Set the height of the status bar
         this.setPercentage(100); // Set the initial health percentage to 100

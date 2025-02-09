@@ -9,8 +9,8 @@ class Coin extends MovableObject {
 
     // Images for the coin
     IMAGES = [
-        'img/img_pollo_locco/img/8_coin/coin_1.png',
-        'img/img_pollo_locco/img/8_coin/coin_2.png',
+        'img/img/8_coin/coin_1.png',
+        'img/img/8_coin/coin_2.png',
     ];
 
     /**

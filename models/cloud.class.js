@@ -13,7 +13,7 @@ class Cloud extends MovableObject {
      * and starts the animation to move the cloud.
      */
     constructor() {
-        super().loadImage('img/img_pollo_locco/img/5_background/layers/4_clouds/1.png'); // Load the image for the cloud
+        super().loadImage('img/img/5_background/layers/4_clouds/1.png'); // Load the image for the cloud
         this.x = 220 + Math.random() * 2500; // Set the initial x-coordinate randomly between 220 and 2720
         this.animate(); // Start the animation
     }
