@@ -89,4 +89,11 @@ function initLevel() {
             new Bottle(),
         ],
     );
+    // level1.bottles.forEach(bottle => {
+    //     bottle.y = world.groundLevel - bottle.height; // Verwende den Parameter world
+    // });
+    // level1.endboss.forEach(endboss => endboss.world = world);
+    // level1.enemies.forEach(enemy => enemy.world = world);
+    // level1.clouds.forEach(cloud => cloud.world = world);
+    // level1.coins.forEach(coin => coin.world = world);
 }

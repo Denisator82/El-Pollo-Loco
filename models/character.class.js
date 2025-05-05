@@ -11,8 +11,6 @@ class Character extends MovableObject {
     coinsCollected = 0; // Number of coins collected by the character
     bottlesCollected = 0; // Number of bottles collected by the character
     world; // Reference to the game world (initialize as needed)
-    walking_sound = new Audio('audio/walking_sound.mp3'); // Sound for walking
-    jumping_sound = new Audio('audio/jumping_sound.mp3'); // Sound for jumping
 
     /**
      * Images for the standing state of the character
@@ -133,6 +131,10 @@ class Character extends MovableObject {
             this.energy = 0;
         } else {
             this.lastHit = new Date().getTime();
+            // Sound beim getroffen werden
+            if (this.world && this.world.audioManager) {
+                this.world.audioManager.playSound('hurt'); // Benötigt 'hurt' Sound
+            }
         }
     }
     
@@ -174,6 +176,9 @@ class Character extends MovableObject {
     jump() {
         if (!this.isAboveGround()) {
             this.speedY = 15; // Apply vertical speed to simulate jump
+            if (this.world && this.world.audioManager) {
+                this.world.audioManager.playSound('jump');
+            }
         }
     }
 
@@ -184,39 +189,51 @@ class Character extends MovableObject {
     animateCharacter() {
         // Primary animation loop running at approximately 60 frames per second
         setInterval(() => {
-            this.walking_sound.pause(); // Pause the walking sound initially
+            console.log('RIGHT:', this.world.keyboard.RIGHT, 'LEFT:', this.world.keyboard.LEFT, 'x:', this.x);
+
+            let isMoving = false;
 
             if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
                 this.moveRight();
                 this.otherDirection = false;
-                this.walking_sound.play(); // Play the walking sound
-                this.resetStandingTime(); // Reset the standing time counter
+                if (this.world && this.world.audioManager) {
+                    this.world.audioManager.playSound('walk');
+                }
+                this.resetStandingTime();
+                isMoving = true;
             }
 
             if (this.world.keyboard.LEFT && this.x > 0) {
                 this.moveLeft();
                 this.otherDirection = true;
-                this.walking_sound.play(); // Play the walking sound
-                this.resetStandingTime(); // Reset the standing time counter
+                if (this.world && this.world.audioManager) {
+                    this.world.audioManager.playSound('walk');
+                }
+                this.resetStandingTime();
+                isMoving = true;
+            }
+
+            if (!isMoving && this.world && this.world.audioManager) {
+                this.world.audioManager.playSound('walk');
+                this.world.audioManager.sounds['walk'].pause();
+                this.world.audioManager.sounds['walk'].currentTime = 0;
             }
 
             if (this.world.keyboard.SPACE && !this.isAboveGround()) {
                 this.jump();
-                this.jumping_sound.play(); // Play the jumping sound
-                this.resetStandingTime(); // Reset the standing time counter
+                this.resetStandingTime();
             }
 
-            // Update the camera position based on the character's x position
+            // Kamera-Update
             this.world.camera_x = -this.x + 100;
         }, 1000 / 60); // Run at 60 frames per second
 
-        // // Secondary animation loop (approx. 10 FPS)
+        // Secondary animation loop (approx. 10 FPS)
         setInterval(() => {
             if (this.isDead()) {
                 this.playAnimation(this.IMAGES_DEAD); // Play the dead animation if the character is dead
                 this.resetStandingTime();
-                this.playAnimation(this.IMAGES_HURT); // Play the hurt animation if the character is hurt
-                this.resetStandingTime();
+                // Hier könnte ein 'death' Sound abgespielt werden, aber das Game Over wird global gehandhabt.
             } else if (this.isAboveGround()) {
                 this.playAnimation(this.IMAGES_JUMPING); // Play the jumping animation if the character is in the air
                 this.resetStandingTime();
@@ -228,7 +245,6 @@ class Character extends MovableObject {
             }
         }, 100); // Run at 10 frames per second
     }
-
     /**
      * Plays the standing animation for the character.
      * If the character stands still for a duration exceeding the sleep delay,
@@ -260,6 +276,9 @@ class Character extends MovableObject {
         this.coinsCollected++; // Increment the collected coins counter
         this.world.removeObject(coin); // Remove the coin from the world
         this.updateCoinStatus(); // Update the coin status
+        if (this.world && this.world.audioManager) {
+            this.world.audioManager.playSound('coinCollected'); // Benötigt 'coinCollected' Sound
+        }
     }
 
     /**
@@ -281,6 +300,10 @@ class Character extends MovableObject {
         this.bottlesCollected++; // Increment the collected bottles counter
         this.world.removeObject(bottle); // Remove the bottle from the world
         this.updateBottleStatus(); // Update the bottle status
+        // Sound beim Aufnehmen einer Flasche
+        if (this.world && this.world.audioManager) {
+            this.world.audioManager.playSound('bottleCollect'); // Benötigt 'bottleCollect' Sound
+        }
     }
 
     /**
@@ -302,6 +325,11 @@ class Character extends MovableObject {
             this.updateBottleStatus(); // Update the bottle status
             let bottle = new ThrowableObject(this.x + 100, this.y + 100); // Create a new throwable object
             this.world.throwableObjects.push(bottle); // Add the throwable object to the world
+            // Sound beim Werfen einer Flasche
+            if (this.world && this.world.audioManager) {
+                this.world.audioManager.playSound('throw'); // Benötigt 'throw' Sound
+            }
+            this.resetStandingTime();
         }
     }
 }

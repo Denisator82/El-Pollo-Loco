@@ -7,8 +7,6 @@ class Chicken extends MovableObject {
     height = 80; // Height of the chicken
     width = 80; // Width of the chicken
     chickenIsDead = false;
-    chickenDead_sound = new Audio('audio/chickenDead_sound.mp3');
-    
 
     // Images for the walking state of the normal chicken
     IMAGES_WALKING = [
@@ -42,24 +40,21 @@ class Chicken extends MovableObject {
         this.animate(); // Start the animation
     }
 
-    /**
-     * Animates the normal chicken by moving it to the left and playing the walking animation.
-     */
     animate() {
         // Move the chicken to the left at approximately 60 frames per second
         setInterval(() => {
             this.moveChicken();
         }, 1000 / 60);
-        
-        // Play the walking animation at 5 frames per second
+
+         // Play the walking animation at 5 frames per second
         setInterval(() => {
             if (!this.chickenIsDead) {
                 this.playAnimation(this.IMAGES_WALKING);
             }
             else {
                 this.loadImage(this.IMAGES_DEAD);
-                if (this.musicCounter === 0) {
-                    this.chickenDead_sound.play();
+                if (this.musicCounter === 0 && this.world && this.world.audioManager && !this.world.audioManager.isMuted) {
+                    this.world.audioManager.playSound('chickenDead');
                 }
                 this.musicCounter++;
                 setTimeout(() => {

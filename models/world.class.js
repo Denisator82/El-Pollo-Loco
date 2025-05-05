@@ -16,24 +16,15 @@ class World {
     statusBarEndboss = new StatusBarEndboss();
     throwableObjects = [];
     coinCounter = 0;
-    lastThrowTime = 0; // Neue Variable in der Klasse
+    lastThrowTime = 0;
     gameOver = false;
-    background_music = new Audio('audio/background_music.mp3');
-    bottleBroke_sound = new Audio('audio/bottleBroke_sound.mp3');
-    chickenDead_sound = new Audio('audio/chickenDead_sound.mp3');
-    endboss_music = new Audio('audio/endboss_music.mp3');
-    game_over = new Audio ('audio/game_over.mp3');
-    jumping_sound = new Audio ('audio/jumping_sound.mp3');
-    lose_sound = new Audio('audio/lose_sound02.mp3');
-    walking_sound = new Audio('audio/walking_sound.mp3');
+    audioManager;
 
-    
-    
     /**
      * Initializes the World class.
      * Sets up the canvas context, the canvas element, and the keyboard input.
      * Calls methods to draw the initial game state, set the world, and start the game loop.
-     * 
+     *
      * @param {HTMLCanvasElement} canvas - The canvas element to draw the game on.
      * @param {Object} keyboard - The keyboard input handler.
      */
@@ -44,14 +35,33 @@ class World {
         this.setWorld();
         this.draw();
         this.run();
-        }
+        this.audioManager = new AudioManager();
+        this.loadSounds();
+        this.audioManager.playBackgroundMusic();
+    }
+
+    loadSounds() {
+        this.audioManager.setBackgroundMusic('audio/background_music.mp3', 0.1);
+        this.audioManager.addSound('bottleBroke', 'audio/bottleBroke_sound.mp3');
+        this.audioManager.addSound('chickenDead', 'audio/chickenDead_sound.mp3');
+        this.audioManager.addSound('endbossMusic', 'audio/endboss_music.mp3');
+        this.audioManager.addSound('gameOver', 'audio/game_over.mp3');
+        this.audioManager.addSound('jump', 'audio/jumping_sound.mp3');
+        this.audioManager.addSound('lose', 'audio/lose_sound02.mp3');
+        this.audioManager.addSound('walk', 'audio/walking_sound.mp3');
+        this.audioManager.addSound('hurt', 'audio/hurt_sound.mp3');        // Sound, wenn der Charakter getroffen wird
+        this.audioManager.addSound('throw', 'audio/throw_sound.mp3');        // Sound, wenn der Charakter wirft
+        this.audioManager.addSound('coinCollected', 'audio/coin_sound.mp3'); // Sound beim Einsammeln einer Münze
+        this.audioManager.addSound('bottleCollect', 'audio/bottle_sound.mp3'); // Sound beim Aufnehmen einer Flasche
+        this.audioManager.addSound('win', 'audio/win_sound.mp3');          // Sound beim Spielgewinn
+    }
 
     /**
      * Allows the character to access all information about the world.
      * Sets the current world instance to the character.
      */
     setWorld() {
-        this.character.world = this; // es wird nur "this" übergeben damit man die aktuelle Instanz der Welt hat  
+        this.character.world = this; 
     }
 
     /**
@@ -96,17 +106,27 @@ class World {
 
     /**
      * checks if the character jumps on an enemy
-     * 
+     *
      */
     checkCollisionsCharacterJumpOnEnemy() {
-        this.level.enemies.forEach(enemy => {
+        this.level.enemies.forEach((enemy, index) => {
             if (this.character.isColliding(enemy) && this.character.isAboveGround() && !enemy.chickenIsDead && this.character.speedY < 0) {
                 this.character.jump();
                 enemy.chickenIsDead = true;
+                // Sound beim Besiegen des Huhns abspielen
+                if (this.audioManager && !this.audioManager.isMuted) {
+                    this.audioManager.playSound('chickenDead');
+                }
+                setTimeout(() => {
+                    if (this.audioManager && this.audioManager.sounds['chickenDead']) {
+                        this.audioManager.sounds['chickenDead'].pause();
+                        this.audioManager.sounds['chickenDead'].currentTime = 0;
+                    }
+                    this.level.enemies.splice(index, 1);
+                }, 500);
             }
         });
     }
-
 
     /**
      * Checks collision between character and enemies.
@@ -210,7 +230,7 @@ class World {
                 this.statusBarEndboss.setPercentage(this.level.endboss[0].health);
                 bottle.isColliding = true;
                 setTimeout(() => {
-                    this.throwableObjects.splice(index, 1);  // Sicherstellen, dass der Index aus der richtigen Liste stammt
+                    this.throwableObjects.splice(index, 1);
                 }, 200);
             }
         });

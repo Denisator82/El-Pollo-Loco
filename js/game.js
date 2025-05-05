@@ -1,10 +1,6 @@
-/**
- * Declares the global variables used in the game.
- */
 let canvas;
 let world;
 let keyboard = new Keyboard();
-let isMuted = false;
 let fullscreen = false;
 
 /**
@@ -12,6 +8,7 @@ let fullscreen = false;
  */
 function initPage() {
     console.log("Seite geladen, aber Spiel startet erst nach Klick auf 'START'");
+    updateAudioIcon(); // Stelle das initiale Audio-Icon ein
 }
 
 /**
@@ -19,8 +16,25 @@ function initPage() {
  */
 function newGame() {
     canvas = document.getElementById('canvas');
-    initLevel(); 
-    world = new World(canvas, keyboard);
+    world = new World(canvas, keyboard); // Erstelle world ZUERST (ohne level im Konstruktor)
+    initLevel(); // Übergib die erstellte world-Instanz an initLevel
+    world.level = level1; // Weise das initialisierte Level der world-Instanz zu
+}
+
+function passWorldToLevel() {
+    if (level1 && world) {
+        level1.enemies.forEach(enemy => {
+            if (enemy instanceof Chicken) {
+                enemy.world = world;
+            } else if (enemy instanceof ChickenMini) {
+                enemy.world = world;
+            } else if (enemy instanceof Endboss) {
+                enemy.world = world;
+            }
+            // Füge hier weitere Gegner-Typen hinzu, falls du welche hast
+        });
+        world.character.world = world; // Stelle sicher, dass auch der Charakter die World-Instanz hat
+    }
 }
 
 /**
@@ -28,11 +42,9 @@ function newGame() {
  */
 function startGame() {
     console.log("startGame wurde aufgerufen!");
-    
     document.getElementById("startScreen").classList.add("hidden");
-    document.getElementById("canvasContent").classList.remove("hidden"); // Canvas-Container anzeigen
-    
-    newGame();
+    document.getElementById("canvasContent").classList.remove("hidden");
+    newGame(); // startGame ruft EINMALIG newGame auf, um das Spiel zu starten
 }
 
 
@@ -41,7 +53,9 @@ function startGame() {
  */
 function gameLose() {
     document.getElementById("gameLose").classList.add("show");
-    world.lose_sound.play();
+    if (world && world.audioManager) {
+        world.audioManager.playSound('lose');
+    }
 }
 
 /**
@@ -49,6 +63,9 @@ function gameLose() {
  */
 function gameWin() {
     document.getElementById("gameWin").classList.add("show");
+    if (world && world.audioManager) {
+        world.audioManager.playSound('win');
+    }
 }
 
 /**
@@ -57,8 +74,66 @@ function gameWin() {
 function restartGame() {
     document.getElementById("gameWin").classList.remove("show");
     document.getElementById("gameLose").classList.remove("show");
-    document.getElementById("startScreen").classList.remove("hidden"); 
+    document.getElementById("startScreen").classList.remove("hidden");
     newGame();
+}
+
+/**
+ * Toggles the mute state of the game's audio.
+ */
+function toggleMute() {
+    if (world && world.audioManager) {
+        world.audioManager.toggleMute();
+        updateAudioIcon(); // Aktualisiere das Audio-Icon
+    }
+}
+
+/**
+ * Updates the audio icon based on the mute state.
+ */
+function updateAudioIcon() {
+    const audioIcon = document.getElementById('audio');
+    if (world && world.audioManager && world.audioManager.isMuted) {
+        audioIcon.src = 'img/img/10_extras/volume-mute-fill.svg'; // Icon für stumm
+        audioIcon.alt = 'Ton an';
+    } else {
+        audioIcon.src = 'img/img/10_extras/volume-up-fill.svg'; // Icon für Ton an
+        audioIcon.alt = 'Ton aus';
+    }
+}
+
+/**
+ * Toggles fullscreen mode.
+ */
+function toggleFullscreen() {
+    const mainSection = document.getElementById('mainSection');
+    if (!fullscreen) {
+        if (mainSection.requestFullscreen) {
+            mainSection.requestFullscreen();
+        } else if (mainSection.webkitRequestFullscreen) { /* Safari */
+            mainSection.webkitRequestFullscreen();
+        } else if (mainSection.msRequestFullscreen) { /* IE11 */
+            mainSection.msRequestFullscreen();
+        }
+        fullscreen = true;
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) { /* Safari */
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) { /* IE11 */
+            document.msExitFullscreen();
+        }
+        fullscreen = false;
+    }
+}
+
+/**
+ * Shows the help page.
+ */
+function showHelpPage() {
+    // Implementiere hier die Logik, um deine Hilfeseite anzuzeigen
+    alert('Hilfeseite wird angezeigt (Funktionalität noch nicht implementiert)');
 }
 
 
