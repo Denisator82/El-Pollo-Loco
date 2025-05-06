@@ -84,12 +84,15 @@ class World {
     * If the SHIFT key is pressed, the character throws a bottle.
     */
     checkThrowObjects() {
+        const THROW_COOLDOWN = 850; // Behalte deinen Cooldown
+        const THROW_OFFSET = 75;   // Dein Offset-Wert
         let now = Date.now();
-        if (this.keyboard.SHIFT && now - this.lastThrowTime > 850) { // 850ms Cooldown
-            this.character.throwBottle();
+        if (this.keyboard.SHIFT && now - this.lastThrowTime > THROW_COOLDOWN) {
+            // Übergabe des Offsets an throwBottle()
+            this.character.throwBottle(THROW_OFFSET, this.character.otherDirection);
             this.lastThrowTime = now;
         }
-    }    
+    }
 
     /**
      * Checks all collisions in the game.

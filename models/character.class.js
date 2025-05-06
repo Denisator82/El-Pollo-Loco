@@ -317,15 +317,26 @@ class Character extends MovableObject {
     /**
      * Throws a bottle if available and updates the bottle status.
      */
-    throwBottle() {
+    throwBottle(offsetX, otherDirection) {
         if (this.bottlesCollected > 0) {
-            this.bottlesCollected--; // Decrement the collected bottles counter
-            this.updateBottleStatus(); // Update the bottle status
-            let bottle = new ThrowableObject(this.x + 100, this.y + 100); // Create a new throwable object
-            this.world.throwableObjects.push(bottle); // Add the throwable object to the world
-            // Sound beim Werfen einer Flasche
+            this.bottlesCollected--;
+            this.updateBottleStatus();
+
+            let bottleX = this.x;
+            // Passe die Startposition basierend auf der Blickrichtung an
+            if (otherDirection) {
+                // Wenn nach links geschaut wird, starte ungefähr am linken Rand
+                bottleX -= (offsetX / 2); // Experimentiere mit diesem Wert
+            } else {
+                // Wenn nach rechts geschaut wird, starte ungefähr am rechten Rand
+                bottleX += this.width - (offsetX / 2); // Experimentiere mit diesem Wert
+            }
+            let bottleY = this.y + this.height / 2 - 20; // Vertikal etwas mittiger
+
+            let bottle = new ThrowableObject(bottleX, bottleY, otherDirection);
+            this.world.throwableObjects.push(bottle);
             if (this.world && this.world.audioManager) {
-                this.world.audioManager.playSound('throw'); // Benötigt 'throw' Sound
+                this.world.audioManager.playSound('throw');
             }
             this.resetStandingTime();
         }

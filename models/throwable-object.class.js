@@ -4,6 +4,7 @@
  */
 class ThrowableObject extends MovableObject {
     isColliding = false;
+    direction = 1; // Standardmäßig nach rechts werfen
     
 
     // Array of image paths for the bottle rotation animation
@@ -33,7 +34,7 @@ class ThrowableObject extends MovableObject {
      * @param {number} x - The initial x-coordinate of the object.
      * @param {number} y - The initial y-coordinate of the object.
      */
-    constructor(x, y) {
+    constructor(x, y, otherDirection) {
         super().loadImage('img/img/6_salsa_bottle/salsa_bottle.png');
         this.loadImages(this.IMAGES_ROTATION);
         this.loadImages(this.IMAGES_SPLASH);
@@ -41,6 +42,8 @@ class ThrowableObject extends MovableObject {
         this.y = y;
         this.height = 80;
         this.width = 80;
+        // Setze die Richtung basierend auf otherDirection
+        this.direction = otherDirection ? -1 : 1;
         this.throw();
         this.animate();
     }
@@ -54,9 +57,9 @@ class ThrowableObject extends MovableObject {
         if (!this.isColliding) {
             this.applyGravity();
             setInterval(() => {
-                this.x += 10;
-            }, 25);   
-        }       
+                this.x += 10 * this.direction; // Multipliziere die Geschwindigkeit mit der Richtung
+            }, 25);
+        }
         setInterval(() => {
             this.animate();
         }, 100);
