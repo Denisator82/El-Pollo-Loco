@@ -47,6 +47,8 @@ class AudioManager {
     }
 }
 
+window.toggleSound = () => audioManager.toggleMute();
+
 // // 🎬 Beispielnutzung im Spiel
 // const audioManager = new AudioManager();
 // audioManager.addSound("jump", "audio/jump.mp3", 0.7); // 70% Lautstärke für den Sprung-Sound
@@ -55,5 +57,3 @@ class AudioManager {
 // audioManager.addSound("walking", "audio/walking_sound.mp3", 0.6); // 60% Lautstärke für das Gehen
 
 // audioManager.setBackgroundMusic("audio/game_music.mp3", 0.1); // 30% Lautstärke für die Hintergrundmusik
-
-window.toggleSound = () => audioManager.toggleMute();

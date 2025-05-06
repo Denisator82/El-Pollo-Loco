@@ -43,17 +43,17 @@ class World {
     loadSounds() {
         this.audioManager.setBackgroundMusic('audio/background_music.mp3', 0.1);
         this.audioManager.addSound('bottleBroke', 'audio/bottleBroke_sound.mp3');
-        this.audioManager.addSound('chickenDead', 'audio/chickenDead_sound.mp3');
+        this.audioManager.addSound('chickenDead', 'audio/chicken_sound.mp3');
         this.audioManager.addSound('endbossMusic', 'audio/endboss_music.mp3');
         this.audioManager.addSound('gameOver', 'audio/game_over.mp3');
         this.audioManager.addSound('jump', 'audio/jumping_sound.mp3');
-        this.audioManager.addSound('lose', 'audio/lose_sound02.mp3');
+        this.audioManager.addSound('lose', 'audio/diosMio_sound.mp3');
         this.audioManager.addSound('walk', 'audio/walking_sound.mp3');
-        this.audioManager.addSound('hurt', 'audio/hurt_sound.mp3');        // Sound, wenn der Charakter getroffen wird
-        this.audioManager.addSound('throw', 'audio/throw_sound.mp3');        // Sound, wenn der Charakter wirft
-        this.audioManager.addSound('coinCollected', 'audio/coin_sound.mp3'); // Sound beim Einsammeln einer Münze
-        this.audioManager.addSound('bottleCollect', 'audio/bottle_sound.mp3'); // Sound beim Aufnehmen einer Flasche
-        this.audioManager.addSound('win', 'audio/win_sound.mp3');          // Sound beim Spielgewinn
+        this.audioManager.addSound('hurt', 'audio/hurt_sound.mp3');
+        this.audioManager.addSound('throw', 'audio/throw_sound.mp3');
+        this.audioManager.addSound('coinCollected', 'audio/coinCollect_sound.mp3');
+        this.audioManager.addSound('bottleCollect', 'audio/bottleCollect_sound.mp3');
+        this.audioManager.addSound('win', 'audio/win_sound.mp3');
     }
 
     /**

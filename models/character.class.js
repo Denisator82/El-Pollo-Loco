@@ -189,8 +189,6 @@ class Character extends MovableObject {
     animateCharacter() {
         // Primary animation loop running at approximately 60 frames per second
         setInterval(() => {
-            console.log('RIGHT:', this.world.keyboard.RIGHT, 'LEFT:', this.world.keyboard.LEFT, 'x:', this.x);
-
             let isMoving = false;
 
             if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {

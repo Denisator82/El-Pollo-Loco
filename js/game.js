@@ -1,3 +1,6 @@
+/**
+ * Declares the global variables used in the game.
+ */
 let canvas;
 let world;
 let keyboard = new Keyboard();
@@ -8,7 +11,7 @@ let fullscreen = false;
  */
 function initPage() {
     console.log("Seite geladen, aber Spiel startet erst nach Klick auf 'START'");
-    updateAudioIcon(); // Stelle das initiale Audio-Icon ein
+    updateAudioIcon();
 }
 
 /**
@@ -16,9 +19,10 @@ function initPage() {
  */
 function newGame() {
     canvas = document.getElementById('canvas');
-    world = new World(canvas, keyboard); // Erstelle world ZUERST (ohne level im Konstruktor)
-    initLevel(); // Übergib die erstellte world-Instanz an initLevel
-    world.level = level1; // Weise das initialisierte Level der world-Instanz zu
+    initLevel();
+    world = new World(canvas, keyboard);
+    // Nach der Erstellung der World-Instanz, übergebe sie an die Level-Objekte
+    passWorldToLevel();
 }
 
 function passWorldToLevel() {
@@ -44,7 +48,7 @@ function startGame() {
     console.log("startGame wurde aufgerufen!");
     document.getElementById("startScreen").classList.add("hidden");
     document.getElementById("canvasContent").classList.remove("hidden");
-    newGame(); // startGame ruft EINMALIG newGame auf, um das Spiel zu starten
+    newGame();
 }
 
 
