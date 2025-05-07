@@ -87,6 +87,27 @@ class AudioManager {
             }
         }
     }
+
+    loadSounds(callback) {
+        let soundsToLoad = Object.keys(this.sounds).length + (this.backgroundMusic ? 1 : 0);
+        let soundsLoaded = 0;
+        const checkLoadComplete = () => {
+            soundsLoaded++;
+            if (soundsLoaded === soundsToLoad && callback) {
+                callback();
+            }
+        };
+
+        for (const name in this.sounds) {
+            this.sounds[name].addEventListener('canplaythrough', checkLoadComplete);
+            this.sounds[name].load(); // Starte das Laden
+        }
+
+        if (this.backgroundMusic) {
+            this.backgroundMusic.addEventListener('canplaythrough', checkLoadComplete);
+            this.backgroundMusic.load();
+        }
+    }
 }
 
 window.toggleSound = () => audioManager.toggleMute();

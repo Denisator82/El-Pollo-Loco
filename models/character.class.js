@@ -191,49 +191,50 @@ class Character extends MovableObject {
         }
     }
 
-    /**
+/**
      * Animates the character based on its state (walking, jumping, etc.).
      * Handles character movement and sound effects.
      */
-    animateCharacter() {
-        // Primary animation loop running at approximately 60 frames per second
-        this.moveIntervalId = setInterval(() => { // Speichere die ID
-            let isMoving = false;
+animateCharacter() {
+    // Primary animation loop running at approximately 60 frames per second
+    this.moveIntervalId = setInterval(() => { // Speichere die ID
+        let isMoving = false;
 
-            if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
-                this.moveRight();
-                this.otherDirection = false;
-                if (this.world && this.world.audioManager) {
-                    this.world.audioManager.playSound('walk');
-                }
-                this.resetStandingTime();
-                isMoving = true;
-            }
-
-            if (this.world.keyboard.LEFT && this.x > 0) {
-                this.moveLeft();
-                this.otherDirection = true;
-                if (this.world && this.world.audioManager) {
-                    this.world.audioManager.playSound('walk');
-                }
-                this.resetStandingTime();
-                isMoving = true;
-            }
-
-            if (!isMoving && this.world && this.world.audioManager) {
+        if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
+            this.moveRight();
+            this.otherDirection = false;
+            if (this.world && this.world.audioManager) {
                 this.world.audioManager.playSound('walk');
-                this.world.audioManager.sounds['walk'].pause();
-                this.world.audioManager.sounds['walk'].currentTime = 0;
             }
+            this.resetStandingTime();
+            isMoving = true;
+        }
 
-            if (this.world.keyboard.SPACE && !this.isAboveGround()) {
-                this.jump();
-                this.resetStandingTime();
+        if (this.world.keyboard.LEFT && this.x > 0) {
+            this.moveLeft();
+            this.otherDirection = true;
+            if (this.world && this.world.audioManager) {
+                this.world.audioManager.playSound('walk');
             }
+            this.resetStandingTime();
+            isMoving = true;
+        }
 
-            // Kamera-Update
-            this.world.camera_x = -this.x + 100;
-        }, 1000 / 60); // Run at 60 frames per second
+        // Pausiere den 'walk'-Sound, wenn sich der Charakter nicht bewegt
+        if (!isMoving && this.world && this.world.audioManager && this.world.audioManager.sounds['walk']) {
+            this.world.audioManager.sounds['walk'].pause();
+            this.world.audioManager.sounds['walk'].currentTime = 0;
+        }
+
+        if (this.world.keyboard.SPACE && !this.isAboveGround()) {
+            this.jump();
+            this.resetStandingTime();
+        }
+
+        // Kamera-Update
+        this.world.camera_x = -this.x + 100;
+    }, 1000 / 60); // Run at 60 frames per second
+
 
         // Secondary animation loop (approx. 10 FPS)
         this.animationIntervalId = setInterval(() => { // Speichere die ID

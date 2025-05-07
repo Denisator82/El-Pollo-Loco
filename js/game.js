@@ -4,14 +4,20 @@
 let canvas;
 let world;
 let keyboard = new Keyboard();
+let audioManager = new AudioManager(); // Initialisiere AudioManager global
 let fullscreen = false;
 
 /**
  * Initializes the page without starting the game automatically.
  */
 function initPage() {
-    console.log("Seite geladen, aber Spiel startet erst nach Klick auf 'START'");
-    updateAudioIcon();
+    console.log("Seite geladen, lade Sounds...");
+    audioManager.loadSounds(() => {
+        console.log("Sounds geladen.");
+        updateAudioIcon();
+        console.log("Spiel kann jetzt durch Klicken auf 'START' gestartet werden.");
+        // Hier könnten weitere Initialisierungen erfolgen, die von geladenen Sounds abhängen
+    });
 }
 
 /**
@@ -20,7 +26,8 @@ function initPage() {
 function newGame() {
     canvas = document.getElementById('canvas');
     initLevel();
-    world = new World(canvas, keyboard);
+    world = new World(canvas, keyboard, audioManager); // Übergebe die AudioManager-Instanz
+    world.loadSounds(); // <--- HIER die loadSounds()-Methode der World-Instanz aufrufen
     passWorldToLevel();
 }
 
@@ -47,6 +54,7 @@ function startGame() {
     document.getElementById("startScreen").classList.add("hidden");
     document.getElementById("canvasContent").classList.remove("hidden");
     newGame();
+    world.audioManager.playBackgroundMusic(); // Verwende world.audioManager
 }
 
 /**
@@ -132,7 +140,7 @@ function restartGame() {
  */
 function toggleMute() {
     if (world && world.audioManager) {
-        world.audioManager.toggleMute();
+        audioManager.toggleMute();
         updateAudioIcon(); // Aktualisiere das Audio-Icon
     }
 }
@@ -142,7 +150,7 @@ function toggleMute() {
  */
 function updateAudioIcon() {
     const audioIcon = document.getElementById('audio');
-    if (world && world.audioManager && world.audioManager.isMuted) {
+    if (audioManager.isMuted) {
         audioIcon.src = 'img/img/10_extras/volume-mute-fill.svg';
         audioIcon.alt = 'Ton an';
     } else {

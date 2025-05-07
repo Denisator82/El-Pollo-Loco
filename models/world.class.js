@@ -8,6 +8,7 @@ class World {
     level = level1;
     ctx;
     canvas;
+    audioManager;
     keyboard;
     camera_x = 0;
     statusBar = new StatusBar();
@@ -18,8 +19,6 @@ class World {
     coinCounter = 0;
     lastThrowTime = 0;
     gameOver = false;
-    audioManager;
-
     collisionIntervalId = null; // Speichert die ID für das Kollisionsintervall
     throwIntervalId = null; // Speichert die ID für das Intervall der Wurffunktionen
 
@@ -31,16 +30,14 @@ class World {
      * @param {HTMLCanvasElement} canvas - The canvas element to draw the game on.
      * @param {Object} keyboard - The keyboard input handler.
      */
-    constructor(canvas, keyboard) {
+    constructor(canvas, keyboard, audioManager) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         this.keyboard = keyboard;
-        this.audioManager = new AudioManager();
-        this.loadSounds();
+        this.audioManager = audioManager;
         this.setWorld();
         this.draw();
         this.run();
-        this.audioManager.playBackgroundMusic();
     }
 
     loadSounds() {
