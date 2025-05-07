@@ -43,7 +43,7 @@ function passWorldToLevel() {
  * Starts the game by hiding the start screen and initializing the game.
  */
 function startGame() {
-    console.log("startGame wurde aufgerufen!");
+    // console.log("startGame wurde aufgerufen!");
     document.getElementById("startScreen").classList.add("hidden");
     document.getElementById("canvasContent").classList.remove("hidden");
     newGame();
@@ -57,6 +57,7 @@ function gameLose() {
     if (world && world.audioManager) {
         world.audioManager.playSound('lose');
     }
+    stopGame(); // Rufe stopGame() auf, wenn das Spiel verloren ist
 }
 
 /**
@@ -67,6 +68,53 @@ function gameWin() {
     if (world && world.audioManager) {
         world.audioManager.playSound('win');
     }
+    stopGame(); // Rufe stopGame() auf, wenn das Spiel gewonnen ist
+}
+
+/**
+ * Stops all game intervals.
+ */
+function stopGame() {
+    console.log('Stoppe alle Spielintervalle...');
+
+    // Stoppe Intervalle, die direkt in game.js gesetzt sein könnten (aktuell keine vorhanden)
+
+    // Stoppe Intervalle der World und ihrer Objekte
+    if (world) {
+        if (world.character) {
+            world.character.stopCharacterIntervals();
+        }
+        if (world.enemies) {
+            world.enemies.forEach(enemy => {
+                if (enemy.stopChickenIntervals) enemy.stopChickenIntervals();
+                if (enemy.stopChickenMiniIntervals) enemy.stopChickenMiniIntervals();
+                if (enemy.stopEndbossIntervals) enemy.stopEndbossIntervals();
+                // Füge hier Stopp-Methoden für weitere Gegner-Typen hinzu, falls vorhanden
+            });
+        }
+        if (world.clouds) {
+            world.clouds.forEach(cloud => {
+                if (cloud.stopCloudIntervals) cloud.stopCloudIntervals();
+            });
+        }
+        if (world.coins) {
+            world.coins.forEach(coin => {
+                if (coin.stopCoinIntervals) coin.stopCoinIntervals();
+            });
+        }
+        if (world.throwableObjects) {
+            world.throwableObjects.forEach(throwable => {
+                if (throwable.stopThrowableObjectIntervals) throwable.stopThrowableObjectIntervals();
+            });
+        }
+
+        // Stoppe Intervalle, die möglicherweise direkt in der World-Klasse laufen
+        if (world.stopWorldIntervals) {
+            world.stopWorldIntervals();
+        }
+    }
+
+    console.log('Alle Intervalle gestoppt.');
 }
 
 /**

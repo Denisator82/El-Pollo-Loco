@@ -93,6 +93,9 @@ class Character extends MovableObject {
         'img/img/2_character_pepe/4_hurt/H-43.png'
     ];
 
+    moveIntervalId = null; // Speichert die ID des Bewegungsintervalls
+    animationIntervalId = null; // Speichert die ID des Animationsintervalls
+
     /**
      * Initializes the Character class, loads the initial image, sets collision offsets,
      * applies gravity, and begins animation.
@@ -137,7 +140,7 @@ class Character extends MovableObject {
             }
         }
     }
-    
+
     /**
      * Checks if the character is currently hurt.
      * Returns true if the character was hit within the last second.
@@ -147,7 +150,7 @@ class Character extends MovableObject {
         timepassed = timepassed / 1000; // Difference in s
         return timepassed < 1;
     }
-    
+
     /**
      * Checks if the character is dead.
      * Returns true if the character's energy is 0, otherwise false.
@@ -155,21 +158,21 @@ class Character extends MovableObject {
     isDead() {
         return this.energy === 0;
     }
-    
+
     /**
      * Moves the character to the right.
      */
     moveRight() {
         this.x += this.speed;
     }
-    
+
     /**
      * Moves the character to the left.
      */
     moveLeft() {
         this.x -= this.speed;
     }
-    
+
     /**
      * Makes the character jump if not already above the ground.
      */
@@ -188,7 +191,7 @@ class Character extends MovableObject {
      */
     animateCharacter() {
         // Primary animation loop running at approximately 60 frames per second
-        setInterval(() => {
+        this.moveIntervalId = setInterval(() => { // Speichere die ID
             let isMoving = false;
 
             if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
@@ -227,7 +230,7 @@ class Character extends MovableObject {
         }, 1000 / 60); // Run at 60 frames per second
 
         // Secondary animation loop (approx. 10 FPS)
-        setInterval(() => {
+        this.animationIntervalId = setInterval(() => { // Speichere die ID
             if (this.isDead()) {
                 this.playAnimation(this.IMAGES_DEAD); // Play the dead animation if the character is dead
                 this.resetStandingTime();
@@ -249,9 +252,9 @@ class Character extends MovableObject {
      * it plays the sleeping animation.
      */
     animateStanding() {
-         // Play the standing animation
+        // Play the standing animation
         this.playAnimation(this.IMAGES_STANDING);
-         // Increment the standing time by 65 ms
+        // Increment the standing time by 65 ms
         this.standingTime += 65;
         // If the character has been standing for longer than the sleep delay, switch to the sleeping animation
         if (this.standingTime >= this.sleepDelay) {
@@ -340,5 +343,16 @@ class Character extends MovableObject {
             }
             this.resetStandingTime();
         }
+    }
+
+    /**
+     * Stops all intervals associated with the character.
+     */
+    stopCharacterIntervals() {
+        clearInterval(this.moveIntervalId);
+        clearInterval(this.animationIntervalId);
+        this.moveIntervalId = null; // Zur Sicherheit die IDs zurücksetzen
+        this.animationIntervalId = null;
+        console.log('Charakter-Intervalle gestoppt.');
     }
 }

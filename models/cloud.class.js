@@ -6,10 +6,12 @@ class Cloud extends MovableObject {
     y = 20; // Y-coordinate of the cloud
     width = 500; // Width of the cloud
     height = 250; // Height of the cloud
-    
+
+    moveIntervalId = null; // Speichert die ID des Bewegungsintervalls
+
     /**
      * Initializes the Cloud class.
-     * Loads the image of the cloud, sets the initial position, 
+     * Loads the image of the cloud, sets the initial position,
      * and starts the animation to move the cloud.
      */
     constructor() {
@@ -23,8 +25,17 @@ class Cloud extends MovableObject {
      */
     animate() {
         // Move the cloud to the left at approximately 60 frames per second
-        setInterval(() => {
+        this.moveIntervalId = setInterval(() => { // Speichere die ID
             this.moveLeft();
         }, 1000 / 60);
+    }
+
+    /**
+     * Stops all intervals associated with the cloud.
+     */
+    stopCloudIntervals() {
+        clearInterval(this.moveIntervalId);
+        this.moveIntervalId = null; // Zur Sicherheit die ID zurücksetzen
+        console.log('Cloud-Intervalle gestoppt.');
     }
 }

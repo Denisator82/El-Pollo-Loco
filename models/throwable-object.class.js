@@ -5,7 +5,6 @@
 class ThrowableObject extends MovableObject {
     isColliding = false;
     direction = 1; // Standardmäßig nach rechts werfen
-    
 
     // Array of image paths for the bottle rotation animation
     IMAGES_ROTATION = [
@@ -25,12 +24,15 @@ class ThrowableObject extends MovableObject {
         'img/img/6_salsa_bottle/bottle_rotation/bottle_splash/6_bottle_splash.png',
     ];
 
+    moveIntervalId = null; // Speichert die ID des Bewegungsintervalls
+    animationIntervalId = null; // Speichert die ID des Animationsintervalls
+
     /**
      * Initializes the SalsaBottle class.
-     * Loads the image of the salsa bottle and its animations, 
-     * sets the initial position and dimensions of the object, 
+     * Loads the image of the salsa bottle and its animations,
+     * sets the initial position and dimensions of the object,
      * and starts the throw method.
-     * 
+     *
      * @param {number} x - The initial x-coordinate of the object.
      * @param {number} y - The initial y-coordinate of the object.
      */
@@ -47,20 +49,18 @@ class ThrowableObject extends MovableObject {
         this.throw();
         this.animate();
     }
-    
+
     /**
      * Throws the object by setting its initial vertical speed and applying gravity.
      * Updates the horizontal position at regular intervals to simulate the throw movement.
      */
     throw() {
         this.speedY = 20;
-        if (!this.isColliding) {
-            this.applyGravity();
-            setInterval(() => {
-                this.x += 10 * this.direction; // Multipliziere die Geschwindigkeit mit der Richtung
-            }, 25);
-        }
-        setInterval(() => {
+        this.applyGravity();
+        this.moveIntervalId = setInterval(() => { // Speichere die ID
+            this.x += 10 * this.direction; // Multipliziere die Geschwindigkeit mit der Richtung
+        }, 25);
+        this.animationIntervalId = setInterval(() => { // Speichere die ID
             this.animate();
         }, 100);
     }
@@ -76,5 +76,16 @@ class ThrowableObject extends MovableObject {
         } else {
             this.playAnimation(this.IMAGES_SPLASH);
         }
-    } 
+    }
+
+    /**
+     * Stops all intervals associated with the throwable object.
+     */
+    stopThrowableObjectIntervals() {
+        clearInterval(this.moveIntervalId);
+        clearInterval(this.animationIntervalId);
+        this.moveIntervalId = null; // Zur Sicherheit die IDs zurücksetzen
+        this.animationIntervalId = null;
+        console.log('ThrowableObject-Intervalle gestoppt.');
+    }
 }

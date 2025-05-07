@@ -20,6 +20,9 @@ class Chicken extends MovableObject {
         'img/img/3_enemies_chicken/chicken_normal/2_dead/dead.png'
     ];
 
+    moveIntervalId = null; // Speichert die ID des Bewegungsintervalls
+    animationIntervalId = null; // Speichert die ID des Animationsintervalls
+
     /**
      * Initializes the Chicken class.
      * Loads the images for walking and dead states, sets the initial position and dimensions,
@@ -32,22 +35,22 @@ class Chicken extends MovableObject {
         this.offset = { top: 0, right: 0, bottom: 0, left: 0 }; // Set the offset for collision detection
 
         // Set the initial x-coordinate randomly between 400 and 2600
-        this.x = 400 + Math.random() * 2200; 
+        this.x = 400 + Math.random() * 2200;
 
         // Set the speed of the chicken randomly between 0.25 and 0.5
-        this.speed = 0.25 + Math.random() * 0.25; 
-        
+        this.speed = 0.25 + Math.random() * 0.25;
+
         this.animate(); // Start the animation
     }
 
     animate() {
         // Move the chicken to the left at approximately 60 frames per second
-        setInterval(() => {
+        this.moveIntervalId = setInterval(() => { // Speichere die ID
             this.moveChicken();
         }, 1000 / 60);
 
-         // Play the walking animation at 5 frames per second
-        setInterval(() => {
+        // Play the walking animation at 5 frames per second
+        this.animationIntervalId = setInterval(() => { // Speichere die ID
             if (!this.chickenIsDead) {
                 this.playAnimation(this.IMAGES_WALKING);
             }
@@ -62,5 +65,16 @@ class Chicken extends MovableObject {
                 }, 500);
             }
         }, 200);
+    }
+
+    /**
+     * Stops all intervals associated with the normal chicken.
+     */
+    stopChickenIntervals() {
+        clearInterval(this.moveIntervalId);
+        clearInterval(this.animationIntervalId);
+        this.moveIntervalId = null; // Zur Sicherheit die IDs zurücksetzen
+        this.animationIntervalId = null;
+        console.log('Chicken-Intervalle gestoppt.');
     }
 }

@@ -59,8 +59,11 @@ class Endboss extends MovableObject {
         'img/img/4_enemie_boss_chicken/5_dead/G26.png',
     ];
 
+    firstContactIntervalId = null; // Speichert die ID für das First Contact Intervall
+    movementIntervalId = null; // Speichert die ID für das Bewegungsintervall
+
     /**
-     * Initializes the end boss by loading images for different states 
+     * Initializes the end boss by loading images for different states
      * and setting the initial position.
      */
     constructor(){
@@ -76,19 +79,19 @@ class Endboss extends MovableObject {
 
         // Set the initial x-coordinate of the end boss on the map
         this.x = 3900;
-        
+
         //new Attribute
         this.lastHitEndboss = 0;
 
         // Start the animation method
-        this.animate();    
+        this.animate();
     }
 
     /**
      * Drains energy from the target by decreasing health.
      */
     hitEndboss() {
-        this.health -= 10;    
+        this.health -= 10;
         if (this.health < 0) {
             this.health = 0;
         }
@@ -99,22 +102,22 @@ class Endboss extends MovableObject {
 
     /**
      * Checks if the last hit occurred within the last second.
-     * 
+     *
      * @returns {boolean} True if the last hit was within 1 second, otherwise false
      */
     isHurtEndboss() {
         return (Date.now() - this.lastHitEndboss) / 1000 < 1;
     }
 
-    
+
     /**
      * Checks if the end boss's health is zero.
-     * 
+     *
      * @returns {boolean} True if the health is zero, otherwise false
      */
     isDeadEndboss() {
         return this.health == 0;
-    }    
+    }
 
     /**
      * Handles the animation of the end boss based on its state.
@@ -132,13 +135,13 @@ class Endboss extends MovableObject {
             this.endbossAnimationDead();
         } else if (this.isHurtEndboss()) {
             this.endbossAnimationHurt();
-        } else if (this.i < this.IMAGES_ALERT.length) { 
+        } else if (this.i < this.IMAGES_ALERT.length) {
             this.endbossAnimationAlert();
         } else if (this.i === this.IMAGES_ALERT.length) {
             // Optional: Add additional actions here after the alert
         } else if (this.i < this.IMAGES_ALERT.length + this.IMAGES_ATTACK.length) {
             this.endbossAnimationAttack();
-        } else {        
+        } else {
             this.endbossAnimationWalk();
         }
 
@@ -152,14 +155,17 @@ class Endboss extends MovableObject {
         showStatusBar() {
             world.statusBarEndboss.visible = true;
         }
-    
+
     /**
      * Handles the animation when the end boss is dead.
      */
     endbossAnimationDead() {
         this.playAnimation(this.IMAGES_DEAD);
         world.gameOver = true;
-        world.background_music.pause();
+        world.audioManager.pauseBackgroundMusic();
+        world.audioManager.playWinSound();
+        console.log('endbossAnimationDead() wurde aufgerufen!'); // Überprüfung
+        world.stopAllIntervals();
     }
 
     /**
@@ -173,7 +179,7 @@ class Endboss extends MovableObject {
      * Handles the animation when the end boss is on alert.
      */
     endbossAnimationAlert() {
-        this.playAnimation(this.IMAGES_ALERT); 
+        this.playAnimation(this.IMAGES_ALERT);
     }
 
     /**
@@ -194,9 +200,11 @@ class Endboss extends MovableObject {
      * Checks if the character had the first contact with the end boss.
      */
     endbossFirstContact() {
-        if (world.character.x > this.x - 400 && !this.hadFirstContact) { 
+        if (world.character.x > this.x - 400 && !this.hadFirstContact) {
             this.i = 0; // Zurücksetzen des Animationszählers
             this.hadFirstContact = true;
+            world.audioManager.pauseBackgroundMusic();
+            world.audioManager.playEndbossMusic();
         }
     }
 
@@ -204,17 +212,28 @@ class Endboss extends MovableObject {
      * Starts the animations and movements of the end boss.
      */
     animate() {
-        setInterval(() => {
+        this.firstContactIntervalId = setInterval(() => { // Speichere die ID
             this.endbossFirstContact(); // Prüft regelmäßig den First Contact
             if (this.hadFirstContact) {
                 this.endbossAnimation(); // Startet Animation erst nach First Contact
             }
         }, 500);
-    
-        setInterval(() => {
+
+        this.movementIntervalId = setInterval(() => { // Speichere die ID
             if (this.hadFirstContact && this.i > this.IMAGES_ALERT.length + this.IMAGES_ATTACK.length && !this.isDeadEndboss() && !this.isHurtEndboss()) {
                 this.x -= this.speed; // Endboss bewegt sich nach dem Alarm und Attack
-            }        
+            }
         }, 1000 / 60);
+    }
+
+    /**
+     * Stops all intervals associated with the end boss.
+     */
+    stopEndbossIntervals() {
+        clearInterval(this.firstContactIntervalId);
+        clearInterval(this.movementIntervalId);
+        this.firstContactIntervalId = null; // Zur Sicherheit die IDs zurücksetzen
+        this.movementIntervalId = null;
+        console.log('Endboss-Intervalle gestoppt.');
     }
 }

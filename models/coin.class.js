@@ -13,9 +13,11 @@ class Coin extends MovableObject {
         'img/img/8_coin/coin_2.png',
     ];
 
+    animationIntervalId = null; // Speichert die ID des Animationsintervalls
+
     /**
      * Initializes the Coin class.
-     * Loads the images for the coin, sets the initial position and dimensions, 
+     * Loads the images for the coin, sets the initial position and dimensions,
      * and starts the animation.
      */
     constructor() {
@@ -54,9 +56,18 @@ class Coin extends MovableObject {
      * Checks the collection status and plays the appropriate animation.
      */
     animate() {
-        setInterval(() => {
+        this.animationIntervalId = setInterval(() => { // Speichere die ID
             this.coinCollected(); // Check if the coin is collected
             this.coinAnimation(); // Play the coin animation
         }, 200); // Run at 5 frames per second
+    }
+
+    /**
+     * Stops all intervals associated with the coin.
+     */
+    stopCoinIntervals() {
+        clearInterval(this.animationIntervalId);
+        this.animationIntervalId = null; // Zur Sicherheit die ID zurücksetzen
+        console.log('Coin-Intervalle gestoppt.');
     }
 }

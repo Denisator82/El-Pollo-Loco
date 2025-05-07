@@ -1,6 +1,6 @@
 /**
  * Represents the game world.
- * Initializes the character, level, canvas context, keyboard input, 
+ * Initializes the character, level, canvas context, keyboard input,
  * camera position, status bars, throwable objects, and the coin counter.
  */
 class World {
@@ -19,6 +19,9 @@ class World {
     lastThrowTime = 0;
     gameOver = false;
     audioManager;
+
+    collisionIntervalId = null; // Speichert die ID für das Kollisionsintervall
+    throwIntervalId = null; // Speichert die ID für das Intervall der Wurffunktionen
 
     /**
      * Initializes the World class.
@@ -58,34 +61,44 @@ class World {
 
     /**
      * Allows the character to access all information about the world.
-     * Sets the current world instance to the character.
+     * Sets the current world instance to the character and enemies.
      */
     setWorld() {
-        this.character.world = this; 
+        this.character.world = this;
+        this.level.enemies.forEach(enemy => {
+            if (enemy instanceof Chicken) {
+                enemy.world = this;
+            } else if (enemy instanceof ChickenMini) {
+                enemy.world = this;
+            } else if (enemy instanceof Endboss) {
+                enemy.world = this;
+            }
+        });
+        this.level.endboss.forEach(endboss => endboss.world = this);
     }
 
     /**
-    * Starts the interval for the game.
-    * Continuously checks for collisions every 25 milliseconds.
-    * Continuously checks for manages throwable objects every 200 milliseconds.
-    */
+     * Starts the interval for the game.
+     * Continuously checks for collisions every 25 milliseconds.
+     * Continuously checks for manages throwable objects every 200 milliseconds.
+     */
     run() {
-        setInterval(() => {
+        this.collisionIntervalId = setInterval(() => { // Speichere die ID
             this.checkCollisions();
-        },25);
-        setInterval(() => {
+        }, 25);
+        this.throwIntervalId = setInterval(() => { // Speichere die ID
             this.checkThrowObjects();
             this.checkCollisionThrowableObject();
         }, 200);
     }
 
     /**
-    * Checks if the SHIFT key is pressed to throw a bottle.
-    * If the SHIFT key is pressed, the character throws a bottle.
-    */
+     * Checks if the SHIFT key is pressed to throw a bottle.
+     * If the SHIFT key is pressed, the character throws a bottle.
+     */
     checkThrowObjects() {
         const THROW_COOLDOWN = 850; // Behalte deinen Cooldown
-        const THROW_OFFSET = 75;   // Dein Offset-Wert
+        const THROW_OFFSET = 75;    // Dein Offset-Wert
         let now = Date.now();
         if (this.keyboard.SHIFT && now - this.lastThrowTime > THROW_COOLDOWN) {
             // Übergabe des Offsets an throwBottle()
@@ -105,7 +118,7 @@ class World {
         this.checkCollisionsCharacterWithCoins();
         this.checkCollisionsCharacterWithBottles();
     }
-    
+
 
     /**
      * checks if the character jumps on an enemy
@@ -178,8 +191,8 @@ class World {
 
     /**
      * Checks collision between character and bottles.
-     * If a collision is detected, the bottle is collected, 
-     * the number of collected bottles is updated, 
+     * If a collision is detected, the bottle is collected,
+     * the number of collected bottles is updated,
      * and the bottle status bar is updated based on the collected percentage.
      */
     checkCollisionsCharacterWithBottles() {
@@ -213,18 +226,18 @@ class World {
 
     /**
      * checks collisions of the bottles
-     * 
+     *
      */
-        checkCollisionThrowableObject() {
-            this.checkCollisionBottleEndboss();
-            this.checkCollisionBottleGround();
-        }
+    checkCollisionThrowableObject() {
+        this.checkCollisionBottleEndboss();
+        this.checkCollisionBottleGround();
+    }
 
     /**
      * checks collision between bottle and end boss
-     * 
-     * @param {object} bottle 
-     * @param {number} index 
+     *
+     * @param {object} bottle
+     * @param {number} index
      */
     checkCollisionBottleEndboss() {
         this.throwableObjects.forEach((bottle, index) => {
@@ -241,9 +254,9 @@ class World {
 
     /**
      * checks collision between bottle and ground
-     * 
-     * @param {object} bottle 
-     * @param {number} index 
+     *
+     * @param {object} bottle
+     * @param {number} index
      */
     checkCollisionBottleGround() {
         this.throwableObjects.forEach((bottle, index) => {
@@ -343,5 +356,39 @@ class World {
     flipImageBack(mo) {
         mo.x = mo.x * -1;
         this.ctx.restore();
+    }
+
+    /**
+     * Stops all intervals in the game.
+     * This includes intervals for the character, throwable objects, end boss, and the world itself.
+     */
+    stopAllIntervals() {
+        this.character.stopCharacterIntervals();
+        this.throwableObjects.forEach(bottle => {
+            if (bottle instanceof ThrowableObject) {
+                bottle.stopThrowableObjectIntervals();
+            }
+        });
+        if (Array.isArray(this.level.endboss)) {
+            this.level.endboss.forEach(endboss => {
+                if (endboss instanceof Endboss) {
+                    endboss.stopEndbossIntervals();
+                }
+            });
+        }
+        this.audioManager.pauseEndbossMusic(); // Hier stoppen wir die Endboss-Musik
+        this.stopWorldIntervals();
+        console.log('Alle Intervalle gestoppt.');
+    }
+
+    /**
+     * Stops the intervals of the World class.
+     */
+    stopWorldIntervals() {
+        clearInterval(this.collisionIntervalId);
+        clearInterval(this.throwIntervalId);
+        this.collisionIntervalId = null;
+        this.throwIntervalId = null;
+        console.log('World-Intervalle gestoppt.');
     }
 }
