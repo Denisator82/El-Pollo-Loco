@@ -11,6 +11,12 @@ class Character extends MovableObject {
     coinsCollected = 0; // Number of coins collected by the character
     bottlesCollected = 0; // Number of bottles collected by the character
     world; // Reference to the game world (initialize as needed)
+    offset = {
+        top: 80,    // Oberer Abstand (reduziert die Höhe der Kollisionsbox oben)
+        left: 20,   // Linker Abstand (reduziert die Breite der Kollisionsbox links)
+        right: 20,  // Rechter Abstand (reduziert die Breite der Kollisionsbox rechts)
+        bottom: 0    // Unterer Abstand (reduziert die Höhe der Kollisionsbox unten)
+    };
 
     /**
      * Images for the standing state of the character

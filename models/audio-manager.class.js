@@ -63,6 +63,13 @@ class AudioManager {
         }
     }
 
+    playLoseSound() {
+        if (!this.isMuted && this.sounds['lose']) {
+            this.sounds['lose'].currentTime = 0;
+            this.sounds['lose'].play();
+        }
+    }
+
     toggleMute() {
         this.isMuted = !this.isMuted;
         if (this.isMuted) {
@@ -83,14 +90,3 @@ class AudioManager {
 }
 
 window.toggleSound = () => audioManager.toggleMute();
-
-window.toggleSound = () => audioManager.toggleMute();
-
-// // 🎬 Beispielnutzung im Spiel
-// const audioManager = new AudioManager();
-// audioManager.addSound("jump", "audio/jump.mp3", 0.7); // 70% Lautstärke für den Sprung-Sound
-// audioManager.addSound("chickenDead", "audio/chickenDead_sound.mp3", 0.5); // 50% Lautstärke für den Tod-Sound
-// audioManager.addSound("lose", "audio/lose_sound02.mp3", 0.8); // 80% Lautstärke für den Verlust-Sound
-// audioManager.addSound("walking", "audio/walking_sound.mp3", 0.6); // 60% Lautstärke für das Gehen
-
-// audioManager.setBackgroundMusic("audio/game_music.mp3", 0.1); // 30% Lautstärke für die Hintergrundmusik

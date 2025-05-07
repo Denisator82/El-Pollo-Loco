@@ -51,25 +51,40 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Checks if the character is colliding with another movable object.
-     * Uses the offset values to determine if the bounding boxes of the two objects overlap.
-     * 
+     * Checks if the character is colliding with another movable object, considering offsets.
+     *
      * @param {MovableObject} mo - The other movable object to check for collision.
-     * @returns {boolean} - True if the character is colliding with the object, otherwise false.
+     * @returns {boolean} - True if the objects are colliding, otherwise false.
      */
     isColliding(mo) {
-        if (this instanceof Character) {
-            return this.x + this.width - this.offset.right > mo.x + mo.offset.left &&
-                this.y + this.height - this.offset.bottom > mo.y + mo.offset.top &&
-                this.x + this.offset.left < mo.x + mo.width - mo.offset.right &&
-                this.y + this.offset.top < mo.y + mo.height - mo.offset.bottom;
+        let thisOffsetX = 0;
+        let thisOffsetY = 0;
+        let thisOffsetRight = 0;
+        let thisOffsetBottom = 0;
+
+        let otherOffsetX = 0;
+        let otherOffsetY = 0;
+        let otherOffsetRight = 0;
+        let otherOffsetBottom = 0;
+
+        if (this.offset) {
+            thisOffsetX = this.offset.left || 0;
+            thisOffsetY = this.offset.top || 0;
+            thisOffsetRight = this.offset.right || 0;
+            thisOffsetBottom = this.offset.bottom || 0;
         }
-        else {
-            return this.x + this.width > mo.x &&
-                this.y + this.height > mo.y &&
-                this.x < mo.x + mo.width &&
-                this.y < mo.y + mo.height;
+
+        if (mo.offset) {
+            otherOffsetX = mo.offset.left || 0;
+            otherOffsetY = mo.offset.top || 0;
+            otherOffsetRight = mo.offset.right || 0;
+            otherOffsetBottom = mo.offset.bottom || 0;
         }
+
+        return this.x + this.width - thisOffsetRight > mo.x + otherOffsetX &&
+               this.y + this.height - thisOffsetBottom > mo.y + otherOffsetY &&
+               this.x + thisOffsetX < mo.x + mo.width - otherOffsetRight &&
+               this.y + thisOffsetY < mo.y + mo.height - otherOffsetBottom;
     }
 
 

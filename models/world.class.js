@@ -35,11 +35,11 @@ class World {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         this.keyboard = keyboard;
+        this.audioManager = new AudioManager();
+        this.loadSounds();
         this.setWorld();
         this.draw();
         this.run();
-        this.audioManager = new AudioManager();
-        this.loadSounds();
         this.audioManager.playBackgroundMusic();
     }
 
@@ -157,17 +157,18 @@ class World {
         });
     }
 
-    /**
+/**
      * Checks collision between character and endboss.
      * If a collision is detected, the character takes a hit and the status bar is updated.
      */
     checkCollisionsCharacterWithEndboss() {
         this.level.endboss.forEach(endboss => {
             if (this.character.isColliding(endboss)) {
-                // this.character.hit();
-                // this.statusBar.setPercentage(this.character.energy);
                 this.gameOver = true;
-                // this.character.walking_sound.pause();
+                this.audioManager.playLoseSound();
+                this.audioManager.pauseEndbossMusic(); // Stoppe die Endboss-Musik
+                endboss.stopEndbossIntervals(); // Stoppe die Endboss-Intervalle
+                this.stopAllIntervals(); // Stoppe alle Spielintervalle
                 gameLose();
             }
         });
@@ -369,10 +370,11 @@ class World {
                 bottle.stopThrowableObjectIntervals();
             }
         });
+        // Stelle sicher, dass this.level.endboss ein Array ist, bevor du forEach aufrufst
         if (Array.isArray(this.level.endboss)) {
             this.level.endboss.forEach(endboss => {
                 if (endboss instanceof Endboss) {
-                    endboss.stopEndbossIntervals();
+                    endboss.stopEndbossIntervals(); // Hier stoppen wir die Endboss-Intervalle
                 }
             });
         }

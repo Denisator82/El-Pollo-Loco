@@ -12,6 +12,12 @@ class Endboss extends MovableObject {
     visible = false; // Visibility status of the end boss
     health = 100; // Energy of the end boss
     world;
+    offset = { // Füge dieses Objekt hinzu, um die Kollisionsbox anzupassen
+        top: 80,    // Oberer Abstand
+        left: 40,   // Linker Abstand
+        right: 40,  // Rechter Abstand
+        bottom: 20  // Unterer Abstand
+    };
 
     // Images for the alert state of the end boss
     IMAGES_ALERT = [
