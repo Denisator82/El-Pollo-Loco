@@ -21,7 +21,6 @@ function newGame() {
     canvas = document.getElementById('canvas');
     initLevel();
     world = new World(canvas, keyboard);
-    // Nach der Erstellung der World-Instanz, übergebe sie an die Level-Objekte
     passWorldToLevel();
 }
 
@@ -35,9 +34,8 @@ function passWorldToLevel() {
             } else if (enemy instanceof Endboss) {
                 enemy.world = world;
             }
-            // Füge hier weitere Gegner-Typen hinzu, falls du welche hast
         });
-        world.character.world = world; // Stelle sicher, dass auch der Charakter die World-Instanz hat
+        world.character.world = world;
     }
 }
 
@@ -50,7 +48,6 @@ function startGame() {
     document.getElementById("canvasContent").classList.remove("hidden");
     newGame();
 }
-
 
 /**
  * Displays the game over screen.
@@ -98,10 +95,10 @@ function toggleMute() {
 function updateAudioIcon() {
     const audioIcon = document.getElementById('audio');
     if (world && world.audioManager && world.audioManager.isMuted) {
-        audioIcon.src = 'img/img/10_extras/volume-mute-fill.svg'; // Icon für stumm
+        audioIcon.src = 'img/img/10_extras/volume-mute-fill.svg';
         audioIcon.alt = 'Ton an';
     } else {
-        audioIcon.src = 'img/img/10_extras/volume-up-fill.svg'; // Icon für Ton an
+        audioIcon.src = 'img/img/10_extras/volume-up-fill.svg';
         audioIcon.alt = 'Ton aus';
     }
 }
@@ -140,124 +137,98 @@ function showHelpPage() {
     alert('Hilfeseite wird angezeigt (Funktionalität noch nicht implementiert)');
 }
 
+const KEY_MAP = {
+    39: 'RIGHT',
+    68: 'RIGHT',
+    37: 'LEFT',
+    65: 'LEFT',
+    38: 'UP',
+    87: 'UP',
+    40: 'DOWN',
+    83: 'DOWN',
+    32: 'SPACE',
+    16: 'SHIFT'
+};
 
 /**
- * Listens for keydown events and updates the keyboard state accordingly.
- * Sets the corresponding keyboard property to true when the key is pressed.
- * 
- * @param {KeyboardEvent} e - The keyboard event.
+ * Listens for 'keydown' events on the window and updates the keyboard state.
+ * When a key is pressed, the corresponding property in the 'keyboard' object
+ * is set to 'true'.
+ *
+ * @param {KeyboardEvent} e - The event object containing information about the
+ * keyboard event, such as the key that was pressed.
  */
 window.addEventListener("keydown", (e) => {
-    if (e.keyCode == 39 || e.keyCode == 68) {
-        keyboard.RIGHT = true;
-    }
-
-    if (e.keyCode == 37 || e.keyCode == 65) {
-        keyboard.LEFT = true;
-    }
-
-    if (e.keyCode == 38 || e.keyCode == 87) {
-        keyboard.UP = true;
-    }
-
-    if (e.keyCode == 40 || e.keyCode == 83) {
-        keyboard.DOWN = true;
-    }
-
-    if (e.keyCode == 32) {
-        keyboard.SPACE = true;
-    }
-
-    if (e.keyCode == 16) {
-        keyboard.SHIFT = true;
+    if (KEY_MAP[e.keyCode]) {
+        keyboard[KEY_MAP[e.keyCode]] = true;
     }
 });
 
 /**
- * Listens for keyup events and updates the keyboard state accordingly.
- * Resets the corresponding keyboard property to false when the key is released.
- * 
- * @param {KeyboardEvent} e - The keyboard event.
+ * Listens for 'keyup' events on the window and updates the keyboard state.
+ * When a key is released, the corresponding property in the 'keyboard' object
+ * is set to 'false'.
+ *
+ * @param {KeyboardEvent} e - The event object containing information about the
+ * keyboard event, such as the key that was released.
  */
 window.addEventListener("keyup", (e) => {
-    if (e.keyCode == 39 || e.keyCode == 68) {
-        keyboard.RIGHT = false;
-    }
-
-    if (e.keyCode == 37 || e.keyCode == 65) {
-        keyboard.LEFT = false;
-    }
-
-    if (e.keyCode == 38 || e.keyCode == 87) {
-        keyboard.UP = false;
-    }
-
-    if (e.keyCode == 40 || e.keyCode == 83) {
-        keyboard.DOWN = false;
-    }
-
-    if (e.keyCode == 32) {
-        keyboard.SPACE = false;
-    }
-
-    if (e.keyCode == 16) {
-        keyboard.SHIFT = false;
+    if (KEY_MAP[e.keyCode]) {
+        keyboard[KEY_MAP[e.keyCode]] = false;
     }
 });
 
-// /**
-//  * initialize mobile press events
-//  * 
-//  */
+/**
+ * initialize mobile press events
+ *
+ */
 function initMobile() {
-    mobileKeyPressEvents();
-    mobileKeyReleaseEvents();
+    setupMobileButtonEvents();
 }
 
-// /**
-//  * Sets the key to true after pressing them (mobile)
-//  */
-function mobileKeyPressEvents() {
-    const leftButton = document.getElementById('left_button');
-    leftButton.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        keyboard.LEFT = true;
-    });
-    const rightButton = document.getElementById('right_button');
-    rightButton.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        keyboard.RIGHT = true;
-    });
-    const jump = document.getElementById('jump_button');
-    jump.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        keyboard.SPACE = true;
-    });
-    const throwBottle = document.getElementById('throw_button');
-    throwBottle.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        keyboard.SHIFT = true;
+function setupMobileButtonEvents() {
+    const buttons = [
+        { id: 'left_button', key: 'LEFT', type: 'touchstart', value: true },
+        { id: 'left_button', key: 'LEFT', type: 'touchend', value: false },
+        { id: 'right_button', key: 'RIGHT', type: 'touchstart', value: true },
+        { id: 'right_button', key: 'RIGHT', type: 'touchend', value: false },
+        { id: 'jump_button', key: 'SPACE', type: 'touchstart', value: true },
+        { id: 'jump_button', key: 'SPACE', type: 'touchend', value: false },
+        { id: 'throw_button', key: 'SHIFT', type: 'touchstart', value: true },
+        { id: 'throw_button', key: 'SHIFT', type: 'touchend', value: false }
+    ];
+
+    /**
+     * Iterates through the button configurations and attaches event listeners
+     * to the corresponding DOM elements to handle mobile touch input.
+     */
+    buttons.forEach(buttonConfig => {
+        const button = document.getElementById(buttonConfig.id);
+        if (button) {
+            /**
+             * Adds an event listener to the button for the specified event type
+             * ('touchstart' for pressing, 'touchend' for releasing).
+             *
+             * @param {TouchEvent} e - The event object containing information about
+             * the touch event. 'preventDefault()' is called
+             * to prevent default touch behaviors.
+             */
+            button.addEventListener(buttonConfig.type, (e) => {
+                e.preventDefault();
+                /**
+                 * Updates the 'keyboard' object's property (e.g., 'LEFT', 'RIGHT')
+                 * with the specified boolean 'value' (true for press, false for release).
+                 */
+                keyboard[buttonConfig.key] = buttonConfig.value;
+            });
+        }
     });
 }
 
-// /**
-//  * Sets the key to false after releasing them (mobile)
-//  */
-function mobileKeyReleaseEvents() {
-    const leftButton = document.getElementById('left_button');
-    leftButton.addEventListener('touchend', () => {
-        keyboard.LEFT = false;
-    });
-    const rightButton = document.getElementById('right_button');
-    rightButton.addEventListener('touchend', () => {
-        keyboard.RIGHT = false;
-    });
-    const jump = document.getElementById('jump_button');
-    jump.addEventListener('touchend', (e) => {
-        keyboard.SPACE = false;
-    });
-    const throwBottle = document.getElementById('throw_button');
-    throwBottle.addEventListener('touchend', (e) => {
-        keyboard.SHIFT = false;
-    });
+/**
+ * Initializes the mobile touch event listeners by calling the
+ * 'setupMobileButtonEvents' function.
+ */
+function initMobile() {
+    setupMobileButtonEvents();
 }
