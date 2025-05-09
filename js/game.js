@@ -11,13 +11,7 @@ let fullscreen = false;
  * Initializes the page without starting the game automatically.
  */
 function initPage() {
-    console.log("Seite geladen, lade Sounds...");
-    audioManager.loadSounds(() => {
-        console.log("Sounds geladen.");
-        updateAudioIcon();
-        console.log("Spiel kann jetzt durch Klicken auf 'START' gestartet werden.");
-        // Hier könnten weitere Initialisierungen erfolgen, die von geladenen Sounds abhängen
-    });
+    updateAudioIcon();
 }
 
 /**

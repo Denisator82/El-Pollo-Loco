@@ -12,6 +12,8 @@ class Endboss extends MovableObject {
     visible = false; // Visibility status of the end boss
     health = 100; // Energy of the end boss
     world;
+    firstContactIntervalId = null; // Speichert die ID für das First Contact Intervall
+    movementIntervalId = null; // Speichert die ID für das Bewegungsintervall
     offset = { // Füge dieses Objekt hinzu, um die Kollisionsbox anzupassen
         top: 80,    // Oberer Abstand
         left: 40,   // Linker Abstand
@@ -64,9 +66,6 @@ class Endboss extends MovableObject {
         'img/img/4_enemie_boss_chicken/5_dead/G25.png',
         'img/img/4_enemie_boss_chicken/5_dead/G26.png',
     ];
-
-    firstContactIntervalId = null; // Speichert die ID für das First Contact Intervall
-    movementIntervalId = null; // Speichert die ID für das Bewegungsintervall
 
     /**
      * Initializes the end boss by loading images for different states
