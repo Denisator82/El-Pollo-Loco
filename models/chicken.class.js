@@ -43,6 +43,16 @@ class Chicken extends MovableObject {
         this.animate(); // Start the animation
     }
 
+    /**
+     * Lets the chicken move left if it is not dead.
+     * <-- Füge diese Methode hier hinzu -->
+     */
+    moveChicken() {
+        if (!this.chickenIsDead) { // <-- Stelle sicher, dass chickenIsDead in Chicken/ChickenMini existiert
+            this.x -= this.speed;
+        }
+    }
+
     animate() {
         // Move the chicken to the left at approximately 60 frames per second
         this.moveIntervalId = setInterval(() => { // Speichere die ID

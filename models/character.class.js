@@ -183,13 +183,16 @@ class Character extends MovableObject {
      * Makes the character jump if not already above the ground.
      */
     jump() {
-        if (!this.isAboveGround()) {
-            this.speedY = 15; // Apply vertical speed to simulate jump
-            if (this.world && this.world.audioManager) {
-                this.world.audioManager.playSound('jump');
-            }
+    if (!this.isDead() && !this.isAboveGround()) { // Füge isDead hinzu, damit totes Char nicht springt
+        this.speedY = 25; // Apply vertical speed to simulate jump (vielleicht 20 für etwas höheren Sprung?)
+        this.applyGravity(); // <-- HINZUFÜGEN: Startet die Schwerkraft, damit der Charakter wieder fällt
+
+        if (this.world && this.world.audioManager) {
+            this.world.audioManager.playSound('jump');
         }
+        this.resetStandingTime();
     }
+}
 
 /**
      * Animates the character based on its state (walking, jumping, etc.).

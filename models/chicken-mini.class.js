@@ -41,6 +41,16 @@ class ChickenMini extends MovableObject {
   }
 
   /**
+     * Lets the mini-chicken move left if it is not dead.
+     * <-- Füge diese Methode hier hinzu -->
+     */
+    moveChicken() {
+         if (!this.chickenIsDead) { // <-- Stelle sicher, dass chickenIsDead in Chicken/ChickenMini existiert
+            this.x -= this.speed;
+        }
+    }
+
+  /**
    * Handles the animation of the chicken.
    * Switches between walking and dead animations depending on the chicken's state.
    */

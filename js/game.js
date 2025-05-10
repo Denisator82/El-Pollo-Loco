@@ -63,60 +63,116 @@ function gameLose() {
 }
 
 /**
- * Displays the win screen.
+ * Displays the win screen and handles game win logic.
  */
 function gameWin() {
+    console.log('LOG: gameWin() called.'); // Log
     document.getElementById("gameWin").classList.add("show");
+
+    world.gameOver = true; // Setze das Game Over Flag
+
+    stopGame(); // <-- Rufe die korrigierte stopGame() auf
+
+    // Spiele den Win Sound NACHDEM die Musik gestoppt wurde
     if (world && world.audioManager) {
         world.audioManager.playSound('win');
     }
-    stopGame(); // Rufe stopGame() auf, wenn das Spiel gewonnen ist
+
+    // *** HIER MUSS DER BOSS AUS DER LISTE ENTFERNT WERDEN ***
+    // Finde die Zeile, die den Boss mit splice aus world.level.enemies oder world.level.endboss entfernt.
+    // Verschiebe DIESE ZEILE hierher, NACHDEM stopGame() aufgerufen wurde.
+    // Wähle die korrekte Liste (enemies oder level.endboss) basierend auf wo der Boss gespeichert ist
+    if (world && world.level) {
+         // Beispiel für enemies Liste:
+         const endbossIndex = world.level.enemies.findIndex(enemy => enemy instanceof Endboss);
+         if (endbossIndex > -1) {
+              console.log('LOG: Removing endboss from enemies list in gameWin().'); // Log
+              world.level.enemies.splice(endbossIndex, 1); // <-- VERSCHIEBE DEINE SPLICE ZEILE HIERHER
+         }
+         // Beispiel für level.endboss Liste (falls Boss dort drin ist):
+         /*
+         const endbossIndex = world.level.endboss.findIndex(boss => boss instanceof Endboss);
+         if (endbossIndex > -1) {
+              console.log('LOG: Removing endboss from level.endboss list in gameWin().'); // Log
+              world.level.endboss.splice(endbossIndex, 1); // <-- VERSCHIEBE DEINE SPLICE ZEILE HIERHER
+         }
+         */
+    } else {
+         console.warn('LOG: World or level not available for endboss removal in gameWin.'); // Warnung
+    }
+
+    // Optional: Timeout für Aufräumarbeiten nach Ende der Todes-Animation (falls nötig)
 }
 
 /**
- * Stops all game intervals.
+ * Stops all game intervals and handles final cleanup.
  */
-function stopGame() {
-    console.log('Stoppe alle Spielintervalle...');
+function stopGame() { // <-- Diese Funktion wird von gameLose()/gameWin() aufgerufen und ersetzt clearAllIntervals()
+    console.log('LOG: --- Start stopGame (game.js) ---'); // Log am Anfang
 
-    // Stoppe Intervalle, die direkt in game.js gesetzt sein könnten (aktuell keine vorhanden)
-
-    // Stoppe Intervalle der World und ihrer Objekte
-    if (world) {
-        if (world.character) {
+    if (world) { // Prüfe, ob world existiert
+        // Stoppe Charakter
+        if (world.character && world.character.stopCharacterIntervals) {
             world.character.stopCharacterIntervals();
         }
-        if (world.enemies) {
+
+        // Stoppe ALLE Gegner in der enemies Liste (falls Endboss NICHT dort ist)
+        if (Array.isArray(world.enemies)) {
             world.enemies.forEach(enemy => {
-                if (enemy.stopChickenIntervals) enemy.stopChickenIntervals();
-                if (enemy.stopChickenMiniIntervals) enemy.stopChickenMiniIntervals();
-                if (enemy.stopEndbossIntervals) enemy.stopEndbossIntervals();
-                // Füge hier Stopp-Methoden für weitere Gegner-Typen hinzu, falls vorhanden
-            });
-        }
-        if (world.clouds) {
-            world.clouds.forEach(cloud => {
-                if (cloud.stopCloudIntervals) cloud.stopCloudIntervals();
-            });
-        }
-        if (world.coins) {
-            world.coins.forEach(coin => {
-                if (coin.stopCoinIntervals) coin.stopCoinIntervals();
-            });
-        }
-        if (world.throwableObjects) {
-            world.throwableObjects.forEach(throwable => {
-                if (throwable.stopThrowableObjectIntervals) throwable.stopThrowableObjectIntervals();
+                if (enemy && enemy.stopChickenIntervals) enemy.stopChickenIntervals();
+                if (enemy && enemy.stopChickenMiniIntervals) enemy.stopChickenMiniIntervals();
+                 // Wenn Endboss HIER in enemies IST, füge den instanceof Check hier ein:
+                // if (enemy instanceof Endboss && enemy.stopEndbossIntervals) enemy.stopEndbossIntervals();
             });
         }
 
-        // Stoppe Intervalle, die möglicherweise direkt in der World-Klasse laufen
-        if (world.stopWorldIntervals) {
-            world.stopWorldIntervals();
+        // *** Stoppe Endboss(se) in der level.endboss Liste ***
+        // <-- DIESE SCHLEIFE MUSS AKTIV SEIN, WENN DEIN BOSS IN level.endboss IST
+        if (world.level && Array.isArray(world.level.endboss)) {
+            world.level.endboss.forEach(endboss => {
+                if (endboss && endboss.stopEndbossIntervals) { // Prüfe auf Endboss Instanz und Methode
+                    endboss.stopEndbossIntervals(); // <-- Diese Zeile stoppt den Endboss!
+                }
+            });
+        } else if (world.level && !Array.isArray(world.level.endboss)) {
+             console.warn("LOG: world.level.endboss is not an array or does not exist."); // Warnung, falls Liste fehlt
         }
+
+
+        // Optional: Stoppe andere Listen mit Intervallen (ThrowableObjects, Clouds etc.)
+        // Wenn ThrowableObjects eigene Intervalle haben, stoppe sie hier
+        if (world.throwableObjects && Array.isArray(world.throwableObjects)) {
+             world.throwableObjects.forEach(throwable => {
+                 if (throwable && throwable.stopThrowableObjectIntervals) throwable.stopThrowableObjectIntervals();
+             });
+             // Optional: Leere Liste hier ODER in gameWin/gameLose
+             // world.throwableObjects = [];
+        }
+
+
+        // Stoppe Intervalle, die in der World-Klasse laufen (collisionIntervalId, throwIntervalId)
+        if (world.stopWorldIntervals) { // Prüfe, ob die Methode existiert
+             world.stopWorldIntervals(); // <-- Dein Log kommt
+        } else {
+             console.warn("LOG: world.stopWorldIntervals method not found."); // Warnung, falls Methode fehlt
+        }
+
+        // *** Musik stoppen ***
+        if (world.audioManager) { // Prüfe, ob audioManager existiert
+             world.audioManager.pauseEndbossMusic(); // <-- Stoppt Endboss-Musik
+             world.audioManager.pauseBackgroundMusic(); // Hintergrundmusik stoppen
+        } else {
+             console.warn('LOG: audioManager not available in stopGame.'); // Warnung
+        }
+
+         // *** HIER NICHT DIE OBJEKTE AUS DER LISTE ENTFERNEN ***
+         // Das passiert erst NACHDEM stopGame() durchgelaufen ist (in gameWin/gameLose)
+    } else {
+         console.warn('LOG: World object not available in stopGame.'); // Warnung, falls World fehlt
     }
 
-    console.log('Alle Intervalle gestoppt.');
+
+    console.log('LOG: --- End stopGame (game.js) ---'); // Log am Ende
 }
 
 /**

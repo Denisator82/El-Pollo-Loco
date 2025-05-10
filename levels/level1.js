@@ -14,7 +14,7 @@ let level1;
 function initLevel() {
     level1 = new Level(
         [
-            new Endboss() // Endboss object
+            new Endboss()
         ],
         [
             new Chicken(),
@@ -79,6 +79,10 @@ function initLevel() {
             new Coin(),
         ],
         [
+            new Bottle(),
+            new Bottle(),
+            new Bottle(),
+            new Bottle(),
             new Bottle(),
             new Bottle(),
             new Bottle(),

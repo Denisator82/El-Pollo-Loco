@@ -95,15 +95,22 @@ class Endboss extends MovableObject {
     /**
      * Drains energy from the target by decreasing health.
      */
-    hitEndboss() {
-        this.health -= 10;
-        if (this.health < 0) {
-            this.health = 0;
-        }
-        else {
-            this.lastHitEndboss = new Date().getTime();
-        }
+    hitEndboss() { // <-- Game-Win-Logik hierher
+    this.health -= 10;
+    if (this.health < 0) {
+        this.health = 0;
+    } else {
+        this.lastHitEndboss = new Date().getTime();
     }
+    console.log('Endboss getroffen! Neue Gesundheit:', this.health); // Log Gesundheit
+
+    // *** NEU: Prüfe hier, ob der Boss stirbt und das Spiel nicht schon vorbei ist ***
+    if (this.isDeadEndboss() && !world.gameOver) { // isDeadEndboss muss <= 0 prüfen!
+        console.log('Boss ist tot erkannt! Trigger gameWin.'); // Log Win Trigger
+        // world.gameOver = true; // Kann hier oder in gameWin gesetzt werden
+        gameWin(); // <-- Rufe gameWin() von hier auf (einmalig)
+    }
+}
 
     /**
      * Checks if the last hit occurred within the last second.
@@ -121,8 +128,9 @@ class Endboss extends MovableObject {
      * @returns {boolean} True if the health is zero, otherwise false
      */
     isDeadEndboss() {
-        return this.health == 0;
-    }
+     //return this.health == 0; // Alte Version
+     return this.health <= 0; // <-- KORRIGIEREN
+ }
 
     /**
      * Handles the animation of the end boss based on its state.
@@ -165,13 +173,14 @@ class Endboss extends MovableObject {
      * Handles the animation when the end boss is dead.
      */
     endbossAnimationDead() {
-        this.playAnimation(this.IMAGES_DEAD);
-        world.gameOver = true;
-        world.audioManager.pauseBackgroundMusic();
-        world.audioManager.playWinSound();
-        console.log('endbossAnimationDead() wurde aufgerufen!'); // Überprüfung
-        world.stopAllIntervals();
-    }
+    this.playAnimation(this.IMAGES_DEAD);
+    // *** ENTFERNE HIER DIE GAME-WIN-LOGIK ***
+    // world.gameOver = true;
+    // world.audioManager.pauseBackgroundMusic();
+    // world.audioManager.playWinSound();
+    // world.stopAllIntervals();
+    console.log('endbossAnimationDead() wurde aufgerufen!'); // Nur Log bleibt
+}
 
     /**
      * Handles the animation when the end boss is hurt.
@@ -205,40 +214,69 @@ class Endboss extends MovableObject {
      * Checks if the character had the first contact with the end boss.
      */
     endbossFirstContact() {
-        if (world.character.x > this.x - 400 && !this.hadFirstContact) {
-            this.i = 0; // Zurücksetzen des Animationszählers
-            this.hadFirstContact = true;
-            world.audioManager.pauseBackgroundMusic();
-            world.audioManager.playEndbossMusic();
-        }
+     console.log('LOG: endbossFirstContact() called.'); // <-- Füge diesen Log hier ein
+
+     if (!this.hadFirstContact) {
+         this.hadFirstContact = true;
+         this.world.audioManager.playEndbossMusic(true); // Loop the music
+         this.i = 0; // Reset animation counter for the alert phase
+         console.log('Erster Kontakt mit Endboss-Bereich! Boss wird aktiviert.'); // Dein bestehender Log
+         // Optional: Stoppe hier das Intervall, das diese Methode ausgelöst hat, und starte ein neues für endbossAnimation? Oder die Logik im Callback ändern.
+         // this.stopCheckingForFirstContact(); // Beispiel: Stoppe das Intervall, das DIESE Methode triggert
+     }
     }
 
     /**
      * Starts the animations and movements of the end boss.
      */
-    animate() {
-        this.firstContactIntervalId = setInterval(() => { // Speichere die ID
-            this.endbossFirstContact(); // Prüft regelmäßig den First Contact
-            if (this.hadFirstContact) {
-                this.endbossAnimation(); // Startet Animation erst nach First Contact
-            }
-        }, 500);
+    // In Endboss.class.js
 
-        this.movementIntervalId = setInterval(() => { // Speichere die ID
-            if (this.hadFirstContact && this.i > this.IMAGES_ALERT.length + this.IMAGES_ATTACK.length && !this.isDeadEndboss() && !this.isHurtEndboss()) {
-                this.x -= this.speed; // Endboss bewegt sich nach dem Alarm und Attack
-            }
-        }, 1000 / 60);
-    }
+animate() {
+    // Interval für First Contact und Animation
+    this.firstContactIntervalId = setInterval(() => { // Speichere die ID
+        if (!this.hadFirstContact) {
+             // PRÜFE die Bedingung für First Contact (z.B. Charakter Nähe)
+             // Du brauchst Zugriff auf den Charakter hier, z.B. this.world.character
+             // Angenommen, deine World ist in this.world gespeichert:
+             if (this.world && this.world.character && this.world.character.x > this.x - 400) { // Beispiel-Bedingung
+                  this.endbossFirstContact(); // Rufe diese Methode NUR einmal auf
+                  // Optional: Stoppe DIESES Intervall hier und starte ein neues für nur Animation, wenn du das so willst
+                  // clearInterval(this.firstContactIntervalId);
+                  // this.startAnimationInterval(); // Eine neue Methode, die nur endbossAnimation aufruft
+             }
+        } else {
+            // Wenn First Contact da war, rufe JETZT die Animation auf
+            // Stelle sicher, dass endbossAnimation() den Tot-Zustand als höchste Priorität hat
+            this.endbossAnimation();
+        }
+    }, 500); // Beispiel-Geschwindigkeit
+
+    // Bewegungsintervall bleibt ähnlich, hängt von hadFirstContact ab
+    this.movementIntervalId = setInterval(() => { // Speichere die ID
+        if (this.hadFirstContact && this.i > this.IMAGES_ALERT.length + this.IMAGES_ATTACK.length && !this.isDeadEndboss() && !this.isHurtEndboss()) {
+            this.x -= this.speed; // Endboss bewegt sich nach dem Alarm und Attack
+        }
+    }, 1000 / 60); // Geschwindigkeit
+}
+
+// Optional: Wenn du das Intervall nach First Contact stoppen und neu starten willst:
+/*
+startAnimationInterval() {
+    this.firstContactIntervalId = setInterval(() => { // Nutze dieselbe Variable oder eine neue
+         this.endbossAnimation(); // Ruft nur die Animation auf
+    }, 500); // Vielleicht schneller für Animation?
+}
+*/
 
     /**
      * Stops all intervals associated with the end boss.
      */
     stopEndbossIntervals() {
-        clearInterval(this.firstContactIntervalId);
-        clearInterval(this.movementIntervalId);
-        this.firstContactIntervalId = null; // Zur Sicherheit die IDs zurücksetzen
-        this.movementIntervalId = null;
-        console.log('Endboss-Intervalle gestoppt.');
-    }
+    clearInterval(this.firstContactIntervalId);
+    clearInterval(this.movementIntervalId);
+    this.firstContactIntervalId = null;
+    this.movementIntervalId = null;
+    super.stopGravity(); // <-- HINZUFÜGEN
+    console.log('Endboss-Intervalle gestoppt.');
+}
 }
