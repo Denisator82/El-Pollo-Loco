@@ -51,34 +51,51 @@ class World {
         this.audioManager.addSound("win", "audio/win_sound.mp3");
     }
 
-    /**
-     * Allows movable objects (character, enemies) to access the world instance.
-     * Sets the current world instance to the character and all enemies in the level.
-     * Assumes all enemies (Chicken, MiniChicken, Endboss) are in the level.enemies array.
+/**
+     * Sets the world reference on all movable objects that need it (e.g., enemies, character).
+     * This allows them to access world-level properties and methods.
+     * Also starts the animation/logic intervals for specific objects like the Endboss,
+     * which need the world reference to function.
+     * <-- WIRD VOM World Constructor aufgerufen -->
      * @method
      */
     setWorld() {
-        // Set world reference for the character
-        this.character.world = this;
-
-        // Set world reference for all enemies in the enemies list (includes Endboss if he's there)
-        // Ensure this.level.enemies is a valid array
-        if (Array.isArray(this.level.enemies)) {
-            this.level.enemies.forEach((enemy) => {
-                 // Ensure the enemy object is valid before setting world
-                 if (enemy) {
-                    enemy.world = this; // Set world reference for each enemy
-                 } else {
-                    // console.warn('LOG: Skipping setting world for null/undefined enemy in enemies list.'); // Optional warning
-                 }
-            });
+        // Set the world reference on the character. (Might be redundant if already in Character constructor, but harmless).
+        if (this.character) { // Safety check
+             this.character.world = this;
         } else {
-            console.warn("LOG: this.level.enemies is not an array or missing, cannot set world for enemies.");
+             console.warn('LOG: Character object not found when setting world reference.');
         }
 
-        // The second loop iterating over level.endboss is removed here,
-        // assuming Endboss is also present in the level.enemies list.
-        // If Endboss is ONLY in level.endboss, the second loop would be needed.
+
+        // Set the world reference on all enemies in the level.
+        // Iterate through the enemies array (ensure it's an array).
+        if (Array.isArray(this.level.enemies)) {
+             this.level.enemies.forEach(enemy => {
+                 if (enemy) { // Safety check for valid enemy object
+                     enemy.world = this; // Set the world reference on the current enemy.
+
+                     // *** NEU: Starte die Endboss-Intervalle HIER, NACHDEM die world-Referenz gesetzt wurde! ***
+                     // Prüfe, ob der aktuelle Gegner ein Endboss ist.
+                     if (enemy instanceof Endboss) {
+                         console.log('LOG: World setting world reference on Endboss and starting animation.'); // Log
+                         // Rufe die animate() Methode des Endbosses auf, um seine Intervalle zu starten.
+                         // Dies sollte nur einmal für den Endboss passieren.
+                         enemy.animate();
+                     }
+                     // Optional: Wenn andere Gegnertypen auch separate animate() Methoden haben,
+                     // die die World brauchen, müsstest du sie hier auch ähnlich starten.
+                     // Meistens starten normale Gegner ihre Intervalle im eigenen Constructor und brauchen die World nicht sofort dafür.
+                 } else {
+                     console.warn('LOG: Found null/undefined enemy in level.enemies list.');
+                 }
+             });
+        } else {
+            console.warn('LOG: level.enemies is not an array or missing when setting world references.');
+        }
+
+        // Optional: Set world reference on throwable objects if they are created before throwing (unlikely).
+        // Throwable objects usually get the world reference when created in Character.throwBottle().
     }
 
     /**

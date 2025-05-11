@@ -195,67 +195,106 @@ class Character extends MovableObject {
 }
 
 /**
-     * Animates the character based on its state (walking, jumping, etc.).
-     * Handles character movement and sound effects.
-     */
+ * Animates the character based on its state (walking, jumping, etc.).
+ * Handles character movement and sound effects based on keyboard input.
+ * Manages the character's animation and updates the camera position.
+ * Contains logging to check the character's X-position for debugging the Endboss "first contact".
+ * @method
+ */
 animateCharacter() {
-    // Primary animation loop running at approximately 60 frames per second
-    this.moveIntervalId = setInterval(() => { // Speichere die ID
-        let isMoving = false;
+    // Primary animation loop running at approximately 60 frames per second.
+    // This interval handles movement based on keyboard input, direction, and camera updates.
+    this.moveIntervalId = setInterval(() => { // Store the interval ID
+        let isMoving = false; // Flag to check if the character is currently moving
 
+        // --- Handle Rightward Movement ---
+        // Check if the RIGHT arrow key is pressed AND the character is within the level boundaries.
         if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
-            this.moveRight();
-            this.otherDirection = false;
-            if (this.world && this.world.audioManager) {
-                this.world.audioManager.playSound('walk');
+            this.moveRight(); // Call the method to move the character to the right.
+            this.otherDirection = false; // Set facing direction to right.
+            // Play walking sound (ensure sound is handled correctly - playing only when moving).
+            if (this.world && this.world.audioManager && typeof this.world.audioManager.playSound === 'function') {
+                this.world.audioManager.playSound('walk'); // Assuming 'walk' sound exists and can be played/paused.
             }
-            this.resetStandingTime();
-            isMoving = true;
+            this.resetStandingTime(); // Reset idle/sleeping timer as character is active.
+            isMoving = true; // Set moving flag.
         }
 
+        // --- Handle Leftward Movement ---
+        // Check if the LEFT arrow key is pressed AND the character is within the left boundary (usually 0).
         if (this.world.keyboard.LEFT && this.x > 0) {
-            this.moveLeft();
-            this.otherDirection = true;
-            if (this.world && this.world.audioManager) {
-                this.world.audioManager.playSound('walk');
+            this.moveLeft(); // Call the method to move the character to the left.
+            this.otherDirection = true; // Set facing direction to left.
+            // Play walking sound.
+            if (this.world && this.world.audioManager && typeof this.world.audioManager.playSound === 'function') {
+                this.world.audioManager.playSound('walk'); // Assuming 'walk' sound exists.
             }
-            this.resetStandingTime();
-            isMoving = true;
+            this.resetStandingTime(); // Reset idle/sleeping timer.
+            isMoving = true; // Set moving flag.
         }
 
-        // Pausiere den 'walk'-Sound, wenn sich der Charakter nicht bewegt
-        if (!isMoving && this.world && this.world.audioManager && this.world.audioManager.sounds['walk']) {
-            this.world.audioManager.sounds['walk'].pause();
-            this.world.audioManager.sounds['walk'].currentTime = 0;
+        // --- Pause Walking Sound if Not Moving ---
+        // Check if the character is NOT moving and the walk sound is currently playing/exists.
+        if (!isMoving && this.world && this.world.audioManager && this.world.audioManager.sounds && this.world.audioManager.sounds['walk']) {
+             // Assuming audioManager.sounds['walk'] gives access to the HTMLAudioElement or similar.
+            if (typeof this.world.audioManager.sounds['walk'].pause === 'function') { // Safety check
+                 this.world.audioManager.sounds['walk'].pause(); // Pause the walking sound.
+                 this.world.audioManager.sounds['walk'].currentTime = 0; // Reset sound playback position to the start.
+            }
         }
 
+        // --- Handle Jumping ---
+        // Check if the SPACE key is pressed AND the character is NOT currently in the air.
         if (this.world.keyboard.SPACE && !this.isAboveGround()) {
-            this.jump();
-            this.resetStandingTime();
+            this.jump(); // Call the jump method.
+            this.resetStandingTime(); // Reset idle/sleeping timer.
         }
 
-        // Kamera-Update
+        // --- Camera Update ---
+        // Adjust the camera's X position based on the character's position.
+        // This creates the scrolling effect. '-this.x + 100' centers the character roughly with an offset of 100 pixels.
         this.world.camera_x = -this.x + 100;
-    }, 1000 / 60); // Run at 60 frames per second
+
+        // // *** LOGGING FOR ENDBOSS FIRST CONTACT DEBUGGING ***
+        // // This log will show the character's current X-coordinate in the console.
+        // // Check this value as you approach the Endboss area (around X=3500).
+        // console.log('LOG: Character X:', this.x); // <-- DIESEN LOG HINZUFÜGEN UND IN DER KONSOLE BEOBACHTEN!
+        // // ****************************************************
+
+    }, 1000 / 60); // Run this interval at 60 frames per second for smooth movement and frequent checks/logs.
 
 
-        // Secondary animation loop (approx. 10 FPS)
-        this.animationIntervalId = setInterval(() => { // Speichere die ID
-            if (this.isDead()) {
-                this.playAnimation(this.IMAGES_DEAD); // Play the dead animation if the character is dead
-                this.resetStandingTime();
-                // Hier könnte ein 'death' Sound abgespielt werden, aber das Game Over wird global gehandhabt.
-            } else if (this.isAboveGround()) {
-                this.playAnimation(this.IMAGES_JUMPING); // Play the jumping animation if the character is in the air
-                this.resetStandingTime();
-            } else if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
-                this.playAnimation(this.IMAGES_WALKING); // Play the walking animation if moving left or right
-                this.resetStandingTime();
-            } else {
-                this.animateStanding(); // Play the standing animation if no other conditions are met
-            }
-        }, 100); // Run at 10 frames per second
-    }
+    // Secondary animation loop (runs at approximately 10 frames per second).
+    // This interval determines which animation sequence (walking, jumping, dead, etc.) is currently playing.
+    this.animationIntervalId = setInterval(() => { // Store the interval ID
+        // --- Animation State Logic ---
+        // Play animations based on the character's current state, prioritized from critical states (dead) to idle.
+        if (this.isDead()) {
+            this.playAnimation(this.IMAGES_DEAD); // Play the dead animation.
+            this.resetStandingTime(); // Keep resetting timer even if dead? (Behavior depends on game design).
+            // Game Over logic (stopping intervals etc.) is handled by World/global functions, not typically here.
+        } else if (this.isHurt && typeof this.isHurt === 'function' && this.isHurt()) { // Check if hurt state is active (and method exists)
+             this.playAnimation(this.IMAGES_HURT); // Play the hurt animation.
+             this.resetStandingTime(); // Reset idle timer while hurt.
+        } else if (this.isAboveGround()) { // Check if character is in the air (jumping or falling)
+            this.playAnimation(this.IMAGES_JUMPING); // Play the jumping animation.
+            this.resetStandingTime(); // Reset idle timer while in the air.
+        } else if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) { // Check if moving horizontally
+            this.playAnimation(this.IMAGES_WALKING); // Play the walking animation.
+            this.resetStandingTime(); // Reset idle timer while walking.
+        } else { // Character is not dead, not hurt, not in air, and not moving horizontally
+            // Play the standing/idle animation, potentially transitioning to sleeping.
+            this.animateStanding(); // Calls a helper method to manage idle/sleeping based on standing time.
+        }
+        // Note: playAnimation internally increments the image index and loads the next frame.
+    }, 100); // Run this interval at 10 frames per second (100ms) - sufficient for most character animations.
+}
+
+// ... rest of the Character class methods (hit, isHurt, isDead, moveRight, moveLeft, jump,
+// animateStanding, resetStandingTime, collectCoin, updateCoinStatus, collectBottle,
+// updateBottleStatus, throwBottle, stopCharacterIntervals)
+
+
     /**
      * Plays the standing animation for the character.
      * If the character stands still for a duration exceeding the sleep delay,
@@ -279,90 +318,169 @@ animateCharacter() {
         this.standingTime = 0;
     }
 
-    /**
-     * Collects a coin and updates the coin status.
-     * @param {Object} coin - The coin object to be collected.
+/**
+     * Collects a coin and updates the character's internal state and status bar.
+     * Plays a sound upon collection.
+     * The coin removal from the world list is handled by the World class.
+     * @param {Coin} coin - The coin object to be collected.
+     * @method
      */
     collectCoin(coin) {
-        this.coinsCollected++; // Increment the collected coins counter
-        this.world.removeObject(coin); // Remove the coin from the world
-        this.updateCoinStatus(); // Update the coin status
-        if (this.world && this.world.audioManager) {
-            this.world.audioManager.playSound('coinCollected'); // Benötigt 'coinCollected' Sound
+        this.coinsCollected++; // Correct: Character's internal counter is incremented.
+
+        // The line this.world.removeObject(coin); is now correctly removed/commented out.
+
+        this.updateCoinStatus(); // Correct: Delegate updating the status bar to a helper method.
+
+        // Play coin collection sound. This is valid Character-internal sound logic.
+        if (this.world && this.world.audioManager && typeof this.world.audioManager.playSound === 'function') {
+            this.world.audioManager.playSound('coinCollected'); // Play sound if AudioManager is available.
         }
     }
 
     /**
-     * Updates the coin status bar based on the number of collected coins.
+     * Updates the coin status bar displayed in the UI based on the character's collected coin count.
+     * Calculates the percentage for the status bar and calls the World's status bar instance.
+     * @method
      */
     updateCoinStatus() {
-        // 1 level per 2 coins
-        const coinsPerLevel = 2;
-        const level = Math.floor(this.coinsCollected / coinsPerLevel);
-        const percentage = (level / 5) * 100;
-        this.world.statusBarCoin.setPercentage(percentage); // Set the percentage for the coin status bar
+        // Calculation logic for percentage. Seems based on 10 coins for 100%.
+        const coinsPerLevel = 2; // How many coins represent one "level" increment visually?
+        const level = Math.floor(this.coinsCollected / coinsPerLevel); // Calculate the visual "level"
+        // The percentage calculation implies 5 visual "levels" make 100% (5 * 2 coins = 10 coins total for 100%).
+        const percentage = (level / 5) * 100; // Calculate percentage based on the visual level
+
+        // Update the specific status bar instance owned by the World.
+        // This is functional: Character tells World's UI element to update.
+        // Alternative (slightly cleaner design): World updates its own status bar directly in the collision method.
+        if (this.world && this.world.statusBarCoin && typeof this.world.statusBarCoin.setPercentage === 'function') {
+             this.world.statusBarCoin.setPercentage(percentage);
+        }
     }
 
     /**
-     * Collects a bottle and updates the bottle status.
-     * @param {Object} bottle - The bottle object to be collected.
+     * Collects a collectible bottle and updates the character's internal bottle count and status bar.
+     * Plays a sound upon collection.
+     * The bottle removal from the world list is handled by the World class.
+     * @param {Bottle} bottle - The collectible bottle object to be collected.
+     * @method
      */
     collectBottle(bottle) {
-        this.bottlesCollected++; // Increment the collected bottles counter
-        this.world.removeObject(bottle); // Remove the bottle from the world
-        this.updateBottleStatus(); // Update the bottle status
-        // Sound beim Aufnehmen einer Flasche
-        if (this.world && this.world.audioManager) {
-            this.world.audioManager.playSound('bottleCollect'); // Benötigt 'bottleCollect' Sound
+        this.bottlesCollected++; // Correct: Character's internal counter is incremented.
+
+        // The line this.world.removeObject(bottle); is now correctly removed/commented out.
+
+        this.updateBottleStatus(); // Correct: Delegate updating the status bar to a helper method.
+
+        // Play collectible bottle sound. This is valid Character-internal sound logic.
+        if (this.world && this.world.audioManager && typeof this.world.audioManager.playSound === 'function') {
+            this.world.audioManager.playSound('bottleCollect'); // Play sound if AudioManager is available.
         }
     }
 
     /**
-     * Updates the bottle status bar based on the number of collected bottles.
+     * Updates the bottle status bar based on the character's collected bottle count.
+     * Calculates the percentage for the status bar and calls the World's status bar instance.
+     * @method
      */
     updateBottleStatus() {
-        // 1 level per 8 bottles
-        const bottlesPerLevel = 8;
-        const percentage = (this.bottlesCollected / bottlesPerLevel) * 100;
-        this.world.statusBarBottle.setPercentage(percentage); // Set the percentage for the bottle status bar
-    }
+         // Calculation logic for percentage. Based on 8 bottles for 100%.
+         const bottlesPerLevel = 8; // How many bottles total for 100% status bar?
+         const percentage = (this.bottlesCollected / bottlesPerLevel) * 100; // Calculate percentage directly from total count
 
-    /**
-     * Throws a bottle if available and updates the bottle status.
+         // Update the specific status bar instance owned by the World.
+         // This is functional: Character tells World's UI element to update.
+         // Alternative (slightly cleaner design): World updates its own status bar directly in the collision method.
+         if (this.world && this.world.statusBarBottle && typeof this.world.statusBarBottle.setPercentage === 'function') {
+              this.world.statusBarBottle.setPercentage(percentage);
+         }
+     }
+
+/**
+     * Throws a bottle if the character has bottles available.
+     * Decrements the bottle count, updates the status bar, creates a new throwable object,
+     * adds it to the world, plays a sound, and resets standing time.
+     * @param {boolean} otherDirection - Indicates if the character is facing the other direction (left).
+     * @method
      */
-    throwBottle(offsetX, otherDirection) {
-        if (this.bottlesCollected > 0) {
-            this.bottlesCollected--;
-            this.updateBottleStatus();
+    throwBottle(otherDirection) { // <-- KORRIGIERTE METHODEN-SIGNATUR: Entferne 'offsetX' Parameter
+        if (this.bottlesCollected > 0) { // Check if the character has bottles to throw
+            this.bottlesCollected--; // Decrement the internal bottle count
+            this.updateBottleStatus(); // Update the bottle count status bar in the UI
 
-            let bottleX = this.x;
-            // Passe die Startposition basierend auf der Blickrichtung an
+            // --- Calculate the starting position of the thrown bottle ---
+            let bottleX = this.x; // Start with the character's x-position
+
+            // Adjust the starting X position based on the character's facing direction (otherDirection).
+            // Position the bottle near the character's edge, not in the center.
+            // The parameter offsetX was not passed from World, so it was undefined.
+            // We will calculate the position using the character's width and maybe a small fixed offset.
+            const bottleHorizontalOffset = 10; // Adjust this value for desired spacing from character's edge
+
             if (otherDirection) {
-                // Wenn nach links geschaut wird, starte ungefähr am linken Rand
-                bottleX -= (offsetX / 2); // Experimentiere mit diesem Wert
+                // If facing left, start the bottle near the character's left edge.
+                bottleX -= bottleHorizontalOffset; // Start 'bottleHorizontalOffset' pixels to the left of character's x.
             } else {
-                // Wenn nach rechts geschaut wird, starte ungefähr am rechten Rand
-                bottleX += this.width - (offsetX / 2); // Experimentiere mit diesem Wert
+                // If facing right, start the bottle near the character's right edge.
+                bottleX += this.width - bottleHorizontalOffset; // Start 'bottleHorizontalOffset' pixels to the left of character's right edge.
             }
-            let bottleY = this.y + this.height / 2 - 20; // Vertikal etwas mittiger
 
+            // Calculate the starting Y position (vertically somewhat centered relative to the character).
+            let bottleY = this.y + this.height / 2 - 20; // Adjust '-20' for desired vertical position
+
+            // --- Create and Add the Throwable Object ---
+            // Create a new ThrowableObject instance at the calculated position with the character's direction.
             let bottle = new ThrowableObject(bottleX, bottleY, otherDirection);
+            // Add the newly created bottle to the World's list of active throwable objects.
             this.world.throwableObjects.push(bottle);
-            if (this.world && this.world.audioManager) {
-                this.world.audioManager.playSound('throw');
+
+            // Play the bottle throw sound (This can also be in World.checkThrowObjects, but here is also fine).
+            if (this.world && this.world.audioManager && typeof this.world.audioManager.playSound === 'function') {
+                this.world.audioManager.playSound('throw'); // Play throw sound.
             }
-            this.resetStandingTime();
+
+            // Reset the character's standing time (likely to prevent idle animation immediately after action).
+            if (typeof this.resetStandingTime === 'function') { // Safety check
+                 this.resetStandingTime();
+            } else {
+                 // Optional warning
+                 // console.warn('LOG: Character resetStandingTime method not found.');
+            }
         }
     }
 
-    /**
-     * Stops all intervals associated with the character.
+/**
+     * Stops all specific intervals associated with the character's movement and animation.
+     * Sets the interval IDs to null after clearing.
+     * <-- WIRD VON World.stopAllIntervals() aufgerufen -->
+     * @method
      */
     stopCharacterIntervals() {
-        clearInterval(this.moveIntervalId);
-        clearInterval(this.animationIntervalId);
-        this.moveIntervalId = null; // Zur Sicherheit die IDs zurücksetzen
-        this.animationIntervalId = null;
-        console.log('Charakter-Intervalle gestoppt.');
+        // Clear the movement interval and reset its ID.
+        if (this.moveIntervalId) { // Safety check
+            clearInterval(this.moveIntervalId);
+            this.moveIntervalId = null; // Set ID to null
+        } else {
+            // Optional warning
+            // console.warn('LOG: Character moveIntervalId was null when trying to stop.');
+        }
+
+
+        // Clear the animation interval and reset its ID.
+        if (this.animationIntervalId) { // Safety check
+            clearInterval(this.animationIntervalId);
+            this.animationIntervalId = null; // Set ID to null
+        } else {
+            // Optional warning
+            // console.warn('LOG: Character animationIntervalId was null when trying to stop.');
+        }
+
+        // Optional: If character has a gravity requestAnimationFrame loop managed by a specific ID, cancel it here.
+        // Example: if (this.gravityFrameId) { cancelAnimationFrame(this.gravityFrameId); this.gravityFrameId = null; }
+        // Or if gravity is handled by a general update loop that gets stopped, this might not be needed here.
+
+
+        // Optional log to confirm method execution.
+        // console.log('LOG: Character intervals stopped.');
     }
 }

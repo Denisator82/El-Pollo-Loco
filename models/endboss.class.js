@@ -3,280 +3,340 @@
  * Inherits from MovableObject and includes properties for different states and behaviors.
  */
 class Endboss extends MovableObject {
-    height = 400; // Height of the end boss
-    width = 250; // Width of the end boss
-    y = 55; // Y-coordinate of the end boss
-    i = 0;
-    hadFirstContact = false; // Indicates if the first contact has occurred
-    speed = 2; // Speed of the end boss
-    visible = false; // Visibility status of the end boss
-    health = 100; // Energy of the end boss
-    world;
-    firstContactIntervalId = null; // Speichert die ID für das First Contact Intervall
-    movementIntervalId = null; // Speichert die ID für das Bewegungsintervall
-    offset = { // Füge dieses Objekt hinzu, um die Kollisionsbox anzupassen
-        top: 80,    // Oberer Abstand
-        left: 40,   // Linker Abstand
-        right: 40,  // Rechter Abstand
-        bottom: 20  // Unterer Abstand
-    };
+     height = 400; // Height of the end boss
+     width = 250; // Width of the end boss
+     y = 55; // Y-coordinate of the end boss
+     i = 0; // Animation frame index/state counter
+     hadFirstContact = false; // Indicates if the first contact has occurred
+     speed = 2; // Speed of the end boss (adjust as needed for movement speed)
+     visible = false; // Visibility status of the end boss (maybe for later use)
+     health = 100; // Energy of the end boss
+     world; // Reference to the game world
 
-    // Images for the alert state of the end boss
-    IMAGES_ALERT = [
-        'img/img/4_enemie_boss_chicken/2_alert/G5.png',
-        'img/img/4_enemie_boss_chicken/2_alert/G6.png',
-        'img/img/4_enemie_boss_chicken/2_alert/G7.png',
-        'img/img/4_enemie_boss_chicken/2_alert/G8.png',
-        'img/img/4_enemie_boss_chicken/2_alert/G9.png',
-        'img/img/4_enemie_boss_chicken/2_alert/G10.png',
-        'img/img/4_enemie_boss_chicken/2_alert/G11.png',
-        'img/img/4_enemie_boss_chicken/2_alert/G12.png'
-    ];
+     firstContactIntervalId = null; // ID for the First Contact Interval
+     movementIntervalId = null; // ID for the Movement Interval
+     animationIntervalId = null; // *** NEW: ID for the Animation Interval ***
 
-    // Images for the walking state of the end boss
-    IMAGES_WALKING = [
-        'img/img/4_enemie_boss_chicken/1_walk/G1.png',
-        'img/img/4_enemie_boss_chicken/1_walk/G2.png',
-        'img/img/4_enemie_boss_chicken/1_walk/G3.png',
-        'img/img/4_enemie_boss_chicken/1_walk/G4.png',
-    ];
+     offset = { // Collision box offset
+         top: 80,
+         left: 40,
+         right: 40,
+         bottom: 20
+     };
 
-    // Images for the attack state of the end boss
-    IMAGES_ATTACK = [
-        'img/img/4_enemie_boss_chicken/3_attack/G13.png',
-        'img/img/4_enemie_boss_chicken/3_attack/G14.png',
-        'img/img/4_enemie_boss_chicken/3_attack/G15.png',
-        'img/img/4_enemie_boss_chicken/3_attack/G16.png',
-        'img/img/4_enemie_boss_chicken/3_attack/G17.png',
-        'img/img/4_enemie_boss_chicken/3_attack/G18.png',
-        'img/img/4_enemie_boss_chicken/3_attack/G19.png',
-        'img/img/4_enemie_boss_chicken/3_attack/G20.png',
-    ];
+     // Animation Image Arrays (keep these as they are)
+     IMAGES_ALERT = [
+         'img/img/4_enemie_boss_chicken/2_alert/G5.png', /* ... */ 'img/img/4_enemie_boss_chicken/2_alert/G12.png'
+     ];
 
-    // Images for the hurt state of the end boss
-    IMAGES_HURT = [
-        'img/img/4_enemie_boss_chicken/4_hurt/G21.png',
-        'img/img/4_enemie_boss_chicken/4_hurt/G22.png',
-        'img/img/4_enemie_boss_chicken/4_hurt/G23.png',
-    ];
+     IMAGES_WALKING = [
+         'img/img/4_enemie_boss_chicken/1_walk/G1.png', /* ... */ 'img/img/4_enemie_boss_chicken/1_walk/G4.png',
+     ];
 
-    // Images for the dead state of the end boss
-    IMAGES_DEAD = [
-        'img/img/4_enemie_boss_chicken/5_dead/G24.png',
-        'img/img/4_enemie_boss_chicken/5_dead/G25.png',
-        'img/img/4_enemie_boss_chicken/5_dead/G26.png',
-    ];
+     IMAGES_ATTACK = [
+         'img/img/4_enemie_boss_chicken/3_attack/G13.png', /* ... */ 'img/img/4_enemie_boss_chicken/3_attack/G20.png',
+     ];
 
-    /**
-     * Initializes the end boss by loading images for different states
-     * and setting the initial position.
-     */
-    constructor(){
-        // Call the parent class constructor and load the initial alert image
-        super().loadImage(this.IMAGES_ALERT[0]);
+     IMAGES_HURT = [
+         'img/img/4_enemie_boss_chicken/4_hurt/G21.png', /* ... */ 'img/img/4_enemie_boss_chicken/4_hurt/G23.png',
+     ];
 
-        // Load images for different states of the end boss
-        this.loadImages(this.IMAGES_WALKING);
-        this.loadImages(this.IMAGES_ALERT);
-        this.loadImages(this.IMAGES_ATTACK);
-        this.loadImages(this.IMAGES_HURT);
-        this.loadImages(this.IMAGES_DEAD);
+     IMAGES_DEAD = [
+         'img/img/4_enemie_boss_chicken/5_dead/G24.png', /* ... */ 'img/img/4_enemie_boss_chicken/5_dead/G26.png',
+     ];
 
-        // Set the initial x-coordinate of the end boss on the map
-        this.x = 3900;
+     lastHitEndboss = 0; // Timestamp of the last hit
 
-        //new Attribute
-        this.lastHitEndboss = 0;
+     /**
+      * Initializes the end boss: loads images, sets initial position.
+      * Note: Intervals are started by the World class after setting the world reference.
+      * @constructor
+      */
+     constructor(){
+         super().loadImage(this.IMAGES_ALERT[0]);
 
-        // Start the animation method
-        this.animate();
-    }
+         // Load all images for different states
+         this.loadImages(this.IMAGES_WALKING);
+         this.loadImages(this.IMAGES_ALERT);
+         this.loadImages(this.IMAGES_ATTACK);
+         this.loadImages(this.IMAGES_HURT);
+         this.loadImages(this.IMAGES_DEAD);
 
-    /**
-     * Drains energy from the target by decreasing health.
-     */
-    hitEndboss() { // <-- Game-Win-Logik hierher
-    this.health -= 10;
-    if (this.health < 0) {
-        this.health = 0;
-    } else {
-        this.lastHitEndboss = new Date().getTime();
-    }
-    console.log('Endboss getroffen! Neue Gesundheit:', this.health); // Log Gesundheit
+         this.x = 3900; // Initial x-coordinate
+         this.lastHitEndboss = 0;
 
-    // *** NEU: Prüfe hier, ob der Boss stirbt und das Spiel nicht schon vorbei ist ***
-    if (this.isDeadEndboss() && !world.gameOver) { // isDeadEndboss muss <= 0 prüfen!
-        console.log('Boss ist tot erkannt! Trigger gameWin.'); // Log Win Trigger
-        // world.gameOver = true; // Kann hier oder in gameWin gesetzt werden
-        gameWin(); // <-- Rufe gameWin() von hier auf (einmalig)
-    }
-}
-
-    /**
-     * Checks if the last hit occurred within the last second.
-     *
-     * @returns {boolean} True if the last hit was within 1 second, otherwise false
-     */
-    isHurtEndboss() {
-        return (Date.now() - this.lastHitEndboss) / 1000 < 1;
-    }
-
-
-    /**
-     * Checks if the end boss's health is zero.
-     *
-     * @returns {boolean} True if the health is zero, otherwise false
-     */
-    isDeadEndboss() {
-     //return this.health == 0; // Alte Version
-     return this.health <= 0; // <-- KORRIGIEREN
- }
-
-    /**
-     * Handles the animation of the end boss based on its state.
-     */
-    endbossAnimation() {
-        if (!this.hadFirstContact) return; // The end boss remains inactive until the first contact occurs
-
-        // Show the status bar before the alert starts
-        if (this.i === 0) {
-            this.showStatusBar(); // The status bar is shown immediately
-        }
-
-        // Handle the end boss animation based on its state
-        if (this.isDeadEndboss()) {
-            this.endbossAnimationDead();
-        } else if (this.isHurtEndboss()) {
-            this.endbossAnimationHurt();
-        } else if (this.i < this.IMAGES_ALERT.length) {
-            this.endbossAnimationAlert();
-        } else if (this.i === this.IMAGES_ALERT.length) {
-            // Optional: Add additional actions here after the alert
-        } else if (this.i < this.IMAGES_ALERT.length + this.IMAGES_ATTACK.length) {
-            this.endbossAnimationAttack();
-        } else {
-            this.endbossAnimationWalk();
-        }
-
-        this.i++; // Increment i after each step
-    }
-
-        /**
-     * Shows the status bar for the end boss.
-     * Makes the status bar of the end boss visible.
-     */
-        showStatusBar() {
-            world.statusBarEndboss.visible = true;
-        }
-
-    /**
-     * Handles the animation when the end boss is dead.
-     */
-    endbossAnimationDead() {
-    this.playAnimation(this.IMAGES_DEAD);
-    // *** ENTFERNE HIER DIE GAME-WIN-LOGIK ***
-    // world.gameOver = true;
-    // world.audioManager.pauseBackgroundMusic();
-    // world.audioManager.playWinSound();
-    // world.stopAllIntervals();
-    console.log('endbossAnimationDead() wurde aufgerufen!'); // Nur Log bleibt
-}
-
-    /**
-     * Handles the animation when the end boss is hurt.
-     */
-    endbossAnimationHurt() {
-        this.playAnimation(this.IMAGES_HURT);
-    }
-
-    /**
-     * Handles the animation when the end boss is on alert.
-     */
-    endbossAnimationAlert() {
-        this.playAnimation(this.IMAGES_ALERT);
-    }
-
-    /**
-     * Handles the animation when the end boss is attacking.
-     */
-    endbossAnimationAttack() {
-        this.playAnimation(this.IMAGES_ATTACK);
-    }
-
-    /**
-     * Handles the animation when the end boss is walking.
-     */
-    endbossAnimationWalk() {
-        this.playAnimation(this.IMAGES_WALKING);
-    }
-
-    /**
-     * Checks if the character had the first contact with the end boss.
-     */
-    endbossFirstContact() {
-     console.log('LOG: endbossFirstContact() called.'); // <-- Füge diesen Log hier ein
-
-     if (!this.hadFirstContact) {
-         this.hadFirstContact = true;
-         this.world.audioManager.playEndbossMusic(true); // Loop the music
-         this.i = 0; // Reset animation counter for the alert phase
-         console.log('Erster Kontakt mit Endboss-Bereich! Boss wird aktiviert.'); // Dein bestehender Log
-         // Optional: Stoppe hier das Intervall, das diese Methode ausgelöst hat, und starte ein neues für endbossAnimation? Oder die Logik im Callback ändern.
-         // this.stopCheckingForFirstContact(); // Beispiel: Stoppe das Intervall, das DIESE Methode triggert
+         // *** REMOVED: this.animate(); is now called by World.setWorld() ***
      }
-    }
 
-    /**
-     * Starts the animations and movements of the end boss.
-     */
-    // In Endboss.class.js
+     /**
+      * Method to activate the end boss after first contact.
+      * Sets the hadFirstContact flag, resets animation counter, plays music.
+      * Called by the first contact interval when the condition is met.
+      * @method
+      */
+     endbossFirstContact() {
+         console.log('LOG: endbossFirstContact() called.'); // Dieser Log sollte erscheinen, wenn die Methode aufgerufen wird.
 
-animate() {
-    // Interval für First Contact und Animation
-    this.firstContactIntervalId = setInterval(() => { // Speichere die ID
-        if (!this.hadFirstContact) {
-             // PRÜFE die Bedingung für First Contact (z.B. Charakter Nähe)
-             // Du brauchst Zugriff auf den Charakter hier, z.B. this.world.character
-             // Angenommen, deine World ist in this.world gespeichert:
-             if (this.world && this.world.character && this.world.character.x > this.x - 400) { // Beispiel-Bedingung
-                  this.endbossFirstContact(); // Rufe diese Methode NUR einmal auf
-                  // Optional: Stoppe DIESES Intervall hier und starte ein neues für nur Animation, wenn du das so willst
-                  // clearInterval(this.firstContactIntervalId);
-                  // this.startAnimationInterval(); // Eine neue Methode, die nur endbossAnimation aufruft
+         // Die Prüfung if (!this.hadFirstContact) ist im aufrufenden Interval jetzt, nicht hier.
+
+         this.hadFirstContact = true; // <-- HIER WIRD DER FLAG GESETZT
+         console.log('LOG: hadFirstContact set to true in endbossFirstContact.'); // *** Füge diesen Log hier ein! ***
+
+         this.world.audioManager.playEndbossMusic(true); // Musik starten
+         this.i = 0; // Animationszähler zurücksetzen
+         console.log('LOG: i reset to 0.'); // Original Log
+
+         // Optional: Weitere Aktionen, die direkt bei Boss-Aktivierung passieren sollen.
+     }
+
+     /**
+      * Reduces energy (health) when hit. Handles game win logic on death.
+      * @method
+      */
+     hitEndboss() {
+         this.health -= 10;
+         if (this.health < 0) {
+             this.health = 0;
+         } else {
+             this.lastHitEndboss = new Date().getTime();
+         }
+         console.log('Endboss getroffen! Neue Gesundheit:', this.health);
+
+         if (this.isDeadEndboss() && world && !world.gameOver) { // Added world check for safety
+             console.log('Boss ist tot erkannt! Trigger gameWin.');
+             // The global gameWin() function should handle stopping intervals and changing state
+             if (typeof gameWin === 'function') { // Safety check
+                 gameWin();
+             } else {
+                 console.error('LOG: gameWin function is not defined!');
+                 // Manual stop intervals if gameWin is missing
+                 // this.stopEndbossIntervals();
+                 // world.stopAllIntervals(); // Assuming World has this method
              }
-        } else {
-            // Wenn First Contact da war, rufe JETZT die Animation auf
-            // Stelle sicher, dass endbossAnimation() den Tot-Zustand als höchste Priorität hat
-            this.endbossAnimation();
-        }
-    }, 500); // Beispiel-Geschwindigkeit
+         }
+     }
 
-    // Bewegungsintervall bleibt ähnlich, hängt von hadFirstContact ab
-    this.movementIntervalId = setInterval(() => { // Speichere die ID
-        if (this.hadFirstContact && this.i > this.IMAGES_ALERT.length + this.IMAGES_ATTACK.length && !this.isDeadEndboss() && !this.isHurtEndboss()) {
-            this.x -= this.speed; // Endboss bewegt sich nach dem Alarm und Attack
-        }
-    }, 1000 / 60); // Geschwindigkeit
-}
+     /**
+      * Checks if the last hit occurred within the last second.
+      * @returns {boolean}
+      * @method
+      */
+     isHurtEndboss() {
+          return (Date.now() - this.lastHitEndboss) / 1000 < 1;
+     }
 
-// Optional: Wenn du das Intervall nach First Contact stoppen und neu starten willst:
-/*
-startAnimationInterval() {
-    this.firstContactIntervalId = setInterval(() => { // Nutze dieselbe Variable oder eine neue
-         this.endbossAnimation(); // Ruft nur die Animation auf
-    }, 500); // Vielleicht schneller für Animation?
-}
-*/
+     /**
+      * Checks if the end boss's health is zero or less.
+      * @returns {boolean}
+      * @method
+      */
+     isDeadEndboss() {
+          return this.health <= 0; // Use <= 0
+     }
 
-    /**
-     * Stops all intervals associated with the end boss.
+/**
+     * Starts the main logic intervals for the end boss.
+     * Called by World.setWorld() after world reference is set.
+     * @method
      */
-    stopEndbossIntervals() {
-    clearInterval(this.firstContactIntervalId);
-    clearInterval(this.movementIntervalId);
-    this.firstContactIntervalId = null;
-    this.movementIntervalId = null;
-    super.stopGravity(); // <-- HINZUFÜGEN
-    console.log('Endboss-Intervalle gestoppt.');
-}
-}
+    animate() {
+        // *** 1. Interval zur Prüfung auf "First Contact" (Sollte sich selbst stoppen) ***
+        // Prüft periodisch die Position des Charakters, um den Boss zu aktivieren.
+        this.firstContactIntervalId = setInterval(() => {
+             // console.log('LOG: Endboss First Contact Interval Callback Firing.'); // <-- Minimal-Test-Log auskommentieren!
+
+             // *** DEN GESAMTEN FOLGENDEN CODE WIEDER EINKOMMENTIEREN! ***
+             // Robust check: Only proceed if world reference is available
+             if (!this.world) {
+                  // console.log('LOG: Endboss First Contact Interval: Waiting for world reference...'); // Optional log
+                  return; // Exit callback if world is not ready
+             }
+
+             // Log to see if the interval is running and the flag state
+             // console.log('LOG: Endboss First Contact Interval Check Running. hadFirstContact:', this.hadFirstContact); // Optional log
+
+             if (!this.hadFirstContact) { // Check only if first contact has NOT yet occurred
+                  // Check if character reference is available
+                  if (this.world.character) {
+                       const triggerX = this.x - 400; // Calculate the trigger X position (3900 - 400 = 3500)
+                       const characterX = this.world.character.x; // Get character's current X position
+
+                       // Log values for debugging the condition
+                       // console.log('LOG: Checking First Contact Condition. Character X:', characterX, 'Boss Trigger X:', triggerX);
+                       // const conditionResult = characterX > triggerX;
+                       // console.log('LOG: First Contact Condition Result:', conditionResult, '(', characterX, '>', triggerX, ')');
+
+                       // *** THE ACTUAL FIRST CONTACT CONDITION ***
+                       if (characterX > triggerX) { // If the character is to the right of the trigger point (X > 3500)
+                            console.log('LOG: Erster Kontakt mit Endboss-Bereich erkannt! Boss wird aktiviert.'); // Success log
+
+                            this.endbossFirstContact(); // Call the method to activate the boss (sets flag, resets i, plays music)
+
+                            // *** Start the separate Animation and Movement intervals HERE ***
+                            this.startBossAnimation();
+                            this.startBossMovement();
+                            // ***************************************************************
+
+                            // *** Stop THIS First Contact Interval as its job is done ***
+                            clearInterval(this.firstContactIntervalId);
+                            this.firstContactIntervalId = null; // Set ID to null after clearing
+                            console.log('LOG: First Contact Interval cleared.'); // Log to confirm it stopped
+
+                       }
+                  } else {
+                       // Log if world exists but character doesn't (shouldn't happen if World is set up correctly)
+                       // console.warn('LOG: Endboss First Contact Check: World exists but Character missing.');
+                  }
+             }
+             // *** BIS HIER ALLES WIEDER EINKOMMENTIEREN! ***
+         }, 200); // Frequency: Check every 200ms (adjust if needed)
+
+         // Log, um zu sehen, ob die Interval ID gesetzt wird (optional).
+         // console.log('LOG: Endboss Animate: firstContactIntervalId set to:', this.firstContactIntervalId);
+
+
+         // *** startBossAnimation und startBossMovement Methoden sind weiterhin separate Methoden UNTER animate()! ***
+     }
+
+     /**
+      * Handles the animation of the end boss based on its state (Dead, Hurt, Alert, Attack, Walk).
+      * This method is called repeatedly by the animation interval after first contact.
+      * It plays the correct image sequence and increments the frame counter 'this.i'.
+      * @method
+      */
+     endbossAnimation() {
+          // This method should only run if hadFirstContact is true, which is controlled by the calling interval.
+          // if (!this.hadFirstContact) return; // Redundant if calling interval checks it
+
+          // Show the status bar when the boss enters the alert state (first time endbossAnimation runs after reset i=0)
+          if (this.i === 0) {
+              this.showStatusBar(); // Make the status bar visible
+          }
+
+          // --- Animation State Logic ---
+          // Determine which animation to play based on current state and 'this.i'.
+          // Play critical states first (Dead, Hurt), then the sequence (Alert -> Attack -> Walk).
+          if (this.isDeadEndboss()) {
+               this.playAnimation(this.IMAGES_DEAD);
+               // Game Win is handled by hitEndboss()
+          } else if (this.isHurtEndboss()) {
+               this.playAnimation(this.IMAGES_HURT);
+          } else if (this.i < this.IMAGES_ALERT.length) {
+               // Play Alert animation until all alert images are shown (i reaches IMAGES_ALERT.length)
+               this.playAnimation(this.IMAGES_ALERT);
+          } else if (this.i < this.IMAGES_ALERT.length + this.IMAGES_ATTACK.length) {
+               // Play Attack animation after Alert sequence is finished
+               this.playAnimation(this.IMAGES_ATTACK);
+               // Optional: Trigger attack action when specific frames are reached
+               // e.g., if (this.i === IMAGES_ALERT.length + 3) { this.performAttack(); }
+          } else {
+               // Play Walking animation after Alert and Attack sequences are finished
+               this.playAnimation(this.IMAGES_WALKING);
+               // Movement is handled by the separate movement interval, based on this.i
+          }
+
+          // Increment the animation frame counter/state indicator.
+          // This is crucial for progressing through the Alert/Attack/Walk sequence.
+          this.i++; // Increment i after each animation frame update
+          // Optional: Reset i back to the start of walking or attack if loops are needed
+          // e.g., if (this.i >= IMAGES_ALERT.length + IMAGES_ATTACK.length + IMAGES_WALKING.length) {
+          //           this.i = IMAGES_ALERT.length + IMAGES_ATTACK.length; // Loop back to start of walk
+          //        }
+      }
+
+     /**
+      * Shows the status bar for the end boss.
+      * @method
+      */
+      showStatusBar() {
+           if (this.world && this.world.statusBarEndboss) {
+               this.world.statusBarEndboss.visible = true;
+           } else {
+               console.warn('LOG: Endboss showStatusBar: world or statusBarEndboss missing.');
+           }
+       }
+
+
+     /**
+      * Starts the animation loop for the boss after first contact.
+      * @method
+      */
+     startBossAnimation() {
+          // Ensure the interval isn't already running (safety)
+          if (this.animationIntervalId === null) {
+              console.log('LOG: Starting Boss Animation Interval.'); // Log
+              this.animationIntervalId = setInterval(() => {
+                   // This interval's only job is to call the animation logic periodically
+                   if (!this.isDeadEndboss()) { // Stop animating if dead (optional, Dead animation is handled inside endbossAnimation)
+                        this.endbossAnimation();
+                   } else {
+                        // If dead, stop this specific animation interval as well
+                        clearInterval(this.animationIntervalId);
+                        this.animationIntervalId = null;
+                        console.log('LOG: Boss Animation Interval stopped due to death.');
+                   }
+              }, 500); // <-- Animation Speed: Adjust this value (milliseconds) to control animation speed.
+                      // Smaller value = faster animation. 80ms (approx 12.5 FPS) is a starting point. Try 100 or 150 if still too fast.
+          } else {
+               // console.warn('LOG: startBossAnimation called but animationIntervalId is not null.');
+          }
+     }
+
+     /**
+      * Starts the movement loop for the boss after first contact.
+      * @method
+      */
+     startBossMovement() {
+          // Ensure the interval isn't already running (safety)
+          if (this.movementIntervalId === null) {
+               console.log('LOG: Starting Boss Movement Interval.'); // Log
+               this.movementIntervalId = setInterval(() => {
+                    // Ensure boss is not dead or hurt before moving
+                    if (!this.isDeadEndboss() && !this.isHurtEndboss()) {
+                         // Check if the boss is in a state where it should move (based on this.i state)
+                         // This condition aligns with the 'Walk' animation state in endbossAnimation()
+                         if (this.i > this.IMAGES_ALERT.length + this.IMAGES_ATTACK.length) {
+                              // --- Movement Logic ---
+                              // Move towards the character's horizontal position
+                              if (this.world && this.world.character) { // Safety check
+                                   const charCenterX = this.world.character.x + this.world.character.width / 2;
+                                   const bossCenterX = this.x + this.width / 2;
+
+                                   if (bossCenterX > charCenterX) { // If boss is to the right of character center
+                                        this.x -= this.speed; // Move left by 'speed' pixels
+                                   } else {
+                                       // Optional: If character is to the right, maybe move right or stand still?
+                                       // this.x += this.speed; // Move right
+                                   }
+                              } else {
+                                  // console.warn('LOG: Boss Movement Interval missing world/character during movement check.');
+                              }
+                         }
+                    }
+               }, 1000 / 60); // <-- Movement Speed: Keep this at a higher FPS (e.g., 60 FPS = ~16.7ms) for smooth movement steps.
+                             // Control the actual movement speed by adjusting the `this.speed` property (value 2 is current).
+          } else {
+              // console.warn('LOG: startBossMovement called but movementIntervalId is not null.');
+          }
+     }
+
+
+     /**
+      * Stops all specific intervals associated with the end boss.
+      * Called, for example, when the game ends.
+      * @method
+      */
+     stopEndbossIntervals() {
+         console.log('LOG: Stopping Endboss Intervals.'); // Log
+         // Clear all known intervals and set their IDs to null
+         if (this.firstContactIntervalId) clearInterval(this.firstContactIntervalId);
+         if (this.movementIntervalId) clearInterval(this.movementIntervalId);
+         if (this.animationIntervalId) clearInterval(this.animationIntervalId); // Clear the animation interval
+
+         this.firstContactIntervalId = null;
+         this.movementIntervalId = null;
+         this.animationIntervalId = null; // Set animation ID to null
+
+         super.stopGravity(); // Assuming MovableObject has a stopGravity method to clear its gravity interval/loop
+     }
+ }
