@@ -6,6 +6,7 @@ class ChickenMini extends MovableObject {
   y = 360; // Y-coordinate of the chicken
   height = 60; // Height of the chicken
   width = 60; // Width of the chicken
+  damage = 10;
   chickenIsDead = false; // Flag to check if the chicken is dead
 
   // Images for the walking state of the small chicken

@@ -6,6 +6,7 @@ class Chicken extends MovableObject {
     y = 340; // Y-coordinate of the chicken
     height = 80; // Height of the chicken
     width = 80; // Width of the chicken
+    damage = 5;
     chickenIsDead = false;
 
     // Images for the walking state of the normal chicken

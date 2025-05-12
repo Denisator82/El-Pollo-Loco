@@ -1,8 +1,8 @@
 /**
- * Represents a movable object in the game.
- * Inherits from DrawableObject and includes properties for speed, direction,
- * vertical speed, acceleration, energy, and collision status.
- */
+* Represents a movable object in the game.
+* Inherits from DrawableObject and includes properties for speed, direction,
+* vertical speed, acceleration, energy, and collision status.
+*/
 class MovableObject extends DrawableObject {
     speed = 0.55; // Horizontal movement speed
     otherDirection = false; // Indicates if the object is moving in the opposite direction
@@ -16,9 +16,9 @@ class MovableObject extends DrawableObject {
     gravityFrameId = null;
 
     /**
-     * Constructor for MovableObject.
-     * Sets default values or calls initialization methods.
-     */
+    * Constructor for MovableObject.
+    * Sets default values or calls initialization methods.
+    */
     constructor() {
         super(); // Rufe den Constructor der Elternklasse auf
         // Rufe applyGravity() hier auf, wenn das Objekt sofort der Schwerkraft unterliegen soll
@@ -28,44 +28,44 @@ class MovableObject extends DrawableObject {
 
 
     /**
-     * Simulates gravity by continuously adjusting the object's vertical position.
-     * Uses requestAnimationFrame for smooth animation.
-     * The loop continues as long as the object is above the ground or moving upwards.
-     * <-- KORRIGIERTE METHODE -->
-     */
+    * Simulates gravity by continuously adjusting the object's vertical position.
+    * Uses requestAnimationFrame for smooth animation.
+    * The loop continues as long as the object is above the ground or moving upwards.
+    * 
+    */
     applyGravity() {
         // Nur starten, wenn Schwerkraft noch NICHT aktiv ist
         if (this.gravityFrameId !== null) {
-             // console.warn('LOG: applyGravity called, but gravityFrameId is not null for', this.constructor.name); // Optionaler Log
-             return; // Verhindert das Starten mehrerer Loops
+            // console.warn('LOG: applyGravity called, but gravityFrameId is not null for', this.constructor.name); // Optionaler Log
+            return; // Verhindert das Starten mehrerer Loops
         }
 
         // console.log('LOG: Gravity started for', this.constructor.name); // Optionaler Log zum Start
 
         const gravityEffect = () => {
-             // Die Schwerkraft wirkt, solange das Objekt ÜBER dem Boden ist ODER (am Boden/unter Boden UND sich nach oben bewegt).
-             // Die isAboveGround() Methode wird jetzt für ALLE Objekte einheitlich gehandhabt (s.u.).
-             if (this.isAboveGround() || (this.y <= this.groundLevel && this.speedY > 0)) {
-                 this.y -= this.speedY; // Position anpassen (speedY ist negativ beim Fallen)
-                 this.speedY -= this.acceleration; // Geschwindigkeit anpassen (Schwerkraft zieht nach unten, also speedY wird negativer)
-                 this.speedY = Math.max(this.speedY, -30); // Fallgeschwindigkeit begrenzen (z.B. auf max 30 Pixel/Frame, 20 war eventuell zu wenig)
+            // Die Schwerkraft wirkt, solange das Objekt ÜBER dem Boden ist ODER (am Boden/unter Boden UND sich nach oben bewegt).
+            // Die isAboveGround() Methode wird jetzt für ALLE Objekte einheitlich gehandhabt (s.u.).
+            if (this.isAboveGround() || (this.y <= this.groundLevel && this.speedY > 0)) {
+                this.y -= this.speedY; // Position anpassen (speedY ist negativ beim Fallen)
+                this.speedY -= this.acceleration; // Geschwindigkeit anpassen (Schwerkraft zieht nach unten, also speedY wird negativer)
+                this.speedY = Math.max(this.speedY, -30); // Fallgeschwindigkeit begrenzen (z.B. auf max 30 Pixel/Frame, 20 war eventuell zu wenig)
 
-                 // *** Schedule the next frame ***
-                 // Rufe gravityEffect() rekursiv für den nächsten Frame auf und speichere die ID
-                 this.gravityFrameId = requestAnimationFrame(gravityEffect); // <-- Speichere die neue ID
+                // *** Schedule the next frame ***
+                // Rufe gravityEffect() rekursiv für den nächsten Frame auf und speichere die ID
+                this.gravityFrameId = requestAnimationFrame(gravityEffect); // <-- Speichere die neue ID
 
-             } else {
-                 // Wenn auf dem Boden (und speedY <= 0)
-                 // Stelle sicher, dass die Position GENAU auf dem Boden ist, um Untersinken zu verhindern
-                 this.y = this.groundLevel;
-                 this.speedY = 0; // Vertikale Geschwindigkeit auf 0 setzen
+            } else {
+                // Wenn auf dem Boden (und speedY <= 0)
+                // Stelle sicher, dass die Position GENAU auf dem Boden ist, um Untersinken zu verhindern
+                this.y = this.groundLevel;
+                this.speedY = 0; // Vertikale Geschwindigkeit auf 0 setzen
 
-                 // *** Stop the gravity loop when landed ***
-                 this.stopGravity(); // Rufe die stopGravity Methode auf (setzt gravityFrameId = null)
-                 // console.log('LOG: Gravity gestoppt: Landung auf Boden für', this.constructor.name); // Optionaler Log zur Landung
+                // *** Stop the gravity loop when landed ***
+                this.stopGravity(); // Rufe die stopGravity Methode auf (setzt gravityFrameId = null)
+                // console.log('LOG: Gravity gestoppt: Landung auf Boden für', this.constructor.name); // Optionaler Log zur Landung
 
-                 // Kein rekursiver Aufruf hier, die Schleife stoppt
-             }
+                // Kein rekursiver Aufruf hier, die Schleife stoppt
+            }
         };
 
         // *** Start the initial loop and store the ID ***
@@ -74,11 +74,11 @@ class MovableObject extends DrawableObject {
 
 
     /**
-     * Checks if the object is currently above the ground level.
-     * This check is uniform for all MovableObjects subject to gravity.
-     * @returns {boolean} - True if the object's bottom is above or at the ground level (considering speedY), otherwise false.
-     * <-- KORRIGIERTE METHODE -->
-     */
+    * Checks if the object is currently above the ground level.
+    * This check is uniform for all MovableObjects subject to gravity.
+    * @returns {boolean} - True if the object's bottom is above or at the ground level (considering speedY), otherwise false.
+    * 
+    */
     isAboveGround() {
         // Ein Objekt ist über dem Boden, wenn:
         // 1. Seine Y-Position (untere Kante) oberhalb des Boden-Levels ist (this.y < this.groundLevel).
@@ -92,14 +92,14 @@ class MovableObject extends DrawableObject {
      * Adds safety checks for missing offset properties.
      * @param {MovableObject} mo - The other movable object to check for collision.
      * @returns {boolean} - True if the objects' bounding boxes overlap, otherwise false.
-     * <-- KORRIGIERTE METHODE (mit Safety-Checks und Logs) -->
+     * 
      */
     isColliding(mo) {
         // Füge Sicherheitsprüfungen hinzu, ob die Objekte und ihre offset-Properties existieren
         // Wenn nicht, können sie nicht kollidieren (oder es wäre ein Fehler, hier false zurückzugeben ist sicherer als Absturz)
         if (!this || !mo) {
-             // console.warn('LOG: isColliding called with null/undefined object.');
-             return false;
+            // console.warn('LOG: isColliding called with null/undefined object.');
+            return false;
         }
 
         // Stelle sicher, dass beide Objekte die offset-Property haben
@@ -160,59 +160,25 @@ class MovableObject extends DrawableObject {
         this.currentImage++;
     }
 
-     /**
+    /**
       * Stops the recursive requestAnimationFrame loop for gravity.
       * <-- HINZUGEFÜGT/KORRIGIERT -->
       */
-     stopGravity() {
-         if (this.gravityFrameId !== null) {
-              cancelAnimationFrame(this.gravityFrameId);
-              this.gravityFrameId = null;
-              // console.log('LOG: Gravity gestoppt für:', this.constructor.name); // Optionaler Log
-         }
-     }
+    stopGravity() {
+        if (this.gravityFrameId !== null) {
+            cancelAnimationFrame(this.gravityFrameId);
+            this.gravityFrameId = null;
+            // console.log('LOG: Gravity gestoppt für:', this.constructor.name); // Optionaler Log
+        }
+    }
 
     // Methode moveLeft() gehört in MovableObject, wenn sie generisch ist.
-     moveLeft() {
-         this.x -= this.speed;
-     }
-     // Füge moveRight() hinzu, wenn du es brauchst
-     moveRight() {
-         this.x += this.speed;
-     }
-
-     // Methode jump() sollte in Character sein, nicht hier in MovableObject
-     /*
-     jump() {
-         this.speedY = 20; // Beispiel Sprunggeschwindigkeit
-         this.applyGravity(); // Starte die Schwerkraft, damit der Charakter wieder fällt
-     }
-     */
-
-     // Methode hit() sollte in Character, Chicken, Endboss etc. sein, nicht hier
-     /*
-     hit() {
-         this.energy -= 10;
-         if (this.energy < 0) {
-             this.energy = 0;
-         }
-         this.lastHit = new Date().getTime();
-     }
-     */
-
-     // isHurt() sollte in Character, Chicken, Endboss etc. sein, nicht hier
-     /*
-     isHurt() {
-          let timePassed = new Date().getTime() - this.lastHit;
-          return timePassed < 1000; // Weniger als 1 Sekunde seit letztem Treffer
-     }
-     */
-
-     // isDead() sollte in Character, Chicken, Endboss etc. sein, nicht hier
-     /*
-     isDead() {
-          return this.energy == 0;
-     }
-     */
+    moveLeft() {
+        this.x -= this.speed;
+    }
+    // Füge moveRight() hinzu, wenn du es brauchst
+    moveRight() {
+        this.x += this.speed;
+    }
 
 }

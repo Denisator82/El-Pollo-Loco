@@ -131,21 +131,39 @@ class Character extends MovableObject {
     }
 
     /**
-     * Reduces the character's energy by a fixed amount (1) when hit.
-     * If energy falls below 0, it is set to 0. Otherwise, updates the timestamp of the last hit.
+     * Reduces the character's energy by a specified amount when hit.
+     * Sets last hit timestamp and plays hurt sound if character is not dead.
+     * @param {number} damageAmount - The amount of energy to reduce.
+     * @method
      */
-    hit() {
-        this.energy -= 1;
+    hit(damageAmount) { // <-- Parameter damageAmount hinzugefügt
+        // Optional: Prüfe, ob damageAmount eine gültige Zahl ist, bevor du rechnest
+        if (typeof damageAmount !== 'number' || damageAmount < 0) {
+            console.warn('LOG: Character hit() called with invalid damageAmount:', damageAmount);
+            damageAmount = 0; // Setze Schaden auf 0, wenn ungültig
+        }
+
+        this.energy -= damageAmount; // <-- Zieht den übergebenen Schaden ab
+
         if (this.energy < 0) {
-            this.energy = 0;
-        } else {
+            this.energy = 0; // Energie nicht unter 0 fallen lassen
+        }
+
+        // Setze lastHit nur, wenn der Charakter noch NICHT tot ist, um Hurt-Animation zu triggern
+        if (!this.isDead()) {
             this.lastHit = new Date().getTime();
+
             // Sound beim getroffen werden
-            if (this.world && this.world.audioManager) {
+            // Stelle sicher, dass world und audioManager verfügbar sind
+            if (this.world && this.world.audioManager && typeof this.world.audioManager.playSound === 'function') {
                 this.world.audioManager.playSound('hurt'); // Benötigt 'hurt' Sound
             }
+        } else {
+            // Wenn der Charakter stirbt, kannst du hier spezielle Todesaktionen triggern,
+            // aber die Game Over Logik ist ja im CollisionManager.
+            console.log('LOG: Character died.'); // Optionaler Log
         }
-    }
+    } // <-- Ende von hit(damageAmount)
 
     /**
      * Checks if the character is currently hurt.
@@ -290,11 +308,6 @@ animateCharacter() {
     }, 100); // Run this interval at 10 frames per second (100ms) - sufficient for most character animations.
 }
 
-// ... rest of the Character class methods (hit, isHurt, isDead, moveRight, moveLeft, jump,
-// animateStanding, resetStandingTime, collectCoin, updateCoinStatus, collectBottle,
-// updateBottleStatus, throwBottle, stopCharacterIntervals)
-
-
     /**
      * Plays the standing animation for the character.
      * If the character stands still for a duration exceeding the sleep delay,
@@ -326,35 +339,9 @@ animateCharacter() {
      * @method
      */
     collectCoin(coin) {
-        this.coinsCollected++; // Correct: Character's internal counter is incremented.
-
-        // The line this.world.removeObject(coin); is now correctly removed/commented out.
-
-        this.updateCoinStatus(); // Correct: Delegate updating the status bar to a helper method.
-
-        // Play coin collection sound. This is valid Character-internal sound logic.
+        this.coinsCollected++;
         if (this.world && this.world.audioManager && typeof this.world.audioManager.playSound === 'function') {
             this.world.audioManager.playSound('coinCollected'); // Play sound if AudioManager is available.
-        }
-    }
-
-    /**
-     * Updates the coin status bar displayed in the UI based on the character's collected coin count.
-     * Calculates the percentage for the status bar and calls the World's status bar instance.
-     * @method
-     */
-    updateCoinStatus() {
-        // Calculation logic for percentage. Seems based on 10 coins for 100%.
-        const coinsPerLevel = 2; // How many coins represent one "level" increment visually?
-        const level = Math.floor(this.coinsCollected / coinsPerLevel); // Calculate the visual "level"
-        // The percentage calculation implies 5 visual "levels" make 100% (5 * 2 coins = 10 coins total for 100%).
-        const percentage = (level / 5) * 100; // Calculate percentage based on the visual level
-
-        // Update the specific status bar instance owned by the World.
-        // This is functional: Character tells World's UI element to update.
-        // Alternative (slightly cleaner design): World updates its own status bar directly in the collision method.
-        if (this.world && this.world.statusBarCoin && typeof this.world.statusBarCoin.setPercentage === 'function') {
-             this.world.statusBarCoin.setPercentage(percentage);
         }
     }
 
@@ -388,13 +375,13 @@ animateCharacter() {
          const bottlesPerLevel = 8; // How many bottles total for 100% status bar?
          const percentage = (this.bottlesCollected / bottlesPerLevel) * 100; // Calculate percentage directly from total count
 
-         // Update the specific status bar instance owned by the World.
-         // This is functional: Character tells World's UI element to update.
-         // Alternative (slightly cleaner design): World updates its own status bar directly in the collision method.
-         if (this.world && this.world.statusBarBottle && typeof this.world.statusBarBottle.setPercentage === 'function') {
-              this.world.statusBarBottle.setPercentage(percentage);
-         }
-     }
+        // Update the specific status bar instance owned by the World.
+        // This is functional: Character tells World's UI element to update.
+        // Alternative (slightly cleaner design): World updates its own status bar directly in the collision method.
+        if (this.world && this.world.statusBarBottle && typeof this.world.statusBarBottle.setPercentage === 'function') {
+            this.world.statusBarBottle.setPercentage(percentage);
+        }
+    }
 
 /**
      * Throws a bottle if the character has bottles available.
@@ -403,7 +390,7 @@ animateCharacter() {
      * @param {boolean} otherDirection - Indicates if the character is facing the other direction (left).
      * @method
      */
-    throwBottle(otherDirection) { // <-- KORRIGIERTE METHODEN-SIGNATUR: Entferne 'offsetX' Parameter
+    throwBottle(otherDirection) {
         if (this.bottlesCollected > 0) { // Check if the character has bottles to throw
             this.bottlesCollected--; // Decrement the internal bottle count
             this.updateBottleStatus(); // Update the bottle count status bar in the UI
@@ -441,7 +428,7 @@ animateCharacter() {
 
             // Reset the character's standing time (likely to prevent idle animation immediately after action).
             if (typeof this.resetStandingTime === 'function') { // Safety check
-                 this.resetStandingTime();
+                this.resetStandingTime();
             } else {
                  // Optional warning
                  // console.warn('LOG: Character resetStandingTime method not found.');
