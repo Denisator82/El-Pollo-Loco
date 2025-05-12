@@ -383,58 +383,75 @@ animateCharacter() {
         }
     }
 
+// In Character.class.js, innerhalb der Klasse Character
+
 /**
-     * Throws a bottle if the character has bottles available.
-     * Decrements the bottle count, updates the status bar, creates a new throwable object,
-     * adds it to the world, plays a sound, and resets standing time.
-     * @param {boolean} otherDirection - Indicates if the character is facing the other direction (left).
-     * @method
-     */
-    throwBottle(otherDirection) {
-        if (this.bottlesCollected > 0) { // Check if the character has bottles to throw
-            this.bottlesCollected--; // Decrement the internal bottle count
-            this.updateBottleStatus(); // Update the bottle count status bar in the UI
-
-            // --- Calculate the starting position of the thrown bottle ---
-            let bottleX = this.x; // Start with the character's x-position
-
-            // Adjust the starting X position based on the character's facing direction (otherDirection).
-            // Position the bottle near the character's edge, not in the center.
-            // The parameter offsetX was not passed from World, so it was undefined.
-            // We will calculate the position using the character's width and maybe a small fixed offset.
-            const bottleHorizontalOffset = 10; // Adjust this value for desired spacing from character's edge
-
-            if (otherDirection) {
-                // If facing left, start the bottle near the character's left edge.
-                bottleX -= bottleHorizontalOffset; // Start 'bottleHorizontalOffset' pixels to the left of character's x.
-            } else {
-                // If facing right, start the bottle near the character's right edge.
-                bottleX += this.width - bottleHorizontalOffset; // Start 'bottleHorizontalOffset' pixels to the left of character's right edge.
-            }
-
-            // Calculate the starting Y position (vertically somewhat centered relative to the character).
-            let bottleY = this.y + this.height / 2 - 20; // Adjust '-20' for desired vertical position
-
-            // --- Create and Add the Throwable Object ---
-            // Create a new ThrowableObject instance at the calculated position with the character's direction.
-            let bottle = new ThrowableObject(bottleX, bottleY, otherDirection);
-            // Add the newly created bottle to the World's list of active throwable objects.
-            this.world.throwableObjects.push(bottle);
-
-            // Play the bottle throw sound (This can also be in World.checkThrowObjects, but here is also fine).
-            if (this.world && this.world.audioManager && typeof this.world.audioManager.playSound === 'function') {
-                this.world.audioManager.playSound('throw'); // Play throw sound.
-            }
-
-            // Reset the character's standing time (likely to prevent idle animation immediately after action).
-            if (typeof this.resetStandingTime === 'function') { // Safety check
-                this.resetStandingTime();
-            } else {
-                 // Optional warning
-                 // console.warn('LOG: Character resetStandingTime method not found.');
-            }
+ * Throws a bottle if the character has bottles available.
+ * Decrements the bottle count, updates the status bar, creates a new throwable object,
+ * adds it to the world, plays a sound, and resets standing time.
+ * @param {boolean} otherDirection - Indicates if the character is facing the other direction (left).
+ * @method
+ */
+throwBottle(otherDirection) {
+    if (this.bottlesCollected > 0) { // Check if the character has bottles to throw
+        this.bottlesCollected--; // Decrement the internal bottle count
+        // Annahme: Du hast eine Methode updateBottleStatus() im Character, die die Statusleiste aktualisiert.
+        // Wenn die Statusleisten-Aktualisierung im CollisionManager ist, entferne den Aufruf hier.
+        // Wenn die Statusleiste hier aktualisiert wird, stelle sicher, dass sie this.world.statusBarBottle nutzt.
+        if (typeof this.updateBottleStatus === 'function') { // Prüfe, ob die Methode existiert
+             this.updateBottleStatus(); // Update the bottle count status bar in the UI
+        } else {
+             // Optionaler Log, falls updateBottleStatus() fehlt
+             // console.warn('LOG: Character updateBottleStatus method not found.');
         }
+
+
+        // --- Calculate the starting position of the thrown bottle ---
+        // Annahme: Die Startposition wird relativ zum Charakter berechnet.
+        // Passe die Offsets an die Größe deines Charakters und gewünschte Wurfposition an.
+        const bottleHorizontalOffset = 30; // Abstand von der Kante des Charakters
+        const bottleVerticalOffset = 20;   // Abstand von der Mitte der Höhe des Charakters (negativ für höher)
+
+        let bottleX;
+        if (otherDirection) {
+             // Wenn nach links geworfen, starte links vom Charakter
+             bottleX = this.x - bottleHorizontalOffset;
+        } else {
+             // Wenn nach rechts geworfen, starte rechts vom Charakter
+             bottleX = this.x + this.width - bottleHorizontalOffset;
+        }
+
+        let bottleY = this.y + this.height / 2 - bottleVerticalOffset; // Start Y auf "Handhöhe"
+
+
+        // --- Create and Add the Throwable Object ---
+        // WICHTIG: ÜBERGIB this.world ALS ERSTEN PARAMETER AN DEN KONSTRUKTOR!
+        let bottle = new ThrowableObject(this.world, bottleX, bottleY, otherDirection); // <-- HIER this.world ÜBERGEBEN!
+
+        // Füge die neu erstellte Flasche zur World's Liste der geworfenen Objekte hinzu.
+        // Stelle sicher, dass world.throwableObjects existiert und ein Array ist.
+        if (this.world && Array.isArray(this.world.throwableObjects)) {
+             this.world.throwableObjects.push(bottle);
+        } else {
+             console.error('LOG: World instance or world.throwableObjects array missing when trying to add bottle.');
+        }
+
+
+        // Optional: Spiele den Wurf-Sound (Deine checkThrowObjects Methode in World macht das schon, also hier redundant)
+        // Wenn du den Sound hier spielen möchtest, entferne ihn aus World.checkThrowObjects().
+        // if (this.world && this.world.audioManager && typeof this.world.audioManager.playSound === 'function') {
+        //     this.world.audioManager.playSound('throw');
+        // }
+
+        // Setze die Standing Time des Charakters zurück (verhindert sofortige Idle-Animation nach dem Wurf)
+        if (typeof this.resetStandingTime === 'function') {
+             this.resetStandingTime();
+        }
+        // console.log('LOG: ThrowableObject created and added to world. throwableObjects count:', this.world.throwableObjects.length); // Optional Log
+    } else {
+         // console.log('LOG: Character has no bottles to throw.'); // Optional Log wenn keine Flaschen da sind
     }
+}
 
 /**
      * Stops all specific intervals associated with the character's movement and animation.

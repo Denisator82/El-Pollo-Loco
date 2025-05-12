@@ -5,7 +5,7 @@
 class Endboss extends MovableObject {
   height = 400; // Height of the end boss
   width = 250; // Width of the end boss
-  damage = 20;
+  damage = 40;
   y = 55; // Y-coordinate of the end boss
   i = 0; // Animation frame index/state counter
   hadFirstContact = false; // Indicates if the first contact has occurred
@@ -111,34 +111,48 @@ class Endboss extends MovableObject {
     // Optional: Weitere Aktionen, die direkt bei Boss-Aktivierung passieren sollen.
   }
 
-  /**
-   * Reduces energy (health) when hit. Handles game win logic on death.
-   * @method
-   */
-  hitEndboss() {
-    this.health -= 10;
-    if (this.health < 0) {
-      this.health = 0;
-    } else {
-      this.lastHitEndboss = new Date().getTime();
-    }
-    console.log("Endboss getroffen! Neue Gesundheit:", this.health);
+/**
+     * Reduces energy (health) when hit. Handles game win logic on death.
+     * @method
+     * @param {number} damageAmount - The amount of damage taken. <-- DIESEN PARAMETER HINZUFÜGEN
+     */
+    hitEndboss(damageAmount) { // <-- Methonensignatur anpassen, um Schaden zu empfangen
+        // console.log(`LOG: Endboss hit with ${damageAmount} damage.`); // Optionaler Log
 
-    if (this.isDeadEndboss() && world && !world.gameOver) {
-      // Added world check for safety
-      console.log("Boss ist tot erkannt! Trigger gameWin.");
-      // The global gameWin() function should handle stopping intervals and changing state
-      if (typeof gameWin === "function") {
-        // Safety check
-        gameWin();
-      } else {
-        console.error("LOG: gameWin function is not defined!");
-        // Manual stop intervals if gameWin is missing
-        // this.stopEndbossIntervals();
-        // world.stopAllIntervals(); // Assuming World has this method
-      }
-    }
-  }
+        this.health -= damageAmount; // Reduziere Lebenspunkte um den übergebenen Schaden
+
+        if (this.health < 0) {
+            this.health = 0; // Stelle sicher, dass Lebenspunkte nicht negativ werden
+        }
+        this.lastHit = new Date().getTime(); // Setze die Zeit des letzten Treffers
+
+        console.log("Endboss getroffen! Neue Gesundheit:", this.health); // Logge die neue Gesundheit
+
+        // Prüfe, ob der Boss tot ist und das Spiel noch nicht vorbei ist
+        // Deine Logik, gameWin hier direkt auszulösen
+        if (this.isDeadEndboss() && typeof this.isDeadEndboss === 'function' && this.world && !this.world.gameOver) { // Added typeof check for safety, using this.world
+             console.log("Boss ist tot erkannt! Trigger gameWin."); // Log
+
+             // Löse das Spiel Gewinnen aus (Deine aktuelle Struktur ruft gameWin hier direkt auf)
+             // Stelle sicher, dass deine gameWin() Funktion im game.js (oder World) existiert
+             // und das world.gameOver Flag setzt und Intervalle stoppt.
+             if (typeof gameWin === "function") {
+                  // Safety check
+                  gameWin(); // Rufe die globale gameWin Funktion auf
+             } else if (this.world && typeof this.world.gameWin === "function") { // Fallback zu World Methode
+                  this.world.gameWin();
+             }
+             else {
+                  console.error("LOG: gameWin function is not defined in World or globally!");
+                  // Optional: Manuell Intervalle stoppen, falls gameWin fehlt (als Fallback)
+                  // this.stopEndbossIntervals();
+                  // if (this.world && typeof this.world.stopAllIntervals === 'function') {
+                  //     this.world.stopAllIntervals();
+                  // }
+             }
+            }
+          }
+
 
   /**
    * Checks if the last hit occurred within the last second.

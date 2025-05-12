@@ -37,10 +37,10 @@ class CollisionManager {
    */
   checkAllCollisions() {
     this.checkCollisionsCharacterWithEndboss();
-    this.checkCollisionsCharacterWithEnemies();
-    this.checkCollisionsCharacterJumpOnEnemy();
     this.checkCollisionsCharacterWithCoins();
     this.checkCollisionsCharacterWithBottles();
+    this.checkCollisionsCharacterJumpOnEnemy();
+    this.checkCollisionsCharacterWithEnemies();
     this.checkCollisionsThrowableObjectsWithEnemies(); 
   }
 
@@ -247,22 +247,16 @@ class CollisionManager {
    */
   handleEnemyDefeatedByJump(enemy, enemyIndex) {
     if (typeof this.world.character.jump === "function") {
-      this.world.character.jump();
+        this.world.character.jump();
     }
-    if (typeof enemy.isDead === "boolean") {
-      enemy.isDead = true;
+
+    if (typeof enemy.setDead === "function") {
+        enemy.setDead();
     }
-    if (
-      this.world.audioManager &&
-      typeof this.world.audioManager.playSound === "function"
-    ) {
-      if (enemy instanceof Chicken)
-        this.world.audioManager.playSound("chickenDead");
-      if (enemy instanceof ChickenMini)
-        this.world.audioManager.playSound("chickenDead");
-    }
+
+    // Ton wird nun nur von der Chicken-Instanz selbst abgespielt
     this.scheduleEnemyRemoval(enemy);
-  }
+}
 
   /**
    * Schedules the removal of a defeated enemy from the world after a delay.
@@ -387,6 +381,179 @@ checkCollisionsThrowableObjectsWithEnemies() {
         }
     });
 }
+
+// In collision_manager.class.js, innerhalb der Klasse CollisionManager
+
+/**
+ * Handles the consequences when a throwable bottle hits an enemy.
+ * Delegates specific handling based on the enemy type (Endboss or normal enemy).
+ * Also handles the bottle's reaction (splashing/removal).
+ * @param {ThrowableObject} bottle - The bottle that hit the enemy.
+ * @param {MovableObject} enemy - The enemy that was hit.
+ * @param {number} enemyIndex - The index of the enemy in the enemies array (useful for removal).
+ * @method
+ */
+handleBottleHitsEnemy(bottle, enemy, enemyIndex) { // Behandelt den Treffer Flasche -> Gegner (< 14 Zeilen)
+     // console.log(`LOG: Bottle hits ${enemy.constructor.name}.`); // Optionaler Log
+
+     // Prüfe, ob der getroffene Gegner der Endboss ist
+     if (enemy instanceof Endboss) {
+          // Wenn Endboss getroffen, rufe spezielle Endboss-Treffer-Logik auf
+          this.handleBottleHitsEndboss(bottle, enemy); // <-- Neue Hilfsfunktion für Endboss
+     } else {
+          // Wenn normaler Gegner (Chicken/MiniChicken) getroffen, rufe spezielle Normal-Gegner-Treffer-Logik auf
+          this.handleBottleHitsNormalEnemy(bottle, enemy, enemyIndex); // <-- Neue Hilfsfunktion für normale Gegner
+     }
+
+     // Logik für die Reaktion der Flasche selbst (Zerplatzen, Sound, Entfernung)
+     // Diese Logik gilt, egal welcher Gegner getroffen wurde.
+     this.handleBottleSplatAndRemoval(bottle, enemyIndex); // <-- Neue Hilfsfunktion für Flaschen-Reaktion
+     // Hinweis: enemyIndex wird hier vielleicht nicht für die Flasche benötigt,
+     // aber die Flasche muss nach dem Treffer entfernt werden.
+     // Die handleBottleSplatAndRemoval() wird sich um die Flasche kümmern.
+} // <-- Ende von handleBottleHitsEnemy
+
+    /**
+     * Handles the consequences when a throwable bottle hits the Endboss.
+     * Applies damage to the Endboss and triggers Game Win if the boss is defeated.
+     * Assumes the bottle's reaction (splashing/removal) is handled separately.
+     * @param {ThrowableObject} bottle - The bottle that hit the Endboss.
+     * @param {Endboss} endboss - The Endboss instance that was hit.
+     * @method
+     */
+    handleBottleHitsEndboss(bottle, endboss) { // Behandelt Treffer Flasche -> Endboss (< 14 Zeilen)
+         // console.log('LOG: Bottle hits Endboss. Applying damage.'); // Optionaler Log
+
+         // --- NEU: Hol den Schaden von der Flasche und wende ihn an ---
+         // Stelle sicher, dass die Flasche eine 'damage' Property hat (haben wir vorher hinzugefügt).
+         // Nutze einen Fallback-Wert (z.B. 20), falls die Property fehlt oder ungültig ist.
+         const damageAmount = typeof bottle.damage === 'number' ? bottle.damage : 20; // Schaden von der Flasche holen
+
+         // Wende den Schaden am Endboss an und übergib den Schaden
+         // Stelle sicher, dass die Endboss-Methode 'hitEndboss' einen Parameter für den Schaden akzeptiert.
+         if (typeof endboss.hitEndboss === 'function') {
+              endboss.hitEndboss(damageAmount); // <-- RUFE hitEndboss MIT DEM SCHADEN AUF!
+         } else {
+              console.warn('LOG: Endboss hitEndboss method not found or is not a function.');
+         }
+
+         // Optional: Statusleiste des Endbosses aktualisieren (falls nicht im Endboss.hitEndboss() gemacht)
+         // Stelle sicher, dass Endboss eine 'health' Property hat.
+         if (this.world?.statusBarEndboss && typeof this.world.statusBarEndboss.setPercentage === 'function' && typeof endboss.health === 'number') { // Sicherere Prüfungen
+                this.world.statusBarEndboss.setPercentage(endboss.health);
+         }
+
+
+         // Prüfe, ob der Endboss durch diesen Treffer gestorben ist
+         // Stelle sicher, dass Endboss eine 'isDeadEndboss()' Methode hat.
+         if (typeof endboss.isDeadEndboss === 'function' && endboss.isDeadEndboss()) {
+              // console.log('LOG: Endboss is dead. Triggering Game Win.'); // Optionaler Log
+              this.triggerGameWin(); // <-- Rufe die Game Win Logik auf (sollte im CollisionManager definiert sein)
+         }
+         // Die Flaschen-Reaktion (Splat & Removal) wird separat von handleBottleHitsEnemy gehandhabt.
+    } // <-- Ende von handleBottleHitsEndboss
+
+
+// In collision_manager.class.js, innerhalb der Klasse CollisionManager
+
+/**
+ * Handles the consequences when a throwable bottle hits a normal enemy (Chicken/MiniChicken).
+ * Sets the enemy to dead and ensures its removal is scheduled (handled by CollisionManager helper).
+ * Assumes the bottle's reaction (splashing/removal) is handled separately.
+ * @param {ThrowableObject} bottle - The bottle that hit the enemy.
+ * @param {MovableObject} enemy - The normal enemy instance that was hit.
+ * @param {number} enemyIndex - The index of the enemy in the enemies array (for safe removal).
+ * @method
+ */
+handleBottleHitsNormalEnemy(bottle, enemy, enemyIndex) { // Behandelt Treffer Flasche -> Normaler Gegner (< 14 Zeilen)
+    // console.log(`LOG: Bottle hits normal enemy: ${enemy.constructor.name}. Setting dead status.`); // Optionaler Log
+
+    // Setze den Gegner auf "tot". Annahme: Gegner hat eine setDead() Methode.
+    // Die setDead() Methode im Gegner sollte seine isDead Flag setzen und ggf. Sounds/Animation starten.
+    if (typeof enemy.setDead === 'function') {
+        enemy.setDead(); // Rufe die setDead() Methode im Gegner auf
+    } else {
+        // Fallback, falls setDead() nicht existiert: Setze die isDead Property direkt
+        if (typeof enemy.chickenIsDead === 'boolean') { // Prüfe auf die Property im Chicken/MiniChicken
+            enemy.chickenIsDead = true;
+        }
+        // Optional: Sound hier spielen, falls nicht in setDead() im Gegner
+        if (this.world.audioManager && typeof this.world.audioManager.playSound === 'function') {
+             if (enemy instanceof Chicken || enemy instanceof ChickenMini) {
+                  // console.log('LOG: Playing chicken dead sound (fallback in CollisionManager).'); // Optional
+                  this.world.audioManager.playSound('chickenDead');
+             }
+        }
+    }
+
+    // Das Entfernen des Gegners aus der World-Liste nach der Todes-Animation wird vom CollisionManager gehandhabt
+    // Die scheduleEnemyRemoval() Methode wird von handleEnemyDefeatedByJump() aufgerufen,
+    // ABER wir rufen handleEnemyDefeatedByJump() bei Flaschen-Treffern NICHT auf.
+    // Wir müssen die Entfernung hier planen, falls handleBottleHitsNormalEnemy() aufgerufen wird.
+    // Annahme: scheduleEnemyRemoval kann jeden MovableObject Gegner entfernen
+    this.scheduleEnemyRemoval(enemy); // <-- Rufe die Hilfsfunktion zur Zeitplanung der Entfernung auf
+} // <-- Ende von handleBottleHitsNormalEnemy
+
+// In collision_manager.class.js, innerhalb der Klasse CollisionManager
+
+/**
+ * Handles the bottle's reaction upon hitting a target (enemy or ground/wall).
+ * Triggers the bottle's splash animation/sound and schedules its removal from the world.
+ * @param {ThrowableObject} bottle - The bottle that hit a target.
+ * @method
+ */
+handleBottleSplatAndRemoval(bottle) { // Behandelt Reaktion der Flasche bei Treffer (< 14 Zeilen)
+     // console.log('LOG: Bottle hit a target. Handling bottle splat and removal.'); // Optionaler Log
+
+     // Setze die Flasche auf "kollidiert" oder "zerplatzt", um ihre eigene Logik zu triggern.
+     // Annahme: ThrowableObject hat eine isColliding oder isSplashed Property, die von seiner update() Methode geprüft wird.
+     // Die update() Methode der Flasche sollte die Splash-Animation, den Sound und das Entfernen auslösen.
+     if (bottle && typeof bottle.onTargetHit === 'function') {
+          // Annahme: onTargetHit() im ThrowableObject handelt Splash-Animation, Sound und Entfernung
+          bottle.onTargetHit(); // Rufe die Methode in der Flasche auf
+     } else {
+         // Fallback: Setze eine Flagge, die die Flaschen-Update-Logik erkennen kann
+         if (bottle && typeof bottle.isSplashing === 'boolean') { // Annahme: Property isSplashing existiert
+             bottle.isSplashing = true;
+         } else if (bottle && typeof bottle.isColliding === 'boolean') { // Alternativ, falls isColliding genutzt wird
+             bottle.isColliding = true;
+         }
+         // Sound abspielen, falls nicht in onTargetHit() in der Flasche
+         if (this.world.audioManager && typeof this.world.audioManager.playSound === 'function') {
+             // console.log('LOG: Playing bottle hit sound (fallback in CollisionManager).'); // Optional
+             this.world.audioManager.playSound('bottle_hit'); // Annahme: bottle_hit sound
+         }
+         // Das Entfernen der Flasche aus der throwableObjects Liste muss auch geplant werden,
+         // falls onTargetHit() das nicht selbst tut.
+         // Da wir keine splice(i, 1) machen wollen, muss die Flasche sich selbst entfernen
+         // oder wir planen das Entfernen hier nach einer Dauer der Splash-Animation.
+         // Annahme: ThrowableObject entfernt sich selbst, wenn isSplashing/isColliding true ist und Animation abgelaufen ist.
+         // Wenn die Flasche sich NICHT selbst entfernt, brauchen wir hier setTimeout/splice(bottle).
+         // Basierend auf deinem früheren Code, setzt du bottle.isColliding = true und die Flasche entfernt sich. Das behalten wir bei.
+         // Also hier keine Entfernung per splice!
+     }
+} // <-- Ende von handleBottleSplatAndRemoval
+
+/**
+ * Triggers the game win sequence.
+ * Sets the game over flag and calls the global game win function.
+ * @method
+ */
+triggerGameWin() { // Löst Spiel Gewinnen aus (< 14 Zeilen)
+     console.log("LOG: Endboss is dead. Triggering Game Win."); // Log
+     this.world.gameOver = true; // Setze Game Over Flag (kann auch ein win Flag sein)
+
+     // Rufe die Game Win Funktion auf (kann in World oder global sein)
+     if (typeof this.world.gameWin === "function") {
+          this.world.gameWin();
+     } else if (typeof gameWin === "function") { // Fallback zu globaler Funktion
+          gameWin();
+     } else {
+          console.error(
+               "LOG: Global gameWin() function not found in World or globally."
+          );
+     }
+} // <-- Ende von triggerGameWin
 
   /**
    * Triggers the game over (lose) sequence.
