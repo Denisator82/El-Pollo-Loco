@@ -155,16 +155,23 @@ class World {
     }
 
     stopAllIntervals() {
-    this.character?.stopCharacterIntervals?.();
-    this.level.enemies?.forEach(enemy => {
-        if (enemy instanceof Chicken) enemy.stopChickenIntervals?.();
-        else if (enemy instanceof ChickenMini) enemy.stopChickenMiniIntervals?.();
-        else if (enemy instanceof Endboss) enemy.stopEndbossIntervals?.(); // ✅ wichtig!
-    });
-    this.throwableObjects?.forEach(bottle => bottle?.stopThrowableObjectIntervals?.());
-    this.stopWorldIntervals();
-    this.audioManager?.pauseBackgroundMusic?.();
-    this.audioManager?.pauseEndbossMusic?.();
+        this.character?.stopCharacterIntervals?.();
+
+        this.level.enemies?.forEach(enemy => {
+            enemy?.stopChickenIntervals?.();
+            enemy?.stopChickenMiniIntervals?.();
+            enemy?.stopEndbossIntervals?.(); // z.B. cancelAnimationFrame()
+        });
+
+        this.throwableObjects?.forEach(bottle => {
+            bottle?.stopThrowableObjectIntervals?.();
+        });
+
+        this.stopWorldIntervals();
+
+        // Sounds stoppen
+        this.audioManager?.pauseBackgroundMusic?.();
+        this.audioManager?.pauseEndbossMusic?.();
     }
 
 

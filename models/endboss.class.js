@@ -117,37 +117,52 @@ class Endboss extends MovableObject {
   }
 
   endbossAnimation(now) {
+    if (this.world?.gameOver) return;
+
+    this.showHealthBarOnce();
+
+    if (this.shouldAttack()) return this.handleAttackAnimation();
+    if (this.isDeadEndboss()) return this.handleDeathAnimation();
+    if (this.isHurtEndboss()) return this.playAnimation(this.IMAGES_HURT);
+
+    this.handleWalkCycle();
+  }
+
+  showHealthBarOnce() {
     if (this.i === 0 && this.hadFirstContact) {
       this.world?.statusBarEndboss && (this.world.statusBarEndboss.visible = true);
     }
+  }
 
-    const currentTime = Date.now();
-    if (this.isCollidingWithCharacter && !this.isAttacking && currentTime - this.lastAttackTime > this.attackCooldown) {
-      this.isAttacking = true;
-      this.lastAttackTime = currentTime;
-      this.playAnimationOnce(this.IMAGES_ATTACK, () => {
-        this.isAttacking = false;
-        this.handleCharacterCollisionEnd();
+  shouldAttack() {
+    const now = Date.now();
+    return (
+      this.isCollidingWithCharacter &&
+      !this.isAttacking &&
+      now - this.lastAttackTime > this.attackCooldown
+    );
+  }
+
+  handleAttackAnimation() {
+    this.isAttacking = true;
+    this.lastAttackTime = Date.now();
+    this.playAnimationOnce(this.IMAGES_ATTACK, () => {
+      this.isAttacking = false;
+      this.handleCharacterCollisionEnd();
+    });
+  }
+
+  handleDeathAnimation() {
+    if (!this.isAlreadyDeadAnimated) {
+      this.isAlreadyDeadAnimated = true;
+      this.stopEndbossIntervals();
+      this.playAnimationOnce(this.IMAGES_DEAD, () => {
+        this.world?.gameWin?.() ?? gameWin?.();
       });
-      return;
     }
+  }
 
-    if (this.isDeadEndboss()) {
-      if (!this.isAlreadyDeadAnimated) {
-        this.isAlreadyDeadAnimated = true;
-        this.stopEndbossIntervals();
-        this.playAnimationOnce(this.IMAGES_DEAD, () => {
-          this.world?.gameWin?.() ?? gameWin?.();
-        });
-      }
-      return;
-    }
-
-    if (this.isHurtEndboss()) {
-      this.playAnimation(this.IMAGES_HURT);
-      return;
-    }
-
+  handleWalkCycle() {
     if (this.i < this.IMAGES_ALERT.length) {
       this.playAnimation(this.IMAGES_ALERT);
       this.i++;
@@ -202,10 +217,10 @@ class Endboss extends MovableObject {
   }
 
   stopEndbossIntervals() {
-    clearInterval(this.firstContactIntervalId);
-    clearInterval(this.movementIntervalId);
-    cancelAnimationFrame(this.animationFrameId);
-    this.firstContactIntervalId = this.movementIntervalId = this.animationFrameId = null;
-    super.stopGravity();
+      clearInterval(this.firstContactIntervalId);
+      clearInterval(this.movementIntervalId);
+      cancelAnimationFrame(this.animationFrameId); // WICHTIG!
+      this.firstContactIntervalId = this.movementIntervalId = this.animationFrameId = null;
+      super.stopGravity?.(); // falls vorhanden
   }
 }

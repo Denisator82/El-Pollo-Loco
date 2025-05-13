@@ -136,9 +136,16 @@ class Character extends MovableObject {
             if (this.world?.audioManager?.playSound)
                 this.world.audioManager.playSound('hurt');
         } else {
-            console.log('LOG: Character died.');
+        console.log('LOG: Character died.');
+        
+        // Lauf-Sound sofort stoppen
+            const walkSound = this.world?.audioManager?.sounds?.['walk'];
+            if (walkSound) {
+                walkSound.pause();
+                walkSound.currentTime = 0;
+            }
         }
-    }
+    }   
 
     /**
      * Returns true if the character was hit recently.
@@ -224,24 +231,19 @@ class Character extends MovableObject {
         this.wasMovingLastFrame = isMovingThisFrame;
     }
 
-    /**
-     * Startet oder stoppt Laufgeräusche basierend auf Bewegungsstatus.
-     */
     _handleWalkingSound(isMovingThisFrame) {
         const walkSound = this.world?.audioManager?.sounds?.['walk'];
-        if (!walkSound) return;
+        if (!walkSound || this.isDead()) return; // ← hier hinzugefügt
 
         if (isMovingThisFrame && !this.wasMovingLastFrame) {
-            if (typeof walkSound.play === 'function') {
-                walkSound.currentTime = 0;
-                walkSound.play();
-            }
+            walkSound.currentTime = 0;
+            walkSound.play();
         } else if (!isMovingThisFrame && this.wasMovingLastFrame) {
-            if (typeof walkSound.pause === 'function') {
-                walkSound.pause(); walkSound.currentTime = 0;
-            }
+            walkSound.pause();
+            walkSound.currentTime = 0;
         }
     }
+
 
 
     /**

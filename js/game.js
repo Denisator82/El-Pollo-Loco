@@ -89,24 +89,20 @@ function stopGame() {
 }
 
 function restartGame() {
-    // 1. Verstecke die Win/Lose-Bilder
+    // Stoppe vorher das alte Spiel, falls vorhanden
+    if (world && typeof world.stopAllIntervals === 'function') {
+        world.stopAllIntervals();
+    }
+
+    // Reset UI
+    document.getElementById("startScreen")?.classList.remove("hidden");
     document.getElementById("winImageContainer")?.classList.remove("show");
     document.getElementById("loseImageContainer")?.classList.remove("show");
 
-    // 2. Zeige wieder das Canvas
-    document.getElementById("canvasContent")?.classList.remove("hidden");
-
-    // 3. Setze globale Zustände zurück
-    justPressed.SPACE = false;
-    justPressed.SHIFT = false;
-    if (world) world.gameOver = false;
-
-    // 4. Starte das Spiel neu
+    // Neues Spiel starten
     newGame();
-
-    // 5. Starte Musik erneut
-    world.audioManager?.playBackgroundMusic?.();
 }
+
 
 
 function toggleMute() {
