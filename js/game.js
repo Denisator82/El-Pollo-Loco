@@ -133,21 +133,44 @@ const KEY_MAP = {
     16: 'SHIFT'
 };
 
+const keyState = {
+    SPACE: false,
+    SHIFT: false,
+    RIGHT: false,
+    LEFT: false,
+    UP: false,
+    DOWN: false
+};
+
+const justPressed = {
+    SPACE: false,
+    SHIFT: false
+};
+
 window.addEventListener("keydown", (e) => {
     const key = KEY_MAP[e.keyCode];
-    if (key && !keyPressed[key]) {
+    if (!key) return;
+
+    if (!keyState[key]) {
+        keyState[key] = true;
         keyboard[key] = true;
-        keyPressed[key] = true;
+        if (key === 'SPACE' || key === 'SHIFT') {
+            justPressed[key] = true;
+        }
     }
 });
 
 window.addEventListener("keyup", (e) => {
     const key = KEY_MAP[e.keyCode];
-    if (key) {
-        keyboard[key] = false;
-        keyPressed[key] = false;
+    if (!key) return;
+
+    keyState[key] = false;
+    keyboard[key] = false;
+    if (key === 'SPACE' || key === 'SHIFT') {
+        justPressed[key] = false;
     }
 });
+
 
 function initMobile() {
     setupMobileButtonEvents();

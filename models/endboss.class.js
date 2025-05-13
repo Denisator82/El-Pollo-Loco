@@ -166,19 +166,23 @@ class Endboss extends MovableObject {
     let lastTime = performance.now();
 
     const step = (now) => {
-      if (this.isDeadEndboss()) return;
-
       const delta = now - lastTime;
       if (delta >= 500) {
         this.endbossAnimation(now);
         lastTime = now;
       }
 
-      this.animationFrameId = requestAnimationFrame(step);
+      // Nur stoppen, wenn Death-Animation bereits einmal vollständig durchgelaufen ist
+      const endAnimationFinished = this.isDeadEndboss() && this.isAlreadyDeadAnimated;
+
+      if (!endAnimationFinished) {
+        this.animationFrameId = requestAnimationFrame(step);
+      }
     };
 
     this.animationFrameId = requestAnimationFrame(step);
   }
+
 
 
   startBossMovement() {

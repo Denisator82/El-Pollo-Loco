@@ -76,10 +76,12 @@ class World {
     checkThrowObjects() {
         const cooldown = 850;
         const now = Date.now();
-        if (this.keyboard.SHIFT && now - this.lastThrowTime > cooldown && this.character.bottlesCollected > 0 && !this.character.isDead()) {
+
+        if (justPressed.SHIFT && now - this.lastThrowTime > cooldown && this.character.bottlesCollected > 0 && !this.character.isDead()) {
             this.character.throwBottle(this.character.otherDirection);
             this.lastThrowTime = now;
             this.audioManager?.playSound("throw");
+            justPressed.SHIFT = false; // Reset nach einmaligem Wurf
         }
     }
 

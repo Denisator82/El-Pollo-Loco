@@ -175,14 +175,15 @@ class Character extends MovableObject {
      * Makes the character jump if possible (not dead and not above the ground).
      */
     jump() {
-        if (!this.isDead() && !this.isAboveGround()) {
-            this.speedY = 25;
+        if (!this.isDead() && !this.isAboveGround() && justPressed.SPACE) {
+            this.speedY = 10;
             this.applyGravity();
-            if (this.world?.audioManager)
-                this.world.audioManager.playSound('jump');
+            this.world?.audioManager?.playSound?.('jump');
             this.resetStandingTime();
+            justPressed.SPACE = false; // ← verhindert Dauerfeuer
         }
     }
+
 
     /**
      * Startet zwei Intervalle: Bewegung (~60 FPS) & Animation (~10 FPS).
