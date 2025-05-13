@@ -2,7 +2,7 @@ class Chicken extends MovableObject {
     y = 340;
     height = 80;
     width = 80;
-    damage = 5;
+    damage = 10;
     chickenIsDead = false;
     deathSoundPlayed = false;
 

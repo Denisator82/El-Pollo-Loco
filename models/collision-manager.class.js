@@ -300,8 +300,8 @@ checkCollisionsCharacterWithCoins() {
 handleCoinCollection(coin, coinIndex) {
     if (typeof this.world.character.collectCoin === 'function') {
         this.world.character.collectCoin(coin);
-    } else {
-        this.world.coinCounter++;
+    // } else {
+    //     this.world.coinCounter++;
     }
     this.updateCoinStatusBarInWorld();
     this.world.level.coins.splice(coinIndex, 1);
@@ -313,7 +313,7 @@ handleCoinCollection(coin, coinIndex) {
  */
 updateCoinStatusBarInWorld() {
      const collectedCount = this.world.character && typeof this.world.character.coinsCollected === 'number' ? this.world.character.coinsCollected : this.world.coinCounter;
-     const totalCoinsInLevel = this.world.level.coins.length + collectedCount;
+     const totalCoinsInLevel = 10
      const percentage = totalCoinsInLevel > 0 ? (collectedCount / totalCoinsInLevel) * 100 : 0;
      if (this.world.statusBarCoin && typeof this.world.statusBarCoin.setPercentage === 'function') {
          this.world.statusBarCoin.setPercentage(percentage);

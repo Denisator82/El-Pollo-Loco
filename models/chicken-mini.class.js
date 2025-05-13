@@ -2,7 +2,7 @@ class ChickenMini extends MovableObject {
   y = 360;
   height = 60;
   width = 60;
-  damage = 10;
+  damage = 20;
   chickenIsDead = false;
   deathSoundPlayed = false;
 
