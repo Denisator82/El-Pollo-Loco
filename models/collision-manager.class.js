@@ -300,8 +300,6 @@ checkCollisionsCharacterWithCoins() {
 handleCoinCollection(coin, coinIndex) {
     if (typeof this.world.character.collectCoin === 'function') {
         this.world.character.collectCoin(coin);
-    // } else {
-    //     this.world.coinCounter++;
     }
     this.updateCoinStatusBarInWorld();
     this.world.level.coins.splice(coinIndex, 1);
@@ -452,9 +450,6 @@ handleBottleHitsEnemy(bottle, enemy, enemyIndex) { // Behandelt den Treffer Flas
          }
          // Die Flaschen-Reaktion (Splat & Removal) wird separat von handleBottleHitsEnemy gehandhabt.
     } // <-- Ende von handleBottleHitsEndboss
-
-
-// In collision_manager.class.js, innerhalb der Klasse CollisionManager
 
 /**
  * Handles the consequences when a throwable bottle hits a normal enemy (Chicken/MiniChicken).
