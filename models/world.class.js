@@ -84,16 +84,44 @@ class World {
     }
 
     draw() {
+        const start = performance.now();
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.save();
         this.ctx.translate(this.camera_x, 0);
 
-        this.addObjectsToMap([...this.level.backgroundObjects, ...this.level.clouds, this.character, ...this.level.endboss, ...this.level.enemies, ...this.level.coins, ...this.level.bottles, ...this.throwableObjects]);
+        const visibleObjects = [
+            ...this.level.backgroundObjects,
+            ...this.level.clouds,
+            this.character,
+            ...this.level.endboss,
+            ...this.level.enemies,
+            ...this.level.coins,
+            ...this.level.bottles,
+            ...this.throwableObjects
+        ].filter(obj => this.isVisibleOnCanvas(obj));
 
+        this.addObjectsToMap(visibleObjects);
         this.ctx.restore();
-        [this.statusBar, this.statusBarBottle, this.statusBarCoin, this.statusBarEndboss].forEach(el => this.addToMap(el));
+
+        [this.statusBar, this.statusBarBottle, this.statusBarCoin, this.statusBarEndboss]
+            .forEach(el => this.addToMap(el));
+
+        const end = performance.now();
+        // Optional zur Laufzeit prüfen, ob Frames zu langsam sind:
+        // console.log(`Draw time: ${Math.round(end - start)}ms`);
+
         requestAnimationFrame(() => this.draw());
     }
+
+    isVisibleOnCanvas(obj) {
+        const buffer = 100; // kleiner Puffer außerhalb des Viewports
+        const x = obj?.x ?? 0;
+        const width = obj?.width ?? 0;
+        const left = -this.camera_x - buffer;
+        const right = -this.camera_x + this.canvas.width + buffer;
+        return x + width > left && x < right;
+    }
+
 
     addObjectsToMap(objects) {
         objects?.forEach(obj => obj && this.addToMap(obj));

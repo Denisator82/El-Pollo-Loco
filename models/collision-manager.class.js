@@ -47,11 +47,26 @@ class CollisionManager {
   }
 
   handleEndbossCharacterCollisionStart(boss) {
-    if (!boss.isCollidingWithCharacter && typeof boss.handleCharacterCollision === 'function') {
-      console.log("LOG: Endboss collision started.");
-      boss.handleCharacterCollision();
+    if (typeof boss.handleCharacterCollision === 'function') {
+      boss.handleCharacterCollision(); // Flag setzen
+    }
+
+    const shouldAttack =
+      !boss.isDeadEndboss?.() &&
+      !boss.isAttacking &&
+      Date.now() - boss.lastAttackTime > boss.attackCooldown;
+
+    if (shouldAttack && typeof boss.playAnimationOnce === 'function') {
+      boss.isAttacking = true;
+      boss.lastAttackTime = Date.now();
+      boss.playAnimationOnce(boss.IMAGES_ATTACK, () => {
+        boss.isAttacking = false;
+        boss.handleCharacterCollisionEnd?.();
+      });
     }
   }
+
+
 
   handleEndbossCharacterCollisionEnd(boss) {
     if (boss.isCollidingWithCharacter && typeof boss.handleCharacterCollisionEnd === 'function') {
@@ -173,7 +188,7 @@ class CollisionManager {
     const dmg = typeof bottle.damage === 'number' ? bottle.damage : 20;
     boss.hitEndboss?.(dmg);
     this.world.statusBarEndboss?.setPercentage?.(boss.health);
-    if (boss.isDeadEndboss?.()) this.triggerGameWin();
+    // if (boss.isDeadEndboss?.()) this.triggerGameWin();
   }
 
   handleBottleHitsNormalEnemy(bottle, enemy) {

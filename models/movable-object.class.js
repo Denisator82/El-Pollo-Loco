@@ -132,4 +132,18 @@ class MovableObject extends DrawableObject {
         this.x += this.speed;
     }
 
+    playAnimationOnce(images, callback) {
+        let i = 0;
+        const interval = setInterval(() => {
+            this.img = this.imageCache[images[i]];
+            i++;
+            if (i >= images.length) {
+            clearInterval(interval);
+            if (typeof callback === 'function') {
+                callback(); // z.B. gameWin()
+            }
+            }
+        }, 120); // z. B. 120ms pro Frame
+    }
+
 }
