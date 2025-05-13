@@ -185,96 +185,69 @@ class Character extends MovableObject {
     }
 
     /**
-     * Starts the main animation loops for the character.
-     * Includes movement, sound, camera updates (60 FPS) and animation state (10 FPS).
-     * @method
+     * Startet zwei Intervalle: Bewegung (~60 FPS) & Animation (~10 FPS).
      */
     animateCharacter() {
-        // Primary animation loop (movement, sound state, camera) ~60 FPS
         this.moveIntervalId = setInterval(() => {
-            this._updateMovementAndSoundState(); // Handles movement, jumping, and sets moving state
-            this._updateCamera(); // Updates camera position based on character
-        }, 1000 / 60); // Run at 60 frames per second
+            this._updateMovementAndSoundState();
+            this._updateCamera();
+        }, 1000 / 60);
 
-
-        // Secondary animation loop (determines which animation sequence is playing) ~10 FPS
         this.animationIntervalId = setInterval(() => {
-            this._playAnimationBasedOnState(); // Determines and plays the correct animation
-        }, 100); // Run at 10 frames per second
+            this._playAnimationBasedOnState();
+        }, 100); 
     }
 
+
     /**
-     * Handles character input for horizontal movement (left/right) and jumping.
-     * Tracks whether the character is moving for sound effect logic (e.g. walking sounds).
-     * Invokes the appropriate movement methods and updates the last movement state.
-     * Called regularly by the move interval (~60 FPS).
-     *
-     * Movement logic:
-     * - Moves right if the RIGHT key is pressed and character hasn't reached level end.
-     * - Moves left if the LEFT key is pressed and character isn't at the start.
-     * - Initiates jump if SPACE is pressed and character is on the ground.
-     *
-     * Also calls internal methods to:
-     * - Reset idle/standing timers on movement input.
-     * - Manage walking sounds via `_handleWalkingSound()`.
-     *
-     * @private
-     * @method
+     * Verwaltet Bewegung, Springen und Sound-Zustände pro Frame.
      */
     _updateMovementAndSoundState() {
         let isMovingThisFrame = false;
 
-        // Handle Rightward Movement
         if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
-            this.moveRight();
-            this.otherDirection = false;
-            this.resetStandingTime();
-            isMovingThisFrame = true;
+            this.moveRight(); this.otherDirection = false;
+            this.resetStandingTime(); isMovingThisFrame = true;
         }
 
-        // Handle Leftward Movement
         if (this.world.keyboard.LEFT && this.x > 0) {
-            this.moveLeft();
-            this.otherDirection = true;
-            this.resetStandingTime();
-            isMovingThisFrame = true;
+            this.moveLeft(); this.otherDirection = true;
+            this.resetStandingTime(); isMovingThisFrame = true;
         }
 
-        // Handle Jumping
         if (this.world.keyboard.SPACE && !this.isAboveGround()) {
-            this.jump();
-            this.resetStandingTime();
+            this.jump(); this.resetStandingTime();
         }
 
-        // Walking sound logic
         this._handleWalkingSound(isMovingThisFrame);
-
-        // Save movement state for comparison in next frame
         this.wasMovingLastFrame = isMovingThisFrame;
     }
 
-
     /**
-     * Starts or stops the walking sound depending on the movement state.
-     * Triggered once per frame when movement state changes.
-     * @param {boolean} isMovingThisFrame - True if character is moving in the current frame.
-     * @private
+     * Startet oder stoppt Laufgeräusche basierend auf Bewegungsstatus.
      */
     _handleWalkingSound(isMovingThisFrame) {
         const walkSound = this.world?.audioManager?.sounds?.['walk'];
+        if (!walkSound) return;
 
-        if (!walkSound) return
+        if (isMovingThisFrame && !this.wasMovingLastFrame) {
+            if (typeof walkSound.play === 'function') {
+                walkSound.currentTime = 0;
+                walkSound.play();
+            }
+        } else if (!isMovingThisFrame && this.wasMovingLastFrame) {
+            if (typeof walkSound.pause === 'function') {
+                walkSound.pause(); walkSound.currentTime = 0;
+            }
+        }
     }
 
 
     /**
-     * Updates the horizontal camera position to follow the character.
-     * Creates a smooth side-scrolling effect by offsetting the camera.
-     * Called by the movement interval (~60 FPS).
-     * @private
+     * Aktualisiert die Kamera basierend auf der X-Position des Charakters.
      */
     _updateCamera() {
-        this.world.camera_x = -this.x + 100; // Offset keeps character roughly centered
+        this.world.camera_x = -this.x + 100;
     }
 
     /**
@@ -391,11 +364,5 @@ class Character extends MovableObject {
             clearInterval(this.animationIntervalId);
             this.animationIntervalId = null;
         }
-
-        // Optional: Cancel gravity animation frame if applicable
-        // if (this.gravityFrameId) { cancelAnimationFrame(this.gravityFrameId); this.gravityFrameId = null; }
-
-        // Optionally log the action
-        // console.log('LOG: Character intervals stopped.');
     }
 }
