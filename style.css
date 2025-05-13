@@ -45,11 +45,10 @@ h1 {
     text-align: center;
 }
 
-#startScreen, #gameWin, #gameLose {
+#startScreen{
     border-radius: 20px;
     width: 100%;
     height: 100%;
-    /* display: flex; */
     justify-content: center;
     align-items: center;
     position: absolute;
@@ -57,29 +56,8 @@ h1 {
     background-size: cover;
 }
 
-#gameWin, #gameLose {
-    z-index: -1; /* Unsichtbar nach hinten verschieben */
-    opacity: 0;   /* Vollständig transparent machen */
-    transition: opacity 0.5s ease-in-out;
-}
-
 #startScreen {
     background-image: url('img/img/9_intro_outro_screens/start/startscreen_1.png');
-}
-
-#gameWin {
-    background-image: url('img/img/9_intro_outro_screens/win/win_1.png');
-}
-
-#gameLose {
-    background-image: url('img/img/9_intro_outro_screens/game_over/game over.png');
-}
-
-canvas {
-    background-color: black;
-    margin-bottom: 100px;
-    border-radius: 20px;
-    z-index: 500;
 }
 
 button {
@@ -94,6 +72,80 @@ button {
 
 button:hover {
     scale: 1.1;
+}
+
+#winImageContainer,
+#loseImageContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform: scale(0.2);
+    opacity: 0;
+    transition: transform 2s ease-out, opacity 2s ease-out;
+    z-index: 2000;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#winImageContainer.show,
+#loseImageContainer.show {
+    transform: scale(1);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#winImageContainer img.win {
+    max-width: 500px;
+    width: 80%;
+    height: auto;
+    object-fit: contain;
+}
+
+#loseImageContainer img {
+    /* border-radius: 20px;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; */
+    max-width: 500px;
+    width: 80%;
+    height: auto;
+    object-fit: contain;
+}
+
+#winImageContainer button,
+#loseImageContainer button {
+    margin-top: 20px;
+    font-size: 32px;
+    padding: 12px 28px;
+    background-color: #FFCC33;
+    color: black;
+    border: none;
+    border-radius: 15px;
+    font-family: 'Fredericka the Great';
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+    box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+#winImageContainer button:hover,
+#loseImageContainer button:hover {
+    transform: scale(1.08);
+    background-color: #ffd84f;
+}
+
+
+
+
+canvas {
+    background-color: black;
+    margin-bottom: 100px;
+    border-radius: 20px;
+    z-index: 500;
 }
 
 #miniBtns img, #left_button, #right_button, #jump_button, #throw_button {

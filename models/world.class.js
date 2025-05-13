@@ -155,19 +155,18 @@ class World {
     }
 
     stopAllIntervals() {
-        this.character?.stopCharacterIntervals?.();
-        this.level.enemies?.forEach(enemy => {
-            if (enemy instanceof Chicken) enemy.stopChickenIntervals?.();
-            else if (enemy instanceof ChickenMini) enemy.stopChickenMiniIntervals?.();
-            else if (enemy instanceof Endboss) enemy.stopEndbossIntervals?.();
-        });
-
-        this.throwableObjects?.forEach(bottle => bottle?.stopThrowableObjectIntervals?.());
-        this.stopWorldIntervals();
-
-        this.audioManager?.pauseBackgroundMusic?.();
-        this.audioManager?.pauseEndbossMusic?.();
+    this.character?.stopCharacterIntervals?.();
+    this.level.enemies?.forEach(enemy => {
+        if (enemy instanceof Chicken) enemy.stopChickenIntervals?.();
+        else if (enemy instanceof ChickenMini) enemy.stopChickenMiniIntervals?.();
+        else if (enemy instanceof Endboss) enemy.stopEndbossIntervals?.(); // ✅ wichtig!
+    });
+    this.throwableObjects?.forEach(bottle => bottle?.stopThrowableObjectIntervals?.());
+    this.stopWorldIntervals();
+    this.audioManager?.pauseBackgroundMusic?.();
+    this.audioManager?.pauseEndbossMusic?.();
     }
+
 
     stopWorldIntervals() {
         clearInterval(this.collisionIntervalId);

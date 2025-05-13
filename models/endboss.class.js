@@ -183,16 +183,19 @@ class Endboss extends MovableObject {
     this.animationFrameId = requestAnimationFrame(step);
   }
 
-
-
   startBossMovement() {
     if (!this.movementIntervalId) {
       this.movementIntervalId = setInterval(() => {
-        if (!this.isDeadEndboss() && !this.isHurtEndboss() && !this.isCollidingWithCharacter && this.i >= this.IMAGES_ALERT.length) {
-          const char = this.world?.character;
-          if (char && this.x + this.width / 2 > char.x + char.width / 2) {
-            this.x -= this.speed;
-          }
+        const char = this.world?.character;
+        const shouldMove =
+          !this.isDeadEndboss() &&
+          !this.isHurtEndboss() &&
+          !this.isCollidingWithCharacter &&
+          !this.world?.gameOver && // ✅ ← hier wichtig!
+          this.i >= this.IMAGES_ALERT.length;
+
+        if (shouldMove && char && this.x + this.width / 2 > char.x + char.width / 2) {
+          this.x -= this.speed;
         }
       }, 1000 / 60);
     }

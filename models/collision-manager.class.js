@@ -207,10 +207,12 @@ class CollisionManager {
   }
 
   triggerGameOverLose() {
+    if (this.world.gameOver) return; // ← Nur 1x auslösen
     console.log("LOG: Character is dead. Triggering Game Over (Lose).");
     this.world.gameOver = true;
     this.world.gameLose?.() || gameLose?.();
   }
+
 
   triggerGameWin() {
     console.log("LOG: Endboss is dead. Triggering Game Win.");

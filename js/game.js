@@ -36,9 +36,14 @@ function startGame() {
 }
 
 function gameLose() {
-    document.getElementById("gameLose").classList.add("show");
-    world?.audioManager?.playSound?.('lose');
+    console.log("LOG: gameLose() called.");
+    if (!world) return;
+
+    world.gameOver = true;
     stopGame();
+    world.audioManager?.playSound?.("lose");
+
+    document.getElementById('loseImageContainer')?.classList.add('show'); // ← richtig!
 }
 
 function gameWin() {
@@ -47,10 +52,9 @@ function gameWin() {
 
     world.gameOver = true;
     stopGame();
-
-    const winScreen = document.getElementById("gameWin");
-    winScreen?.classList.add("show");
     world.audioManager?.playSound?.("win");
+
+    document.getElementById('winImageContainer')?.classList.add('show');
 }
 
 function stopGame() {
@@ -85,11 +89,25 @@ function stopGame() {
 }
 
 function restartGame() {
-    document.getElementById("gameWin").classList.remove("show");
-    document.getElementById("gameLose").classList.remove("show");
-    document.getElementById("startScreen").classList.remove("hidden");
+    // 1. Verstecke die Win/Lose-Bilder
+    document.getElementById("winImageContainer")?.classList.remove("show");
+    document.getElementById("loseImageContainer")?.classList.remove("show");
+
+    // 2. Zeige wieder das Canvas
+    document.getElementById("canvasContent")?.classList.remove("hidden");
+
+    // 3. Setze globale Zustände zurück
+    justPressed.SPACE = false;
+    justPressed.SHIFT = false;
+    if (world) world.gameOver = false;
+
+    // 4. Starte das Spiel neu
     newGame();
+
+    // 5. Starte Musik erneut
+    world.audioManager?.playBackgroundMusic?.();
 }
+
 
 function toggleMute() {
     if (world && world.audioManager) {
