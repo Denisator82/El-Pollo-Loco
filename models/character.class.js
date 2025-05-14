@@ -151,32 +151,15 @@ class Character extends MovableObject {
         this.x -= this.speed;
     }
 
-jump() {
-    if (!this.world || this.world.gameOver) return; // ⬅️ ganz oben
-
-    if (!this.isDead() && !this.isAboveGround() && justPressed.SPACE) {
-        console.log("JUMP!", this.y, this.isAboveGround(), this.world);
-        this.speedY = 8;
-        this.applyGravity();
-        this.world?.audioManager?.playSound?.('jump');
-        this.resetStandingTime();
-        justPressed.SPACE = false;
+    jump() {
+        if (!this.isDead() && !this.isAboveGround() && justPressed.SPACE) {
+            this.speedY = 10;
+            this.applyGravity();
+            this.world?.audioManager?.playSound('jump');
+            this.resetStandingTime();
+            justPressed.SPACE = false;
+        }
     }
-}
-
-/**
- * Checks if the character is falling down onto an enemy (from above).
- * @param {MovableObject} enemy - The enemy object.
- * @returns {boolean}
- */
-isJumpingOn(enemy) {
-    return (
-        this.speedY < 0 &&
-        this.y + this.height <= enemy.y + enemy.height * 0.6
-    );
-}
-
-
 
     animateCharacter() {
         this.moveIntervalId = setInterval(() => {
@@ -208,8 +191,6 @@ isJumpingOn(enemy) {
 
     _handleWalkingSound(isMovingThisFrame) {
         if (this.isDead()) return;
-        if (this.isAboveGround()) isMovingThisFrame = false; // ← NEU
-
         const am = this.world?.audioManager;
         const walkSound = am?.sounds?.['walk'];
         if (!am || am.isMuted || !walkSound) return;
