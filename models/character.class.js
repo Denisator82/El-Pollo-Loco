@@ -11,7 +11,7 @@ class Character extends MovableObject {
     bottlesCollected = 0;
     wasMovingLastFrame = false;
     world;
-    offset = { top: 80, left: 20, right: 20, bottom: 0 };
+    offset = { top: 100, right: 30, bottom: 10, left: 20 };
 
     /**
      * Images for the standing state of the character
@@ -97,18 +97,14 @@ class Character extends MovableObject {
     moveIntervalId = null;
     animationIntervalId = null;
 
-    /**
-     * Initializes the character with assets and behavior.
-     */
     constructor() {
         super();
         this.loadAssets();
-        this.offset = { top: 100, right: 30, bottom: 10, left: 20 };
         this.applyGravity();
         this.animateCharacter();
     }
 
-    /** Loads all necessary animation images for the character. */
+    /** Loads all animation assets. */
     loadAssets() {
         this.loadImage(this.IMAGES_STANDING[0]);
         this.loadImages(this.IMAGES_STANDING);
@@ -119,7 +115,7 @@ class Character extends MovableObject {
         this.loadImages(this.IMAGES_HURT);
     }
 
-    /** Applies damage to the character. */
+    /** Handles taking damage and death logic. */
     hit(damageAmount) {
         if (typeof damageAmount !== 'number' || damageAmount < 0) damageAmount = 0;
         this.energy = Math.max(this.energy - damageAmount, 0);
@@ -151,9 +147,11 @@ class Character extends MovableObject {
         this.x -= this.speed;
     }
 
+    /** Handles jumping action. */
     jump() {
+        if (!this.world || this.world.gameOver) return;
         if (!this.isDead() && !this.isAboveGround() && justPressed.SPACE) {
-            this.speedY = 10;
+            this.speedY = 8;
             this.applyGravity();
             this.world?.audioManager?.playSound('jump');
             this.resetStandingTime();
@@ -161,36 +159,50 @@ class Character extends MovableObject {
         }
     }
 
+    /** Checks if character lands on enemy. */
+    isJumpingOn(enemy) {
+        return this.speedY < 0 && this.y + this.height <= enemy.y + enemy.height * 0.6;
+    }
+
     animateCharacter() {
         this.moveIntervalId = setInterval(() => {
-            this._updateMovementAndSoundState();
-            this._updateCamera();
+            this.updateMovementAndSoundState();
+            this.updateCamera();
         }, 1000 / 60);
 
         this.animationIntervalId = setInterval(() => {
-            this._playAnimationBasedOnState();
+            this.playAnimationBasedOnState();
         }, 100);
     }
 
-    _updateMovementAndSoundState() {
+    /** Updates movement and sound per frame. */
+    updateMovementAndSoundState() {
         let isMovingThisFrame = false;
         if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
-            this.moveRight(); this.otherDirection = false;
-            this.resetStandingTime(); isMovingThisFrame = true;
+            this.moveRight();
+            this.otherDirection = false;
+            this.resetStandingTime();
+            isMovingThisFrame = true;
         }
         if (this.world.keyboard.LEFT && this.x > 0) {
-            this.moveLeft(); this.otherDirection = true;
-            this.resetStandingTime(); isMovingThisFrame = true;
+            this.moveLeft();
+            this.otherDirection = true;
+            this.resetStandingTime();
+            isMovingThisFrame = true;
         }
         if (this.world.keyboard.SPACE && !this.isAboveGround()) {
-            this.jump(); this.resetStandingTime();
+            this.jump();
+            this.resetStandingTime();
         }
-        this._handleWalkingSound(isMovingThisFrame);
+        this.handleWalkingSound(isMovingThisFrame);
         this.wasMovingLastFrame = isMovingThisFrame;
     }
 
-    _handleWalkingSound(isMovingThisFrame) {
+    /** Plays or stops walking sound. */
+    handleWalkingSound(isMovingThisFrame) {
         if (this.isDead()) return;
+        if (this.isAboveGround()) isMovingThisFrame = false;
+
         const am = this.world?.audioManager;
         const walkSound = am?.sounds?.['walk'];
         if (!am || am.isMuted || !walkSound) return;
@@ -204,13 +216,13 @@ class Character extends MovableObject {
         }
     }
 
-    _updateCamera() {
+    updateCamera() {
         this.world.camera_x = -this.x + 100;
     }
 
-    _playAnimationBasedOnState() {
+    playAnimationBasedOnState() {
         if (this.isDead()) this.playAnimation(this.IMAGES_DEAD);
-        else if (this.isHurt?.()) this.playAnimation(this.IMAGES_HURT);
+        else if (this.isHurt()) this.playAnimation(this.IMAGES_HURT);
         else if (this.isAboveGround()) this.playAnimation(this.IMAGES_JUMPING);
         else if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT)
             this.playAnimation(this.IMAGES_WALKING);
@@ -254,8 +266,7 @@ class Character extends MovableObject {
         const y = this.y + this.height / 2 - offsetY;
         const bottle = new ThrowableObject(this.world, x, y, otherDirection);
 
-        this.world?.throwableObjects?.push(bottle) ||
-            console.error('Could not add bottle.');
+        this.world?.throwableObjects?.push(bottle) || console.error('Could not add bottle.');
 
         this.resetStandingTime();
     }
