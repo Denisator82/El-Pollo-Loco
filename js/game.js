@@ -89,7 +89,6 @@ function gameWin() {
   document.getElementById("winImageContainer")?.classList.add("show");
 }
 
-
 function stopGame() {
   if (!world) return;
   world.stopAllIntervals?.();
@@ -137,7 +136,6 @@ function toggleMute() {
   }
 }
 
-
 function updateAudioIcon() {
   const audioIcon = document.getElementById("audio");
   const manager = world?.audioManager || audioManager;
@@ -152,7 +150,6 @@ function updateAudioIcon() {
     audioIcon.alt = "Ton aus";
   }
 }
-
 
 function toggleFullscreen() {
   const mainSection = document.getElementById("mainSection");
@@ -229,16 +226,20 @@ window.addEventListener("keyup", (e) => {
 function initMobile() {
   setupMobileButtonEvents();
 
-  // Mobile Geräte erkennen
   const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
 
   if (isMobile) {
-    document.getElementById("leftMobile-container")?.classList.remove("hidden");
-    document
-      .getElementById("rightMobile-container")
-      ?.classList.remove("hidden");
+    handleOrientationChange(); // Diese Funktion regelt die Sichtbarkeit je nach Ausrichtung
+  } else {
+    // Auf Desktop alles verstecken
+    document.getElementById("leftMobile-container")?.classList.add("hidden");
+    document.getElementById("rightMobile-container")?.classList.add("hidden");
+    document.getElementById("rotateDevice")?.classList.add("hidden");
   }
 }
+
+window.addEventListener('resize', handleOrientationChange);
+window.addEventListener('orientationchange', handleOrientationChange);
 
 function setupMobileButtonEvents() {
   const buttons = [
@@ -273,6 +274,23 @@ function setupMobileButtonEvents() {
     }
   });
 }
+
+  function handleOrientationChange() {
+    const isPortrait = window.innerHeight > window.innerWidth;
+    const rotateOverlay = document.getElementById('rotateDevice');
+    const leftBtns = document.getElementById('leftMobile-container');
+    const rightBtns = document.getElementById('rightMobile-container');
+
+    if (isPortrait) {
+      rotateOverlay?.classList.remove('hidden');
+      leftBtns?.classList.add('hidden');
+      rightBtns?.classList.add('hidden');
+    } else {
+      rotateOverlay?.classList.add('hidden');
+      leftBtns?.classList.remove('hidden');
+      rightBtns?.classList.remove('hidden');
+    }
+  }
 
 function showImpressum() {
   document.getElementById("impressum")?.classList.remove("hidden");
