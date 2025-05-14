@@ -36,10 +36,11 @@ class StatusBarEndboss extends DrawableObject {
      * Sets the health percentage of the status bar and updates the displayed image.
      * @param {number} percentage - The new health percentage value.
      */
-    setPercentage(percentage) {
-        this.percentage = percentage; // Update the health percentage
-        let path = this.IMAGES_HEALTH[this.resolveImageIndex()]; // Get the path of the image based on the percentage
-        this.img = this.imageCache[path]; // Set the image based on the resolved path
+    setPercentage(health) {
+        const maxHealth = 100;
+        this.percentage = Math.max(0, Math.min((health / maxHealth) * 100, 100));
+        let path = this.IMAGES_HEALTH[this.resolveImageIndex()];
+        this.img = this.imageCache[path];
     }
 
     /**
@@ -47,19 +48,12 @@ class StatusBarEndboss extends DrawableObject {
      * @returns {number} - The index of the image corresponding to the health percentage.
      */
     resolveImageIndex() {
-        if (this.percentage == 100) {
-            return 5;
-        } else if (this.percentage > 80) {
-            return 4;
-        } else if (this.percentage > 60) {
-            return 3;
-        } else if (this.percentage > 40) {
-            return 2;
-        } else if (this.percentage > 20) {
-            return 1;
-        } else {
-            return 0;
-        }
+        if (this.percentage >= 100) return 5;
+        if (this.percentage >= 80) return 4;
+        if (this.percentage >= 60) return 3;
+        if (this.percentage >= 40) return 2;
+        if (this.percentage >= 20) return 1;
+        return 0;
     }
 
     /**

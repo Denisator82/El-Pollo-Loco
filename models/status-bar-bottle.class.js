@@ -41,6 +41,7 @@ class StatusBarBottle extends DrawableObject {
         this.img = this.imageCache[path]; // Set the image based on the resolved path
     }
     
+    
     /**
      * Resolves the image index based on the current percentage.
      * @returns {number} - The index of the image corresponding to the percentage.
@@ -54,7 +55,7 @@ class StatusBarBottle extends DrawableObject {
             return 3;
         } else if (this.percentage > 40) {
             return 2;
-        } else if (this.percentage > 20) {
+        } else if (this.percentage > 1) {
             return 1;
         } else {
             return 0;

@@ -133,15 +133,9 @@ handleEnemyDefeatedByJump(enemy) {
       const coin = this.world.level.coins[i];
       if (this.world.character.isColliding?.(coin)) {
         this.world.character.collectCoin?.(coin);
-        this.updateCoinStatusBarInWorld();
         this.world.level.coins.splice(i, 1);
       }
     }
-  }
-
-  updateCoinStatusBarInWorld() {
-    const count = this.world.character?.coinsCollected ?? 0;
-    this.world.statusBarCoin?.setPercentage?.((count / 10) * 100);
   }
 
   checkCollisionsCharacterWithBottles() {
@@ -149,15 +143,9 @@ handleEnemyDefeatedByJump(enemy) {
       const bottle = this.world.level.bottles[i];
       if (this.world.character.isColliding?.(bottle)) {
         this.world.character.collectBottle?.(bottle);
-        this.updateBottleStatusBarInWorld();
         this.world.level.bottles.splice(i, 1);
       }
     }
-  }
-
-  updateBottleStatusBarInWorld() {
-    const count = this.world.character?.bottlesCollected ?? 0;
-    this.world.statusBarBottle?.setPercentage?.((count / 8) * 100);
   }
 
   checkCollisionsThrowableObjectsWithEnemies() {
@@ -185,9 +173,8 @@ handleEnemyDefeatedByJump(enemy) {
   handleBottleHitsEndboss(bottle, boss) {
     const dmg = typeof bottle.damage === 'number' ? bottle.damage : 20;
     boss.hitEndboss?.(dmg);
-    this.world.statusBarEndboss?.setPercentage?.(boss.health);
-    // if (boss.isDeadEndboss?.()) this.triggerGameWin();
   }
+
 
   handleBottleHitsNormalEnemy(bottle, enemy) {
     enemy.setDead?.();

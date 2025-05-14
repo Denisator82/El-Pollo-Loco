@@ -242,7 +242,13 @@ class Character extends MovableObject {
 
     collectCoin(coin) {
         this.coinsCollected++;
+        this.updateCoinsStatus();
         this.world?.audioManager?.playSound('coinCollected');
+    }
+
+    updateCoinsStatus() {
+        const percent = (this.coinsCollected /10) * 100;
+        this.world?.statusBarCoin?.setPercentage(percent);
     }
 
     collectBottle(bottle) {
@@ -252,7 +258,7 @@ class Character extends MovableObject {
     }
 
     updateBottleStatus() {
-        const percent = (this.bottlesCollected / 8) * 100;
+        const percent = (this.bottlesCollected / 10) * 100;
         this.world?.statusBarBottle?.setPercentage(percent);
     }
 

@@ -81,8 +81,9 @@ class Endboss extends MovableObject {
   }
 
   hitEndboss(damageAmount) {
-    this.health = Math.max(0, this.health - damageAmount);
-    this.lastHitEndboss = Date.now();
+      this.health = Math.max(0, this.health - damageAmount);
+      this.lastHitEndboss = Date.now();
+      this.world?.statusBarEndboss?.setPercentage?.(this.health);
   }
 
   isHurtEndboss() {
