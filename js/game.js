@@ -64,6 +64,7 @@ function gameLose() {
   if (!world) return;
   world.gameOver = true;
   stopGame();
+  world.audioManager?.stopAllSounds?.();
   world.audioManager?.playSound?.("lose");
   document.getElementById("loseImageContainer")?.classList.add("show");
 }
