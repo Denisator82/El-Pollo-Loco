@@ -7,147 +7,151 @@ let keyPressed = {}; // Prevents rapid-fire actions
 let gameAlreadyStarted = false; // ⬅️ Verhindert mehrfaches Starten
 
 function initPage() {
-    loadMuteState();
-    updateAudioIcon();
+  loadMuteState();
+  updateAudioIcon();
 }
 
 /**
  * Loads mute state from localStorage.
  */
 function loadMuteState() {
-    const storedMute = localStorage.getItem('isMuted') === 'true';
-    audioManager.isMuted = storedMute;
+  const storedMute = localStorage.getItem("isMuted") === "true";
+  audioManager.isMuted = storedMute;
 }
 
 /**
  * Saves mute state to localStorage.
  */
 function saveMuteState() {
-    localStorage.setItem('isMuted', audioManager.isMuted.toString());
+  localStorage.setItem("isMuted", audioManager.isMuted.toString());
 }
 
 function newGame() {
-    console.log("🆕 newGame() wurde aufgerufen");
-    canvas = document.getElementById('canvas');
-    initLevel();
-    world = new World(canvas, keyboard, audioManager);
-    world.loadSounds();
-    passWorldToLevel();
-    canvas?.getContext('2d')?.clearRect(0, 0, canvas.width, canvas.height);
-    if (world?.audioManager) {
-        world.audioManager.pauseBackgroundMusic();
-        setTimeout(() => {
-            world.audioManager.playBackgroundMusic();
-        }, 100);
-    }
+  console.log("🆕 newGame() wurde aufgerufen");
+  canvas = document.getElementById("canvas");
+  initLevel();
+  world = new World(canvas, keyboard, audioManager);
+  world.loadSounds();
+  passWorldToLevel();
+  canvas?.getContext("2d")?.clearRect(0, 0, canvas.width, canvas.height);
+  if (world?.audioManager) {
+    world.audioManager.pauseBackgroundMusic();
+    setTimeout(() => {
+      world.audioManager.playBackgroundMusic();
+    }, 100);
+  }
 }
 
 function passWorldToLevel() {
-    if (level1 && world) {
-        level1.enemies.forEach(enemy => {
-            if (enemy instanceof Chicken || enemy instanceof ChickenMini || enemy instanceof Endboss) {
-                enemy.world = world;
-            }
-        });
-        world.character.world = world;
-    }
+  if (level1 && world) {
+    level1.enemies.forEach((enemy) => {
+      if (
+        enemy instanceof Chicken ||
+        enemy instanceof ChickenMini ||
+        enemy instanceof Endboss
+      ) {
+        enemy.world = world;
+      }
+    });
+    world.character.world = world;
+  }
 }
 
 function startGame() {
-    if (gameAlreadyStarted) {
-        console.warn("❌ Spiel wurde bereits gestartet – Start abgebrochen.");
-        return;
-    }
+  if (gameAlreadyStarted) {
+    console.warn("❌ Spiel wurde bereits gestartet – Start abgebrochen.");
+    return;
+  }
 
-    gameAlreadyStarted = true;
+  gameAlreadyStarted = true;
 
-    document.getElementById("startScreen").classList.add("hidden");
-    document.getElementById("canvasContent").classList.remove("hidden");
-    newGame();
-    world.audioManager.playBackgroundMusic();
+  document.getElementById("startScreen").classList.add("hidden");
+  document.getElementById("canvasContent").classList.remove("hidden");
+  newGame();
+  world.audioManager.playBackgroundMusic();
 }
 
 function gameLose() {
-    if (!world) return;
-    world.gameOver = true;
-    stopGame();
-    world.audioManager?.playSound?.("lose");
-    document.getElementById('loseImageContainer')?.classList.add('show');
+  if (!world) return;
+  world.gameOver = true;
+  stopGame();
+  world.audioManager?.playSound?.("lose");
+  document.getElementById("loseImageContainer")?.classList.add("show");
 }
 
 function gameWin() {
-    if (!world) return;
-    world.gameOver = true;
-    stopGame();
-    world.audioManager?.playSound?.("win");
-    document.getElementById('winImageContainer')?.classList.add('show');
+  if (!world) return;
+  world.gameOver = true;
+  stopGame();
+  world.audioManager?.playSound?.("win");
+  document.getElementById("winImageContainer")?.classList.add("show");
 }
 
 function stopGame() {
-    if (!world) return;
-    world.stopAllIntervals?.();
+  if (!world) return;
+  world.stopAllIntervals?.();
 }
 
 function restartGame() {
-    console.log('🔁 Restart Game pressed');
+  console.log("🔁 Restart Game pressed");
 
-    // Alles stoppen
-    if (world?.stopAllIntervals) world.stopAllIntervals();
-    world = null;
+  // Alles stoppen
+  if (world?.stopAllIntervals) world.stopAllIntervals();
+  world = null;
 
-    // Tasten sicher zurücksetzen
-    ['SPACE', 'SHIFT', 'RIGHT', 'LEFT', 'UP', 'DOWN'].forEach(k => {
-        justPressed[k] = false;
-        keyState[k] = false;
-        keyboard[k] = false;
-    });
+  // Tasten sicher zurücksetzen
+  ["SPACE", "SHIFT", "RIGHT", "LEFT", "UP", "DOWN"].forEach((k) => {
+    justPressed[k] = false;
+    keyState[k] = false;
+    keyboard[k] = false;
+  });
 
-    // Fokus vom Button entfernen, um Enter-Auslöser zu vermeiden
-    document.activeElement.blur();
+  // Fokus vom Button entfernen, um Enter-Auslöser zu vermeiden
+  document.activeElement.blur();
 
-    // Canvas leeren
-    const canvas = document.getElementById("canvas");
-    canvas?.getContext('2d')?.clearRect(0, 0, canvas.width, canvas.height);
+  // Canvas leeren
+  const canvas = document.getElementById("canvas");
+  canvas?.getContext("2d")?.clearRect(0, 0, canvas.width, canvas.height);
 
-    // UI anpassen
-    document.getElementById("startScreen")?.classList.add("hidden");
-    document.getElementById("winImageContainer")?.classList.remove("show");
-    document.getElementById("loseImageContainer")?.classList.remove("show");
-    document.getElementById("canvasContent")?.classList.remove("hidden");
+  // UI anpassen
+  document.getElementById("startScreen")?.classList.add("hidden");
+  document.getElementById("winImageContainer")?.classList.remove("show");
+  document.getElementById("loseImageContainer")?.classList.remove("show");
+  document.getElementById("canvasContent")?.classList.remove("hidden");
 
-    // Neues Spiel starten
-    newGame();
-    gameAlreadyStarted = false;
+  // Neues Spiel starten
+  newGame();
+  gameAlreadyStarted = false;
 }
 
 function toggleMute() {
-    if (world && world.audioManager) {
-        audioManager.toggleMute();
-        saveMuteState();
-        updateAudioIcon();
-    }
+  if (world && world.audioManager) {
+    audioManager.toggleMute();
+    saveMuteState();
+    updateAudioIcon();
+  }
 }
 
 function updateAudioIcon() {
-    const audioIcon = document.getElementById('audio');
-    if (audioManager.isMuted) {
-        audioIcon.src = 'img/img/10_extras/volume-mute-fill.svg';
-        audioIcon.alt = 'Ton an';
-    } else {
-        audioIcon.src = 'img/img/10_extras/volume-up-fill.svg';
-        audioIcon.alt = 'Ton aus';
-    }
+  const audioIcon = document.getElementById("audio");
+  if (audioManager.isMuted) {
+    audioIcon.src = "img/img/10_extras/volume-mute-fill.svg";
+    audioIcon.alt = "Ton an";
+  } else {
+    audioIcon.src = "img/img/10_extras/volume-up-fill.svg";
+    audioIcon.alt = "Ton aus";
+  }
 }
 
 function toggleFullscreen() {
-    const mainSection = document.getElementById('mainSection');
-    if (!fullscreen) {
-        mainSection.requestFullscreen?.();
-        fullscreen = true;
-    } else {
-        document.exitFullscreen?.();
-        fullscreen = false;
-    }
+  const mainSection = document.getElementById("mainSection");
+  if (!fullscreen) {
+    mainSection.requestFullscreen?.();
+    fullscreen = true;
+  } else {
+    document.exitFullscreen?.();
+    fullscreen = false;
+  }
 }
 
 function showHelpPage() {
@@ -158,90 +162,111 @@ function showHelpPage() {
 }
 
 const KEY_MAP = {
-    39: 'RIGHT', 68: 'RIGHT',
-    37: 'LEFT', 65: 'LEFT',
-    38: 'UP', 87: 'UP',
-    40: 'DOWN', 83: 'DOWN',
-    32: 'SPACE',
-    16: 'SHIFT'
+  39: "RIGHT",
+  68: "RIGHT",
+  37: "LEFT",
+  65: "LEFT",
+  38: "UP",
+  87: "UP",
+  40: "DOWN",
+  83: "DOWN",
+  32: "SPACE",
+  16: "SHIFT",
 };
 
 const keyState = {
-    SPACE: false,
-    SHIFT: false,
-    RIGHT: false,
-    LEFT: false,
-    UP: false,
-    DOWN: false
+  SPACE: false,
+  SHIFT: false,
+  RIGHT: false,
+  LEFT: false,
+  UP: false,
+  DOWN: false,
 };
 
 const justPressed = {
-    SPACE: false,
-    SHIFT: false
+  SPACE: false,
+  SHIFT: false,
 };
 
 window.addEventListener("keydown", (e) => {
-    console.log("Taste gedrückt:", e.keyCode);
+  console.log("Taste gedrückt:", e.keyCode);
 
-    const key = KEY_MAP[e.keyCode];
-    if (!key) return;
+  const key = KEY_MAP[e.keyCode];
+  if (!key) return;
 
-    if (!keyState[key]) {
-        keyState[key] = true;
-        keyboard[key] = true;
+  if (!keyState[key]) {
+    keyState[key] = true;
+    keyboard[key] = true;
 
-        if ((key === 'SPACE' || key === 'SHIFT') && world && !world.gameOver) {
-            justPressed[key] = true;
-        }
+    if ((key === "SPACE" || key === "SHIFT") && world && !world.gameOver) {
+      justPressed[key] = true;
     }
+  }
 });
 
 window.addEventListener("keyup", (e) => {
-    const key = KEY_MAP[e.keyCode];
-    if (!key) return;
+  const key = KEY_MAP[e.keyCode];
+  if (!key) return;
 
-    keyState[key] = false;
-    keyboard[key] = false;
-    if (key === 'SPACE' || key === 'SHIFT') {
-        justPressed[key] = false;
-    }
+  keyState[key] = false;
+  keyboard[key] = false;
+  if (key === "SPACE" || key === "SHIFT") {
+    justPressed[key] = false;
+  }
 });
 
 function initMobile() {
-    setupMobileButtonEvents();
+  setupMobileButtonEvents();
 
-    // Mobile Geräte erkennen
-    const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+  // Mobile Geräte erkennen
+  const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
 
-    if (isMobile) {
-        document.getElementById('leftMobile-container')?.classList.remove('hidden');
-        document.getElementById('rightMobile-container')?.classList.remove('hidden');
-    }
+  if (isMobile) {
+    document.getElementById("leftMobile-container")?.classList.remove("hidden");
+    document
+      .getElementById("rightMobile-container")
+      ?.classList.remove("hidden");
+  }
 }
 
-
 function setupMobileButtonEvents() {
-    const buttons = [
-        { id: 'left_button', key: 'LEFT' },
-        { id: 'right_button', key: 'RIGHT' },
-        { id: 'jump_button', key: 'SPACE' },
-        { id: 'throw_button', key: 'SHIFT' }
-    ];
+  const buttons = [
+    { id: "left_button", key: "LEFT" },
+    { id: "right_button", key: "RIGHT" },
+    { id: "jump_button", key: "SPACE" },
+    { id: "throw_button", key: "SHIFT" },
+  ];
 
-    buttons.forEach(({ id, key }) => {
-        const button = document.getElementById(id);
-        if (button) {
-            button.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                keyboard[key] = true;
-                button.classList.add('active');
-            }, { passive: false });
+  buttons.forEach(({ id, key }) => {
+    const button = document.getElementById(id);
+    if (button) {
+      button.addEventListener(
+        "touchstart",
+        (e) => {
+          e.preventDefault();
+          keyboard[key] = true;
+          button.classList.add("active");
+        },
+        { passive: false }
+      );
 
-            button.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                keyboard[key] = false;
-                button.classList.remove('active');
-            }, { passive: false });
-        }
-    });
+      button.addEventListener(
+        "touchend",
+        (e) => {
+          e.preventDefault();
+          keyboard[key] = false;
+          button.classList.remove("active");
+        },
+        { passive: false }
+      );
+    }
+  });
+}
+
+function showImpressum() {
+  document.getElementById("impressum")?.classList.remove("hidden");
+}
+
+function closeImpressum() {
+  document.getElementById("impressum")?.classList.add("hidden");
 }

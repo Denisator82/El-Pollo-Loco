@@ -155,12 +155,118 @@ button:hover {
     padding: 20px;
     }
 
-
 canvas {
     background-color: black;
     margin-bottom: 100px;
     border-radius: 20px;
     z-index: 500;
+}
+
+#impressum {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(0, 0, 0, 0.75);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 5000;
+}
+
+.impressum-content {
+    /* background-color: #FFFDD0; */
+    background-color: #F3E5AB;
+    color: black;
+    padding: 30px;
+    border-radius: 20px;
+    max-width: 90%;
+    width: 350px;
+    font-family: sans-serif;
+    text-align: left;
+}
+
+.impressum-content h2 {
+    margin-top: 0;
+}
+
+#impressum button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 18px;
+    border: none;
+    border-radius: 10px;
+    background-color: #FFCC33;
+    color: black;
+    cursor: pointer;
+    font-family: 'Fredericka the Great', cursive;
+    box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+#impressum button:hover {
+    background-color: #ffd84f;
+}
+
+#help {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5000;
+}
+
+.help-content {
+  background-color: #F3E5AB;
+  padding: 30px;
+  border-radius: 20px;
+  width: 80%;
+  max-width: 400px;
+  font-family: 'Fredericka the Great', cursive;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  text-align: left;
+}
+
+.help-content h2 {
+  margin-top: 0;
+  font-size: 28px;
+}
+
+.help-content ul {
+  list-style: none;
+  padding: 0;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.help-content li {
+  margin-bottom: 8px;
+}
+
+.help-content button {
+  display: block;
+  margin: 20px auto 0;
+  padding: 10px 20px;
+  font-size: 18px;
+  border-radius: 10px;
+  background-color: #FFCC33;
+  border: none;
+  cursor: pointer;
+  font-family: 'Fredericka the Great', cursive;
+  box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.help-content button:hover {
+  transform: scale(1.05);
+}
+
+
+.hidden {
+    display: none !important;
 }
 
 #miniBtns img, #left_button, #right_button, #jump_button, #throw_button {
@@ -197,10 +303,6 @@ canvas {
 .show {
     z-index: 100; /* Ganz nach vorne bringen */
     opacity: 1;   /* Sichtbar machen */
-}
-
-.hidden {
-    display: none;
 }
 
 @media only screen and (max-width: 840px) {

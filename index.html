@@ -42,7 +42,31 @@
             </div>
 
             <!-- Hilfe-Seite -->
-            <div id="help" class="hidden"></div>
+            <div id="help" class="hidden">
+                <div class="help-content">
+                    <h2>Steuerung & Tipps</h2>
+                    <ul>
+                        <li><b>Links / A : </b> nach links laufen</li>
+                        <li><b>Rechts / D :</b> nach rechts laufen</li>
+                        <li><b>Leertaste :</b> Springen</li>
+                        <li><b>Shift :</b> Flasche werfen</li>
+                        <li><b>Ton an/aus :</b> oben rechts Lautsprecher-Icon</li>
+                        <li><b>Fullscreen :</b> oben rechts Doppelpfeil</li>
+                    </ul>
+                    <button onclick="showHelpPage()">Schließen</button>
+                </div>
+            </div>
+
+
+            <!-- Impressum Modal -->
+            <div id="impressum" class="hidden">
+                <div class="impressum-content">
+                    <h2>Impressum</h2>
+                    <p>Denis Welsch<br>Ringstraße 38<br>51371 Leverkusen<br>Deutschland</p>
+                    <p>E-Mail: <a>denis.welsch@gmx.de</a></p>
+                    <button onclick="closeImpressum()" type="button">Schließen</button>
+                </div>
+            </div>
 
             <!-- Canvas-Bereich -->
             <div id="canvasContent" class="hidden">
@@ -64,7 +88,8 @@
             <div id="miniBtns">
                 <img id="audio" src="img/img/10_extras/volume-up-fill.svg" alt="Ton einschalten" onclick="toggleMute()">
                 <img id="fullscreen" src="img/img/10_extras/arrows-fullscreen.svg" alt="" onclick="toggleFullscreen()">
-                <img id="settings" src="img/img/10_extras/gear.svg" alt="" onclick="showHelpPage()">
+                <img id="settings" src="img/img/10_extras/gear.svg" alt="Hilfe anzeigen" onclick="showHelpPage()">
+                <img id="impressumBtn" src="img/img/10_extras/info-circle.svg" alt="Impressum anzeigen" onclick="showImpressum()">
             </div>
 
             <!-- Mobile Steuerung -->
