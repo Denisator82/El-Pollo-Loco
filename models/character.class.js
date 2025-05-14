@@ -232,8 +232,13 @@ class Character extends MovableObject {
     }
 
     _handleWalkingSound(isMovingThisFrame) {
-        const walkSound = this.world?.audioManager?.sounds?.['walk'];
-        if (!walkSound || this.isDead()) return; // ← hier hinzugefügt
+        if (this.isDead()) return;
+
+        const audioManager = this.world?.audioManager;
+        if (!audioManager || audioManager.isMuted) return;
+
+        const walkSound = audioManager.sounds?.['walk'];
+        if (!walkSound) return;
 
         if (isMovingThisFrame && !this.wasMovingLastFrame) {
             walkSound.currentTime = 0;
@@ -243,8 +248,6 @@ class Character extends MovableObject {
             walkSound.currentTime = 0;
         }
     }
-
-
 
     /**
      * Aktualisiert die Kamera basierend auf der X-Position des Charakters.

@@ -15,6 +15,13 @@ function newGame() {
     world = new World(canvas, keyboard, audioManager);
     world.loadSounds();
     passWorldToLevel();
+    canvas?.getContext('2d')?.clearRect(0, 0, canvas.width, canvas.height);
+    if (world?.audioManager) {
+        world.audioManager.pauseBackgroundMusic();
+        setTimeout(() => {
+            world.audioManager.playBackgroundMusic();
+        }, 100);
+    }
 }
 
 function passWorldToLevel() {
@@ -89,21 +96,23 @@ function stopGame() {
 }
 
 function restartGame() {
-    // Stoppe vorher das alte Spiel, falls vorhanden
-    if (world && typeof world.stopAllIntervals === 'function') {
-        world.stopAllIntervals();
-    }
+    console.log('🔁 Restart Game pressed');
 
-    // Reset UI
-    document.getElementById("startScreen")?.classList.remove("hidden");
+    // Stoppe alles vollständig über stopGame()
+    stopGame();
+
+    // UI zurücksetzen
+    document.getElementById("startScreen")?.classList.add("hidden");
     document.getElementById("winImageContainer")?.classList.remove("show");
     document.getElementById("loseImageContainer")?.classList.remove("show");
+    document.getElementById("canvasContent")?.classList.remove("hidden");
 
-    // Neues Spiel starten
+    // Wichtig: world nullen, damit die alte Instanz ganz verschwindet
+    world = null;
+
+    console.log('🎮 Calling newGame()');
     newGame();
 }
-
-
 
 function toggleMute() {
     if (world && world.audioManager) {

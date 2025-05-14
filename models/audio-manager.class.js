@@ -51,19 +51,28 @@ class AudioManager {
      * @param {string} name - The name of the sound to play.
      */
     playSound(name) {
-        if (!this.isMuted && this.sounds[name]) {
-            this.sounds[name].currentTime = 0;
-            this.sounds[name].play().catch(e => console.warn("Error playing sound " + name + ":", e)); // Added catch for robustness
-        }
+    if (this.isMuted) return; // Stoppe hier direkt
+    const sound = this.sounds[name];
+    if (sound) {
+        sound.currentTime = 0;
+        sound.play().catch(e => console.warn("Error playing sound " + name + ":", e));
     }
+}
 
-    /**
-     * Starts playing the main background music if it's set, not muted, and the endboss fight is not active.
-     */
+
     playBackgroundMusic() {
-        if (this.backgroundMusic && !this.isMuted && !this.endbossFightStarted) { // Only play if endboss fight is not running
-            this.backgroundMusic.play().catch(e => console.warn("Error playing background music:", e)); // Added catch
+        if (
+            this.backgroundMusic &&
+            !this.isMuted &&
+            !this.endbossFightStarted &&
+            this.backgroundMusic.paused
+        ) {
+            this.backgroundMusic.play().catch(e =>
+                console.warn("Error playing background music:", e)
+            );
             this.backgroundMusicPlaying = true;
+        } else {
+            console.log("🎵 Hintergrundmusik läuft bereits oder nicht erlaubt.");
         }
     }
 
