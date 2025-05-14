@@ -116,7 +116,7 @@ class Endboss extends MovableObject {
     }, 200);
   }
 
-  endbossAnimation(now) {
+  animateEndbossFrame(now) {
     if (this.world?.gameOver) return;
 
     this.showHealthBarOnce();
@@ -183,11 +183,10 @@ class Endboss extends MovableObject {
     const step = (now) => {
       const delta = now - lastTime;
       if (delta >= 500) {
-        this.endbossAnimation(now);
+        this.animateEndbossFrame(now);
         lastTime = now;
       }
 
-      // Nur stoppen, wenn Death-Animation bereits einmal vollständig durchgelaufen ist
       const endAnimationFinished = this.isDeadEndboss() && this.isAlreadyDeadAnimated;
 
       if (!endAnimationFinished) {
@@ -206,7 +205,7 @@ class Endboss extends MovableObject {
           !this.isDeadEndboss() &&
           !this.isHurtEndboss() &&
           !this.isCollidingWithCharacter &&
-          !this.world?.gameOver && // ✅ ← hier wichtig!
+          !this.world?.gameOver &&
           this.i >= this.IMAGES_ALERT.length;
 
         if (shouldMove && char && this.x + this.width / 2 > char.x + char.width / 2) {
@@ -217,10 +216,10 @@ class Endboss extends MovableObject {
   }
 
   stopEndbossIntervals() {
-      clearInterval(this.firstContactIntervalId);
-      clearInterval(this.movementIntervalId);
-      cancelAnimationFrame(this.animationFrameId); // WICHTIG!
-      this.firstContactIntervalId = this.movementIntervalId = this.animationFrameId = null;
-      super.stopGravity?.(); // falls vorhanden
+    clearInterval(this.firstContactIntervalId);
+    clearInterval(this.movementIntervalId);
+    cancelAnimationFrame(this.animationFrameId);
+    this.firstContactIntervalId = this.movementIntervalId = this.animationFrameId = null;
+    super.stopGravity?.();
   }
 }
