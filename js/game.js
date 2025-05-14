@@ -125,16 +125,23 @@ function restartGame() {
 }
 
 function toggleMute() {
-  if (world && world.audioManager) {
-    audioManager.toggleMute();
-    saveMuteState();
+  const manager = world?.audioManager || audioManager;
+
+  if (manager) {
+    manager.toggleMute();
+    localStorage.setItem('isMuted', manager.isMuted.toString());
     updateAudioIcon();
   }
 }
 
+
 function updateAudioIcon() {
   const audioIcon = document.getElementById("audio");
-  if (audioManager.isMuted) {
+  const manager = world?.audioManager || audioManager;
+
+  if (!audioIcon || !manager) return;
+
+  if (manager.isMuted) {
     audioIcon.src = "img/img/10_extras/volume-mute-fill.svg";
     audioIcon.alt = "Ton an";
   } else {
@@ -142,6 +149,7 @@ function updateAudioIcon() {
     audioIcon.alt = "Ton aus";
   }
 }
+
 
 function toggleFullscreen() {
   const mainSection = document.getElementById("mainSection");
