@@ -20,6 +20,7 @@ class World {
     gameOver = false;
     collisionIntervalId = null;
     throwIntervalId = null;
+    animationFrameId = null;
 
     constructor(canvas, keyboard, audioManager) {
         this.canvas = canvas;
@@ -81,12 +82,12 @@ class World {
             this.character.throwBottle(this.character.otherDirection);
             this.lastThrowTime = now;
             this.audioManager?.playSound("throw");
-            justPressed.SHIFT = false; // Reset nach einmaligem Wurf
+            justPressed.SHIFT = false;
         }
     }
 
     draw() {
-        const start = performance.now();
+        if (!this.ctx || !this.canvas || this.gameOver) return;
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.save();
         this.ctx.translate(this.camera_x, 0);
@@ -108,22 +109,17 @@ class World {
         [this.statusBar, this.statusBarBottle, this.statusBarCoin, this.statusBarEndboss]
             .forEach(el => this.addToMap(el));
 
-        const end = performance.now();
-        // Optional zur Laufzeit prüfen, ob Frames zu langsam sind:
-        // console.log(`Draw time: ${Math.round(end - start)}ms`);
-
-        requestAnimationFrame(() => this.draw());
+        this.animationFrameId = requestAnimationFrame(() => this.draw());
     }
 
     isVisibleOnCanvas(obj) {
-        const buffer = 100; // kleiner Puffer außerhalb des Viewports
+        const buffer = 100;
         const x = obj?.x ?? 0;
         const width = obj?.width ?? 0;
         const left = -this.camera_x - buffer;
         const right = -this.camera_x + this.canvas.width + buffer;
         return x + width > left && x < right;
     }
-
 
     addObjectsToMap(objects) {
         objects?.forEach(obj => obj && this.addToMap(obj));
@@ -136,8 +132,6 @@ class World {
         if (shouldFlip) this.flipImage(obj);
 
         obj.draw(this.ctx);
-
-        // obj.drawFrame?.(this.ctx); // Uncomment for debugging
 
         if (shouldFlip) this.flipImageBack(obj);
     }
@@ -160,7 +154,7 @@ class World {
         this.level.enemies?.forEach(enemy => {
             enemy?.stopChickenIntervals?.();
             enemy?.stopChickenMiniIntervals?.();
-            enemy?.stopEndbossIntervals?.(); // z.B. cancelAnimationFrame()
+            enemy?.stopEndbossIntervals?.();
         });
 
         this.throwableObjects?.forEach(bottle => {
@@ -169,11 +163,16 @@ class World {
 
         this.stopWorldIntervals();
 
-        // Sounds stoppen
+        if (this.animationFrameId) {
+            cancelAnimationFrame(this.animationFrameId);
+            this.animationFrameId = null;
+        }
+
+        this.character?.stopGravity?.();
+
         this.audioManager?.pauseBackgroundMusic?.();
         this.audioManager?.pauseEndbossMusic?.();
     }
-
 
     stopWorldIntervals() {
         clearInterval(this.collisionIntervalId);

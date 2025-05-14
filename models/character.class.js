@@ -3,15 +3,15 @@
  * Inherits from MovableObject.
  */
 class Character extends MovableObject {
-    y = 180; // Y-coordinate
-    height = 250; // Height
-    width = 120; // Width
-    speed = 5; // Speed
-    coinsCollected = 0; // Coins collected
-    bottlesCollected = 0; // Bottles collected
+    y = 180;
+    height = 250;
+    width = 120;
+    speed = 5;
+    coinsCollected = 0;
+    bottlesCollected = 0;
     wasMovingLastFrame = false;
-    world; // Reference to the game world
-    offset = { top: 80, left: 20, right: 20, bottom: 0 }; // Collision box offsets
+    world;
+    offset = { top: 80, left: 20, right: 20, bottom: 0 };
 
     /**
      * Images for the standing state of the character
@@ -94,16 +94,22 @@ class Character extends MovableObject {
         'img/img/2_character_pepe/4_hurt/H-43.png'
     ];
 
-    moveIntervalId = null; // Stores the movement interval ID
-    animationIntervalId = null; // Stores the animation interval ID
+    moveIntervalId = null;
+    animationIntervalId = null;
 
     /**
-     * Initializes the character, loads images, sets collision offset,
-     * applies gravity, and starts the animation.
+     * Initializes the character with assets and behavior.
      */
     constructor() {
-        super(); // Parent constructor
+        super();
+        this.loadAssets();
+        this.offset = { top: 100, right: 30, bottom: 10, left: 20 };
+        this.applyGravity();
+        this.animateCharacter();
+    }
 
+    /** Loads all necessary animation images for the character. */
+    loadAssets() {
         this.loadImage(this.IMAGES_STANDING[0]);
         this.loadImages(this.IMAGES_STANDING);
         this.loadImages(this.IMAGES_SLEEPING);
@@ -111,90 +117,67 @@ class Character extends MovableObject {
         this.loadImages(this.IMAGES_JUMPING);
         this.loadImages(this.IMAGES_DEAD);
         this.loadImages(this.IMAGES_HURT);
-
-        this.offset = { top: 100, right: 30, bottom: 10, left: 20 };
-
-        this.applyGravity();
-        this.animateCharacter();
     }
 
-    /**
-     * Reduces energy when damaged and plays a sound, unless the character is dead.
-     * @param {number} damageAmount - The amount of damage to reduce from the character's energy.
-     */
+    /** Applies damage to the character. */
     hit(damageAmount) {
-        if (typeof damageAmount !== 'number' || damageAmount < 0) {
-            console.warn('Invalid damage:', damageAmount);
-            damageAmount = 0;
-        }
-
-        this.energy -= damageAmount;
-        if (this.energy < 0) this.energy = 0;
-
+        if (typeof damageAmount !== 'number' || damageAmount < 0) damageAmount = 0;
+        this.energy = Math.max(this.energy - damageAmount, 0);
         if (!this.isDead()) {
             this.lastHit = new Date().getTime();
-            if (this.world?.audioManager?.playSound)
-                this.world.audioManager.playSound('hurt');
+            this.world?.audioManager?.playSound('hurt');
         } else {
-        console.log('LOG: Character died.');
-        
-        // Lauf-Sound sofort stoppen
             const walkSound = this.world?.audioManager?.sounds?.['walk'];
             if (walkSound) {
                 walkSound.pause();
                 walkSound.currentTime = 0;
             }
         }
-    }   
-
-    /**
-     * Returns true if the character was hit recently.
-     * @returns {boolean} - True if the character was hit within the last second.
-     */
-    isHurt() {
-        let timepassed = new Date().getTime() - this.lastHit;
-        return (timepassed / 1000) < 1;
     }
 
-    /**
-     * Returns true if the character is dead (energy is 0).
-     * @returns {boolean} - True if the character is dead.
-     */
+    isHurt() {
+        return (new Date().getTime() - this.lastHit) / 1000 < 1;
+    }
+
     isDead() {
         return this.energy === 0;
     }
 
-    /**
-     * Moves the character to the right.
-     */
     moveRight() {
         this.x += this.speed;
     }
 
-    /**
-     * Moves the character to the left.
-     */
     moveLeft() {
         this.x -= this.speed;
     }
 
-    /**
-     * Makes the character jump if possible (not dead and not above the ground).
-     */
-    jump() {
-        if (!this.isDead() && !this.isAboveGround() && justPressed.SPACE) {
-            this.speedY = 10;
-            this.applyGravity();
-            this.world?.audioManager?.playSound?.('jump');
-            this.resetStandingTime();
-            justPressed.SPACE = false; // ← verhindert Dauerfeuer
-        }
+jump() {
+    if (!this.world || this.world.gameOver) return; // ⬅️ ganz oben
+
+    if (!this.isDead() && !this.isAboveGround() && justPressed.SPACE) {
+        console.log("JUMP!", this.y, this.isAboveGround(), this.world);
+        this.speedY = 8;
+        this.applyGravity();
+        this.world?.audioManager?.playSound?.('jump');
+        this.resetStandingTime();
+        justPressed.SPACE = false;
     }
+}
+
+/**
+ * Checks if the character is falling down onto an enemy (from above).
+ * @param {MovableObject} enemy - The enemy object.
+ * @returns {boolean}
+ */
+isJumpingOn(enemy) {
+    return (
+        this.speedY < 0 &&
+        this.y + this.height <= enemy.y + enemy.height * 0.6
+    );
+}
 
 
-    /**
-     * Startet zwei Intervalle: Bewegung (~60 FPS) & Animation (~10 FPS).
-     */
+
     animateCharacter() {
         this.moveIntervalId = setInterval(() => {
             this._updateMovementAndSoundState();
@@ -203,42 +186,33 @@ class Character extends MovableObject {
 
         this.animationIntervalId = setInterval(() => {
             this._playAnimationBasedOnState();
-        }, 100); 
+        }, 100);
     }
 
-
-    /**
-     * Verwaltet Bewegung, Springen und Sound-Zustände pro Frame.
-     */
     _updateMovementAndSoundState() {
         let isMovingThisFrame = false;
-
         if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
             this.moveRight(); this.otherDirection = false;
             this.resetStandingTime(); isMovingThisFrame = true;
         }
-
         if (this.world.keyboard.LEFT && this.x > 0) {
             this.moveLeft(); this.otherDirection = true;
             this.resetStandingTime(); isMovingThisFrame = true;
         }
-
         if (this.world.keyboard.SPACE && !this.isAboveGround()) {
             this.jump(); this.resetStandingTime();
         }
-
         this._handleWalkingSound(isMovingThisFrame);
         this.wasMovingLastFrame = isMovingThisFrame;
     }
 
     _handleWalkingSound(isMovingThisFrame) {
         if (this.isDead()) return;
+        if (this.isAboveGround()) isMovingThisFrame = false; // ← NEU
 
-        const audioManager = this.world?.audioManager;
-        if (!audioManager || audioManager.isMuted) return;
-
-        const walkSound = audioManager.sounds?.['walk'];
-        if (!walkSound) return;
+        const am = this.world?.audioManager;
+        const walkSound = am?.sounds?.['walk'];
+        if (!am || am.isMuted || !walkSound) return;
 
         if (isMovingThisFrame && !this.wasMovingLastFrame) {
             walkSound.currentTime = 0;
@@ -249,126 +223,66 @@ class Character extends MovableObject {
         }
     }
 
-    /**
-     * Aktualisiert die Kamera basierend auf der X-Position des Charakters.
-     */
     _updateCamera() {
         this.world.camera_x = -this.x + 100;
     }
 
-    /**
-     * Determines and plays the correct animation sequence based on the character's state.
-     * Called by the animationIntervalId (~10 FPS).
-     * @private
-     * @method
-     */
-    _playAnimationBasedOnState() { // <-- NEUE HILFSMETHODE (< 14 Zeilen)
-        // Play animations based on the character's current state, prioritized from critical states (dead) to idle.
-        if (this.isDead()) {
-            this.playAnimation(this.IMAGES_DEAD);
-            this.resetStandingTime();
-        } else if (this.isHurt && typeof this.isHurt === 'function' && this.isHurt()) {
-            this.playAnimation(this.IMAGES_HURT);
-            this.resetStandingTime();
-        } else if (this.isAboveGround()) {
-            this.playAnimation(this.IMAGES_JUMPING);
-            this.resetStandingTime();
-        } else if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) { // Prüft immer noch, ob eine Richtungstaste gedrückt ist
+    _playAnimationBasedOnState() {
+        if (this.isDead()) this.playAnimation(this.IMAGES_DEAD);
+        else if (this.isHurt?.()) this.playAnimation(this.IMAGES_HURT);
+        else if (this.isAboveGround()) this.playAnimation(this.IMAGES_JUMPING);
+        else if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT)
             this.playAnimation(this.IMAGES_WALKING);
-            this.resetStandingTime();
-        } else {
-            this.animateStanding(); // Ruft Hilfsmethode für Idle/Sleeping auf
-        }
+        else this.animateStanding();
+        this.resetStandingTime();
     }
 
-    /**
-     * Plays the standing animation for the character.
-     * If the character stands still for a duration exceeding the sleep delay,
-     * it plays the sleeping animation.
-     */
     animateStanding() {
-        // Play the standing animation
         this.playAnimation(this.IMAGES_STANDING);
-        // Increment the standing time by 65 ms
         this.standingTime += 65;
-        // If the character has been standing for longer than the sleep delay, switch to the sleeping animation
-        if (this.standingTime >= this.sleepDelay) {
-            this.playAnimation(this.IMAGES_SLEEPING);
-        }
+        if (this.standingTime >= this.sleepDelay) this.playAnimation(this.IMAGES_SLEEPING);
     }
 
-    /**
-     * Resets the standing time counter to 0.
-     */
     resetStandingTime() {
         this.standingTime = 0;
     }
 
-    /**
-     * Increments coin count and plays a collection sound.
-     * Coin removal from world is handled elsewhere.
-     * @param {Coin} coin - The collected coin object.
-     */
     collectCoin(coin) {
         this.coinsCollected++;
-        this.world?.audioManager?.playSound?.('coinCollected');
+        this.world?.audioManager?.playSound('coinCollected');
     }
 
-    /**
-     * Increments bottle count, updates the status bar, and plays a collection sound.
-     * @param {Bottle} bottle - The collected bottle (removed by the World class).
-     */
     collectBottle(bottle) {
         this.bottlesCollected++;
-        this.updateBottleStatus?.();
-        this.world?.audioManager?.playSound?.('bottleCollect');
+        this.updateBottleStatus();
+        this.world?.audioManager?.playSound('bottleCollect');
     }
 
-    /**
-     * Updates the bottle status bar based on collected bottle count (max 8 = 100%).
-     */
     updateBottleStatus() {
         const percent = (this.bottlesCollected / 8) * 100;
-        this.world?.statusBarBottle?.setPercentage?.(percent);
+        this.world?.statusBarBottle?.setPercentage(percent);
     }
 
-    /**
-     * Throws a bottle if available: updates status, creates and adds the bottle, plays sound.
-     * @param {boolean} otherDirection - True if character is facing left.
-     */
     throwBottle(otherDirection) {
         if (this.bottlesCollected <= 0) return;
         this.bottlesCollected--;
-        this.updateBottleStatus?.();
-        
-        const offsetX = 30, offsetY = 20;
-        const bottleX = otherDirection ? this.x - offsetX : this.x + this.width - offsetX;
-        const bottleY = this.y + this.height / 2 - offsetY;
-        const bottle = new ThrowableObject(this.world, bottleX, bottleY, otherDirection);
-        
-        this.world?.throwableObjects?.push?.(bottle) ||
-        console.error('LOG: Could not add bottle – missing array.');
+        this.updateBottleStatus();
 
-        this.resetStandingTime?.();
+        const offsetX = 30, offsetY = 20;
+        const x = otherDirection ? this.x - offsetX : this.x + this.width - offsetX;
+        const y = this.y + this.height / 2 - offsetY;
+        const bottle = new ThrowableObject(this.world, x, y, otherDirection);
+
+        this.world?.throwableObjects?.push(bottle) ||
+            console.error('Could not add bottle.');
+
+        this.resetStandingTime();
     }
 
-    /**
-     * Stops all specific intervals associated with the character's movement and animation.
-     * Clears the interval IDs and sets them to null.
-     * Called by World.stopAllIntervals().
-     * @method
-     */
     stopCharacterIntervals() {
-        // Clear movement interval
-        if (this.moveIntervalId) {
-            clearInterval(this.moveIntervalId);
-            this.moveIntervalId = null;
-        }
-
-        // Clear animation interval
-        if (this.animationIntervalId) {
-            clearInterval(this.animationIntervalId);
-            this.animationIntervalId = null;
-        }
+        if (this.moveIntervalId) clearInterval(this.moveIntervalId);
+        if (this.animationIntervalId) clearInterval(this.animationIntervalId);
+        this.moveIntervalId = null;
+        this.animationIntervalId = null;
     }
 }

@@ -3,13 +3,31 @@ let world;
 let keyboard = new Keyboard();
 let audioManager = new AudioManager();
 let fullscreen = false;
-let keyPressed = {}; // Verhindert Dauerfeuer
+let keyPressed = {}; // Prevents rapid-fire actions
+let gameAlreadyStarted = false; // ⬅️ Verhindert mehrfaches Starten
 
 function initPage() {
+    loadMuteState();
     updateAudioIcon();
 }
 
+/**
+ * Loads mute state from localStorage.
+ */
+function loadMuteState() {
+    const storedMute = localStorage.getItem('isMuted') === 'true';
+    audioManager.isMuted = storedMute;
+}
+
+/**
+ * Saves mute state to localStorage.
+ */
+function saveMuteState() {
+    localStorage.setItem('isMuted', audioManager.isMuted.toString());
+}
+
 function newGame() {
+    console.log("🆕 newGame() wurde aufgerufen");
     canvas = document.getElementById('canvas');
     initLevel();
     world = new World(canvas, keyboard, audioManager);
@@ -36,6 +54,13 @@ function passWorldToLevel() {
 }
 
 function startGame() {
+    if (gameAlreadyStarted) {
+        console.warn("❌ Spiel wurde bereits gestartet – Start abgebrochen.");
+        return;
+    }
+
+    gameAlreadyStarted = true;
+
     document.getElementById("startScreen").classList.add("hidden");
     document.getElementById("canvasContent").classList.remove("hidden");
     newGame();
@@ -43,80 +68,62 @@ function startGame() {
 }
 
 function gameLose() {
-    console.log("LOG: gameLose() called.");
     if (!world) return;
-
     world.gameOver = true;
     stopGame();
     world.audioManager?.playSound?.("lose");
-
-    document.getElementById('loseImageContainer')?.classList.add('show'); // ← richtig!
+    document.getElementById('loseImageContainer')?.classList.add('show');
 }
 
 function gameWin() {
-    console.log("LOG: gameWin() called.");
     if (!world) return;
-
     world.gameOver = true;
     stopGame();
     world.audioManager?.playSound?.("win");
-
     document.getElementById('winImageContainer')?.classList.add('show');
 }
 
 function stopGame() {
-    console.log('LOG: --- Start stopGame (game.js) ---');
-
-    if (!world) {
-        console.warn('LOG: World object not available in stopGame.');
-        return;
-    }
-
-    world.character?.stopCharacterIntervals?.();
-
-    if (Array.isArray(world.enemies)) {
-        world.enemies.forEach(enemy => {
-            enemy?.stopChickenIntervals?.();
-            enemy?.stopChickenMiniIntervals?.();
-        });
-    }
-
-    if (Array.isArray(world.level?.endboss)) {
-        world.level.endboss.forEach(boss => boss?.stopEndbossIntervals?.());
-    } else {
-        console.warn("LOG: world.level.endboss is not an array or does not exist.");
-    }
-
-    world.throwableObjects?.forEach(obj => obj?.stopThrowableObjectIntervals?.());
-    world.stopWorldIntervals?.();
-    world.audioManager?.pauseEndbossMusic?.();
-    world.audioManager?.pauseBackgroundMusic?.();
-
-    console.log('LOG: --- End stopGame (game.js) ---');
+    if (!world) return;
+    world.stopAllIntervals?.();
 }
 
 function restartGame() {
     console.log('🔁 Restart Game pressed');
 
-    // Stoppe alles vollständig über stopGame()
-    stopGame();
+    // Alles stoppen
+    if (world?.stopAllIntervals) world.stopAllIntervals();
+    world = null;
 
-    // UI zurücksetzen
+    // Tasten sicher zurücksetzen
+    ['SPACE', 'SHIFT', 'RIGHT', 'LEFT', 'UP', 'DOWN'].forEach(k => {
+        justPressed[k] = false;
+        keyState[k] = false;
+        keyboard[k] = false;
+    });
+
+    // Fokus vom Button entfernen, um Enter-Auslöser zu vermeiden
+    document.activeElement.blur();
+
+    // Canvas leeren
+    const canvas = document.getElementById("canvas");
+    canvas?.getContext('2d')?.clearRect(0, 0, canvas.width, canvas.height);
+
+    // UI anpassen
     document.getElementById("startScreen")?.classList.add("hidden");
     document.getElementById("winImageContainer")?.classList.remove("show");
     document.getElementById("loseImageContainer")?.classList.remove("show");
     document.getElementById("canvasContent")?.classList.remove("hidden");
 
-    // Wichtig: world nullen, damit die alte Instanz ganz verschwindet
-    world = null;
-
-    console.log('🎮 Calling newGame()');
+    // Neues Spiel starten
     newGame();
+    gameAlreadyStarted = false;
 }
 
 function toggleMute() {
     if (world && world.audioManager) {
         audioManager.toggleMute();
+        saveMuteState();
         updateAudioIcon();
     }
 }
@@ -144,7 +151,10 @@ function toggleFullscreen() {
 }
 
 function showHelpPage() {
-    alert('Hilfeseite wird angezeigt (Funktionalität noch nicht implementiert)');
+    const helpPage = document.getElementById('help');
+    if (helpPage) {
+        helpPage.classList.toggle('hidden');
+    }
 }
 
 const KEY_MAP = {
@@ -171,13 +181,16 @@ const justPressed = {
 };
 
 window.addEventListener("keydown", (e) => {
+    console.log("Taste gedrückt:", e.keyCode);
+
     const key = KEY_MAP[e.keyCode];
     if (!key) return;
 
     if (!keyState[key]) {
         keyState[key] = true;
         keyboard[key] = true;
-        if (key === 'SPACE' || key === 'SHIFT') {
+
+        if ((key === 'SPACE' || key === 'SHIFT') && world && !world.gameOver) {
             justPressed[key] = true;
         }
     }
@@ -193,7 +206,6 @@ window.addEventListener("keyup", (e) => {
         justPressed[key] = false;
     }
 });
-
 
 function initMobile() {
     setupMobileButtonEvents();
@@ -213,11 +225,13 @@ function setupMobileButtonEvents() {
             button.addEventListener('touchstart', (e) => {
                 e.preventDefault();
                 keyboard[key] = true;
+                button.classList.add('active');
             }, { passive: false });
 
             button.addEventListener('touchend', (e) => {
                 e.preventDefault();
                 keyboard[key] = false;
+                button.classList.remove('active');
             }, { passive: false });
         }
     });

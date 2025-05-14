@@ -103,25 +103,23 @@ class CollisionManager {
 
   checkCollisionsCharacterJumpOnEnemy() {
     for (let i = this.world.level.enemies.length - 1; i >= 0; i--) {
-      const e = this.world.level.enemies[i];
-      if (!(e instanceof Endboss)) {
+        const e = this.world.level.enemies[i];
         if (
-          e?.isDead?.() === false &&
-          this.world.character.isColliding?.(e) &&
-          this.world.character.isAboveGround?.() &&
-          this.world.character.speedY < 0
+            e?.isDead?.() === false &&
+            this.world.character.isColliding?.(e) &&
+            this.world.character.isJumpingOn?.(e)
         ) {
-          this.handleEnemyDefeatedByJump(e);
+            this.handleEnemyDefeatedByJump(e);
         }
-      }
     }
-  }
+}
 
-  handleEnemyDefeatedByJump(enemy) {
-    this.world.character.jump?.();
+handleEnemyDefeatedByJump(enemy) {
+    this.world.character.speedY = 5; // Rebound nach oben
     enemy.setDead?.();
     this.scheduleEnemyRemoval(enemy);
-  }
+    this.world.audioManager?.playSound?.('chickenDead'); // Falls du das magst
+}
 
   scheduleEnemyRemoval(enemy) {
     setTimeout(() => {
