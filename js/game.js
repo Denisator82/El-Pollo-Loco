@@ -209,7 +209,16 @@ window.addEventListener("keyup", (e) => {
 
 function initMobile() {
     setupMobileButtonEvents();
+
+    // Mobile Geräte erkennen
+    const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+
+    if (isMobile) {
+        document.getElementById('leftMobile-container')?.classList.remove('hidden');
+        document.getElementById('rightMobile-container')?.classList.remove('hidden');
+    }
 }
+
 
 function setupMobileButtonEvents() {
     const buttons = [
