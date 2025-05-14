@@ -251,27 +251,21 @@ function setupMobileButtonEvents() {
 
   buttons.forEach(({ id, key }) => {
     const button = document.getElementById(id);
-    if (button) {
-      button.addEventListener(
-        "touchstart",
-        (e) => {
-          e.preventDefault();
-          keyboard[key] = true;
-          button.classList.add("active");
-        },
-        { passive: false }
-      );
+    if (!button) return;
 
-      button.addEventListener(
-        "touchend",
-        (e) => {
-          e.preventDefault();
-          keyboard[key] = false;
-          button.classList.remove("active");
-        },
-        { passive: false }
-      );
-    }
+    button.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      keyboard[key] = true;
+      if (key === 'SPACE' || key === 'SHIFT') justPressed[key] = true;
+      button.classList.add("active");
+    }, { passive: false });
+
+    button.addEventListener("touchend", (e) => {
+      e.preventDefault();
+      keyboard[key] = false;
+      if (key === 'SPACE' || key === 'SHIFT') justPressed[key] = false;
+      button.classList.remove("active");
+    }, { passive: false });
   });
 }
 
