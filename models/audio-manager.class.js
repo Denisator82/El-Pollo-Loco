@@ -164,6 +164,26 @@ class AudioManager {
     }
 
     /**
+     * Stops all currently playing sounds and resets them to start.
+     */
+    stopAllSounds() {
+        for (let name in this.sounds) {
+            const sound = this.sounds[name];
+            sound.pause();
+            sound.currentTime = 0;
+        }
+
+        if (this.backgroundMusic) {
+            this.backgroundMusic.pause();
+            this.backgroundMusic.currentTime = 0;
+        }
+
+        this.backgroundMusicPlaying = false;
+        this.endbossFightStarted = false;
+    }
+
+
+    /**
      * Loads all registered sounds (including background music).
      * Executes a callback function once all sounds are ready to be played.
      * @param {function} [callback] - An optional function to call when all sounds have been loaded.

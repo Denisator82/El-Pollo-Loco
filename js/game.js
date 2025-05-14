@@ -83,9 +83,12 @@ function gameWin() {
   if (!world) return;
   world.gameOver = true;
   stopGame();
-  world.audioManager?.playSound?.("win");
+  world.audioManager?.stopAllSounds?.();
+  world.audioManager?.playWinSound?.();
+
   document.getElementById("winImageContainer")?.classList.add("show");
 }
+
 
 function stopGame() {
   if (!world) return;
