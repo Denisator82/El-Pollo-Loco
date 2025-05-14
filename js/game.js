@@ -4,30 +4,23 @@ let keyboard = new Keyboard();
 let audioManager = new AudioManager();
 let fullscreen = false;
 let keyPressed = {}; // Prevents rapid-fire actions
-let gameAlreadyStarted = false; // ⬅️ Verhindert mehrfaches Starten
+let gameAlreadyStarted = false;
 
 function initPage() {
   loadMuteState();
   updateAudioIcon();
 }
 
-/**
- * Loads mute state from localStorage.
- */
 function loadMuteState() {
   const storedMute = localStorage.getItem("isMuted") === "true";
   audioManager.isMuted = storedMute;
 }
 
-/**
- * Saves mute state to localStorage.
- */
 function saveMuteState() {
   localStorage.setItem("isMuted", audioManager.isMuted.toString());
 }
 
 function newGame() {
-  console.log("🆕 newGame() wurde aufgerufen");
   canvas = document.getElementById("canvas");
   initLevel();
   world = new World(canvas, keyboard, audioManager);
@@ -58,13 +51,9 @@ function passWorldToLevel() {
 }
 
 function startGame() {
-  if (gameAlreadyStarted) {
-    console.warn("❌ Spiel wurde bereits gestartet – Start abgebrochen.");
-    return;
-  }
+  if (gameAlreadyStarted) return;
 
   gameAlreadyStarted = true;
-
   document.getElementById("startScreen").classList.add("hidden");
   document.getElementById("canvasContent").classList.remove("hidden");
   newGame();
@@ -85,7 +74,6 @@ function gameWin() {
   stopGame();
   world.audioManager?.stopAllSounds?.();
   world.audioManager?.playWinSound?.();
-
   document.getElementById("winImageContainer")?.classList.add("show");
 }
 
@@ -95,40 +83,31 @@ function stopGame() {
 }
 
 function restartGame() {
-  console.log("🔁 Restart Game pressed");
-
-  // Alles stoppen
   if (world?.stopAllIntervals) world.stopAllIntervals();
   world = null;
 
-  // Tasten sicher zurücksetzen
   ["SPACE", "SHIFT", "RIGHT", "LEFT", "UP", "DOWN"].forEach((k) => {
     justPressed[k] = false;
     keyState[k] = false;
     keyboard[k] = false;
   });
 
-  // Fokus vom Button entfernen, um Enter-Auslöser zu vermeiden
   document.activeElement.blur();
 
-  // Canvas leeren
   const canvas = document.getElementById("canvas");
   canvas?.getContext("2d")?.clearRect(0, 0, canvas.width, canvas.height);
 
-  // UI anpassen
   document.getElementById("startScreen")?.classList.add("hidden");
   document.getElementById("winImageContainer")?.classList.remove("show");
   document.getElementById("loseImageContainer")?.classList.remove("show");
   document.getElementById("canvasContent")?.classList.remove("hidden");
 
-  // Neues Spiel starten
   newGame();
   gameAlreadyStarted = false;
 }
 
 function toggleMute() {
   const manager = world?.audioManager || audioManager;
-
   if (manager) {
     manager.toggleMute();
     localStorage.setItem('isMuted', manager.isMuted.toString());
@@ -139,7 +118,6 @@ function toggleMute() {
 function updateAudioIcon() {
   const audioIcon = document.getElementById("audio");
   const manager = world?.audioManager || audioManager;
-
   if (!audioIcon || !manager) return;
 
   if (manager.isMuted) {
@@ -163,32 +141,22 @@ function toggleFullscreen() {
 }
 
 function showHelpPage() {
-    const helpPage = document.getElementById('help');
-    if (helpPage) {
-        helpPage.classList.toggle('hidden');
-    }
+  const helpPage = document.getElementById('help');
+  if (helpPage) helpPage.classList.toggle('hidden');
 }
 
 const KEY_MAP = {
-  39: "RIGHT",
-  68: "RIGHT",
-  37: "LEFT",
-  65: "LEFT",
-  38: "UP",
-  87: "UP",
-  40: "DOWN",
-  83: "DOWN",
-  32: "SPACE",
-  16: "SHIFT",
+  39: "RIGHT", 68: "RIGHT",
+  37: "LEFT", 65: "LEFT",
+  38: "UP", 87: "UP",
+  40: "DOWN", 83: "DOWN",
+  32: "SPACE", 16: "SHIFT",
 };
 
 const keyState = {
-  SPACE: false,
-  SHIFT: false,
-  RIGHT: false,
-  LEFT: false,
-  UP: false,
-  DOWN: false,
+  SPACE: false, SHIFT: false,
+  RIGHT: false, LEFT: false,
+  UP: false, DOWN: false,
 };
 
 const justPressed = {
@@ -197,15 +165,11 @@ const justPressed = {
 };
 
 window.addEventListener("keydown", (e) => {
-  console.log("Taste gedrückt:", e.keyCode);
-
   const key = KEY_MAP[e.keyCode];
   if (!key) return;
-
   if (!keyState[key]) {
     keyState[key] = true;
     keyboard[key] = true;
-
     if ((key === "SPACE" || key === "SHIFT") && world && !world.gameOver) {
       justPressed[key] = true;
     }
@@ -215,7 +179,6 @@ window.addEventListener("keydown", (e) => {
 window.addEventListener("keyup", (e) => {
   const key = KEY_MAP[e.keyCode];
   if (!key) return;
-
   keyState[key] = false;
   keyboard[key] = false;
   if (key === "SPACE" || key === "SHIFT") {
@@ -225,13 +188,10 @@ window.addEventListener("keyup", (e) => {
 
 function initMobile() {
   setupMobileButtonEvents();
-
   const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
-
   if (isMobile) {
-    handleOrientationChange(); // Diese Funktion regelt die Sichtbarkeit je nach Ausrichtung
+    handleOrientationChange();
   } else {
-    // Auf Desktop alles verstecken
     document.getElementById("leftMobile-container")?.classList.add("hidden");
     document.getElementById("rightMobile-container")?.classList.add("hidden");
     document.getElementById("rotateDevice")?.classList.add("hidden");
@@ -269,22 +229,27 @@ function setupMobileButtonEvents() {
   });
 }
 
-  function handleOrientationChange() {
-    const isPortrait = window.innerHeight > window.innerWidth;
-    const rotateOverlay = document.getElementById('rotateDevice');
-    const leftBtns = document.getElementById('leftMobile-container');
-    const rightBtns = document.getElementById('rightMobile-container');
+function handleOrientationChange() {
+  const isPortrait = window.innerHeight > window.innerWidth;
+  const rotateOverlay = document.getElementById('rotateDevice');
+  const leftBtns = document.getElementById('leftMobile-container');
+  const rightBtns = document.getElementById('rightMobile-container');
 
-    if (isPortrait) {
-      rotateOverlay?.classList.remove('hidden');
-      leftBtns?.classList.add('hidden');
-      rightBtns?.classList.add('hidden');
-    } else {
-      rotateOverlay?.classList.add('hidden');
-      leftBtns?.classList.remove('hidden');
-      rightBtns?.classList.remove('hidden');
-    }
+  if (isPortrait) {
+    rotateOverlay?.classList.remove('hidden');
+    leftBtns?.classList.add('hidden');
+    rightBtns?.classList.add('hidden');
+  } else {
+    rotateOverlay?.classList.add('hidden');
+    leftBtns?.classList.remove('hidden');
+    rightBtns?.classList.remove('hidden');
   }
+
+  ['LEFT', 'RIGHT', 'SPACE', 'SHIFT'].forEach(key => keyboard[key] = false);
+  ['left_button', 'right_button', 'jump_button', 'throw_button'].forEach(id => {
+    document.getElementById(id)?.classList.remove('active');
+  });
+}
 
 function showImpressum() {
   document.getElementById("impressum")?.classList.remove("hidden");
