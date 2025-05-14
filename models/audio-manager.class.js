@@ -71,8 +71,6 @@ class AudioManager {
                 console.warn("Error playing background music:", e)
             );
             this.backgroundMusicPlaying = true;
-        } else {
-            console.log("🎵 Hintergrundmusik läuft bereits oder nicht erlaubt.");
         }
     }
 

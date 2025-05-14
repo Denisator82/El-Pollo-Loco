@@ -5,6 +5,7 @@ let audioManager = new AudioManager();
 let fullscreen = false;
 let keyPressed = {}; // Prevents rapid-fire actions
 let gameAlreadyStarted = false;
+let gamePaused = false;
 
 function initPage() {
   loadMuteState();
@@ -107,6 +108,23 @@ function restartGame() {
   gameAlreadyStarted = false;
 }
 
+function pauseGame() {
+  if (world && !world.gameOver) {
+    world.stopAllIntervals?.();
+    world.audioManager?.pauseBackgroundMusic?.();
+    gamePaused = true;
+  }
+}
+
+
+function resumeGame() {
+    if (world && !world.gameOver && gamePaused) {
+        world.resumeAllIntervals?.();   // Diese Methode musst du noch ergänzen, siehe unten
+        world.audioManager?.playBackgroundMusic?.();
+        gamePaused = false;
+    }
+}
+
 function toggleMute() {
   const manager = world?.audioManager || audioManager;
   if (manager) {
@@ -139,11 +157,6 @@ function toggleFullscreen() {
     document.exitFullscreen?.();
     fullscreen = false;
   }
-}
-
-function showHelpPage() {
-  const helpPage = document.getElementById('help');
-  if (helpPage) helpPage.classList.toggle('hidden');
 }
 
 const KEY_MAP = {
@@ -254,8 +267,24 @@ function handleOrientationChange() {
 
 function showImpressum() {
   document.getElementById("impressum")?.classList.remove("hidden");
+  document.getElementById("overlayBlocker")?.classList.add("show");
+  pauseGame();
 }
 
 function closeImpressum() {
-  document.getElementById("impressum")?.classList.add("hidden");
+    document.getElementById("impressum")?.classList.add("hidden");
+    document.getElementById("overlayBlocker")?.classList.remove("show");
+    resumeGame();
+}
+
+function showHelpPage() {
+  const helpPage = document.getElementById('help');
+  const isVisible = helpPage.classList.toggle('hidden');
+  document.getElementById("overlayBlocker")?.classList.toggle("show", !helpPage.classList.contains("hidden"));
+
+  if (helpPage.classList.contains("hidden")) {
+    resumeGame();
+  } else {
+    pauseGame();
+  }
 }

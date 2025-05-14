@@ -5,7 +5,6 @@
 class CollisionManager {
   constructor(world) {
     this.world = world;
-    console.log("LOG: CollisionManager created.");
   }
 
   checkAllCollisions() {
@@ -47,31 +46,25 @@ class CollisionManager {
   }
 
   handleEndbossCharacterCollisionStart(boss) {
-    if (typeof boss.handleCharacterCollision === 'function') {
-      boss.handleCharacterCollision(); // Flag setzen
-    }
+    boss.handleCharacterCollision?.();
 
-    const shouldAttack =
-      !boss.isDeadEndboss?.() &&
+    const shouldAttack = !boss.isDeadEndboss?.() &&
       !boss.isAttacking &&
       Date.now() - boss.lastAttackTime > boss.attackCooldown;
 
-    if (shouldAttack && typeof boss.playAnimationOnce === 'function') {
+    if (shouldAttack) {
       boss.isAttacking = true;
       boss.lastAttackTime = Date.now();
-      boss.playAnimationOnce(boss.IMAGES_ATTACK, () => {
+      boss.playAnimationOnce?.(boss.IMAGES_ATTACK, () => {
         boss.isAttacking = false;
         boss.handleCharacterCollisionEnd?.();
       });
     }
   }
 
-
-
   handleEndbossCharacterCollisionEnd(boss) {
-    if (boss.isCollidingWithCharacter && typeof boss.handleCharacterCollisionEnd === 'function') {
-      console.log("LOG: Endboss collision ended.");
-      boss.handleCharacterCollisionEnd();
+    if (boss.isCollidingWithCharacter) {
+      boss.handleCharacterCollisionEnd?.();
     }
   }
 
@@ -83,7 +76,6 @@ class CollisionManager {
 
   checkCollisionWithNormalEnemy(enemy) {
     if (this.isEnemyCollisionActive(enemy)) {
-      console.log("LOG: Collided with:", enemy.constructor.name);
       this.handleCharacterEnemyHit(enemy);
     }
   }
@@ -103,23 +95,23 @@ class CollisionManager {
 
   checkCollisionsCharacterJumpOnEnemy() {
     for (let i = this.world.level.enemies.length - 1; i >= 0; i--) {
-        const e = this.world.level.enemies[i];
-        if (
-            e?.isDead?.() === false &&
-            this.world.character.isColliding?.(e) &&
-            this.world.character.isJumpingOn?.(e)
-        ) {
-            this.handleEnemyDefeatedByJump(e);
-        }
+      const e = this.world.level.enemies[i];
+      if (
+        e?.isDead?.() === false &&
+        this.world.character.isColliding?.(e) &&
+        this.world.character.isJumpingOn?.(e)
+      ) {
+        this.handleEnemyDefeatedByJump(e);
+      }
     }
-}
+  }
 
-handleEnemyDefeatedByJump(enemy) {
-    this.world.character.speedY = 5; // Rebound nach oben
+  handleEnemyDefeatedByJump(enemy) {
+    this.world.character.speedY = 5;
     enemy.setDead?.();
     this.scheduleEnemyRemoval(enemy);
-    this.world.audioManager?.playSound?.('chickenDead'); // Falls du das magst
-}
+    this.world.audioManager?.playSound?.('chickenDead');
+  }
 
   scheduleEnemyRemoval(enemy) {
     setTimeout(() => {
@@ -175,7 +167,6 @@ handleEnemyDefeatedByJump(enemy) {
     boss.hitEndboss?.(dmg);
   }
 
-
   handleBottleHitsNormalEnemy(bottle, enemy) {
     enemy.setDead?.();
     this.world.audioManager?.playSound?.('chickenDead');
@@ -192,15 +183,12 @@ handleEnemyDefeatedByJump(enemy) {
   }
 
   triggerGameOverLose() {
-    if (this.world.gameOver) return; // ← Nur 1x auslösen
-    console.log("LOG: Character is dead. Triggering Game Over (Lose).");
+    if (this.world.gameOver) return;
     this.world.gameOver = true;
     this.world.gameLose?.() || gameLose?.();
   }
 
-
   triggerGameWin() {
-    console.log("LOG: Endboss is dead. Triggering Game Win.");
     this.world.gameOver = true;
     this.world.gameWin?.() || gameWin?.();
   }

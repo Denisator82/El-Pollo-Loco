@@ -177,6 +177,7 @@ class Endboss extends MovableObject {
   }
 
   startBossAnimation() {
+    cancelAnimationFrame(this.animationFrameId);
     if (!this.hadFirstContact) return;
 
     let lastTime = performance.now();
@@ -222,5 +223,19 @@ class Endboss extends MovableObject {
     cancelAnimationFrame(this.animationFrameId);
     this.firstContactIntervalId = this.movementIntervalId = this.animationFrameId = null;
     super.stopGravity?.();
+  }
+
+  resumeEndboss() {
+    if (this.hadFirstContact && !this.isDeadEndboss()) {
+      this.startBossAnimation();
+      this.startBossMovement();
+
+      // Resume endboss music if it's not playing
+      const audioManager = this.world?.audioManager;
+      const music = audioManager?.sounds?.['endbossMusic'];
+      if (audioManager && !audioManager.isMuted && music && music.paused) {
+        music.play().catch(e => console.warn("Error resuming endboss music:", e));
+      }
+    }
   }
 }

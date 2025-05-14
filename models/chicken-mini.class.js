@@ -82,6 +82,5 @@ class ChickenMini extends MovableObject {
     clearInterval(this.animationIntervalId);
     this.moveIntervalId = null;
     this.animationIntervalId = null;
-    console.log("ChickenMini-Intervalle gestoppt.");
   }
 }
