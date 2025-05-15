@@ -148,17 +148,6 @@ function updateAudioIcon() {
   }
 }
 
-function toggleFullscreen() {
-  const mainSection = document.getElementById("mainSection");
-  if (!fullscreen) {
-    mainSection.requestFullscreen?.();
-    fullscreen = true;
-  } else {
-    document.exitFullscreen?.();
-    fullscreen = false;
-  }
-}
-
 const KEY_MAP = {
   39: "RIGHT", 68: "RIGHT",
   37: "LEFT", 65: "LEFT",
