@@ -1,26 +1,65 @@
+/**
+ * Global canvas element used to render the game.
+ * @type {HTMLCanvasElement}
+ */
 let canvas;
+
+/**
+ * The main world instance controlling the game.
+ * @type {World}
+ */
 let world;
+
+/**
+ * The keyboard input handler.
+ * @type {Keyboard}
+ */
 let keyboard = new Keyboard();
+
+/**
+ * The audio manager instance for handling sound.
+ * @type {AudioManager}
+ */
 let audioManager = new AudioManager();
+
+/** Indicates whether the game is in fullscreen mode. */
 let fullscreen = false;
-let keyPressed = {}; // Prevents rapid-fire actions
+
+/** Tracks keys currently pressed to avoid repeated actions. */
+let keyPressed = {};
+
+/** Indicates whether the game has already started. */
 let gameAlreadyStarted = false;
+
+/** Indicates whether the game is currently paused. */
 let gamePaused = false;
 
+/**
+ * Initializes the basic page state, such as audio mute state and UI icons.
+ */
 function initPage() {
   loadMuteState();
   updateAudioIcon();
 }
 
+/**
+ * Loads the audio mute state from localStorage.
+ */
 function loadMuteState() {
   const storedMute = localStorage.getItem("isMuted") === "true";
   audioManager.isMuted = storedMute;
 }
 
+/**
+ * Saves the current audio mute state to localStorage.
+ */
 function saveMuteState() {
   localStorage.setItem("isMuted", audioManager.isMuted.toString());
 }
 
+/**
+ * Starts a new game instance, initializes canvas and world, and loads sounds.
+ */
 function newGame() {
   canvas = document.getElementById("canvas");
   initLevel();
@@ -36,6 +75,9 @@ function newGame() {
   }
 }
 
+/**
+ * Passes the current world instance to all enemies and the character.
+ */
 function passWorldToLevel() {
   if (level1 && world) {
     level1.enemies.forEach((enemy) => {
@@ -51,6 +93,9 @@ function passWorldToLevel() {
   }
 }
 
+/**
+ * Starts the game if it hasn't already started and hides the start screen.
+ */
 function startGame() {
   if (gameAlreadyStarted) return;
 
@@ -61,6 +106,9 @@ function startGame() {
   world.audioManager.playBackgroundMusic();
 }
 
+/**
+ * Triggers the game over (lose) screen and stops all sounds.
+ */
 function gameLose() {
   if (!world) return;
   world.gameOver = true;
@@ -70,6 +118,9 @@ function gameLose() {
   document.getElementById("loseImageContainer")?.classList.add("show");
 }
 
+/**
+ * Triggers the game over (win) screen and stops all sounds.
+ */
 function gameWin() {
   if (!world) return;
   world.gameOver = true;
@@ -79,11 +130,17 @@ function gameWin() {
   document.getElementById("winImageContainer")?.classList.add("show");
 }
 
+/**
+ * Stops all running game intervals.
+ */
 function stopGame() {
   if (!world) return;
   world.stopAllIntervals?.();
 }
 
+/**
+ * Restarts the game by resetting states and reinitializing game objects.
+ */
 function restartGame() {
   if (world?.stopAllIntervals) world.stopAllIntervals();
   world = null;
@@ -108,6 +165,9 @@ function restartGame() {
   gameAlreadyStarted = false;
 }
 
+/**
+ * Pauses the game and background music.
+ */
 function pauseGame() {
   if (world && !world.gameOver) {
     world.stopAllIntervals?.();
@@ -116,15 +176,20 @@ function pauseGame() {
   }
 }
 
-
+/**
+ * Resumes the game and background music if previously paused.
+ */
 function resumeGame() {
-    if (world && !world.gameOver && gamePaused) {
-        world.resumeAllIntervals?.();   // Diese Methode musst du noch ergänzen, siehe unten
-        world.audioManager?.playBackgroundMusic?.();
-        gamePaused = false;
-    }
+  if (world && !world.gameOver && gamePaused) {
+    world.resumeAllIntervals?.();
+    world.audioManager?.playBackgroundMusic?.();
+    gamePaused = false;
+  }
 }
 
+/**
+ * Toggles game mute state and updates localStorage + icon.
+ */
 function toggleMute() {
   const manager = world?.audioManager || audioManager;
   if (manager) {
@@ -134,6 +199,9 @@ function toggleMute() {
   }
 }
 
+/**
+ * Updates the audio icon in the UI based on mute state.
+ */
 function updateAudioIcon() {
   const audioIcon = document.getElementById("audio");
   const manager = world?.audioManager || audioManager;
@@ -148,6 +216,10 @@ function updateAudioIcon() {
   }
 }
 
+/**
+ * Maps keyboard key codes to internal action names.
+ * @type {Object<number, string>}
+ */
 const KEY_MAP = {
   39: "RIGHT", 68: "RIGHT",
   37: "LEFT", 65: "LEFT",
@@ -156,17 +228,26 @@ const KEY_MAP = {
   32: "SPACE", 16: "SHIFT",
 };
 
+/**
+ * Tracks current pressed state of keys.
+ * @type {Object<string, boolean>}
+ */
 const keyState = {
   SPACE: false, SHIFT: false,
   RIGHT: false, LEFT: false,
   UP: false, DOWN: false,
 };
 
+/**
+ * Tracks key presses for one-time actions.
+ * @type {Object<string, boolean>}
+ */
 const justPressed = {
   SPACE: false,
   SHIFT: false,
 };
 
+// Keyboard event listeners
 window.addEventListener("keydown", (e) => {
   const key = KEY_MAP[e.keyCode];
   if (!key) return;
@@ -189,6 +270,9 @@ window.addEventListener("keyup", (e) => {
   }
 });
 
+/**
+ * Initializes mobile controls and sets up event listeners.
+ */
 function initMobile() {
   setupMobileButtonEvents();
   const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
@@ -201,9 +285,13 @@ function initMobile() {
   }
 }
 
+// Resize/orientation event listeners
 window.addEventListener('resize', handleOrientationChange);
 window.addEventListener('orientationchange', handleOrientationChange);
 
+/**
+ * Sets up touch events for mobile control buttons.
+ */
 function setupMobileButtonEvents() {
   const buttons = [
     { id: "left_button", key: "LEFT" },
@@ -232,6 +320,9 @@ function setupMobileButtonEvents() {
   });
 }
 
+/**
+ * Adjusts UI elements depending on device orientation.
+ */
 function handleOrientationChange() {
   const isPortrait = window.innerHeight > window.innerWidth;
   const rotateOverlay = document.getElementById('rotateDevice');
@@ -254,18 +345,27 @@ function handleOrientationChange() {
   });
 }
 
+/**
+ * Displays the legal notice (Impressum) and pauses the game.
+ */
 function showImpressum() {
   document.getElementById("impressum")?.classList.remove("hidden");
   document.getElementById("overlayBlocker")?.classList.add("show");
   pauseGame();
 }
 
+/**
+ * Hides the legal notice and resumes the game.
+ */
 function closeImpressum() {
-    document.getElementById("impressum")?.classList.add("hidden");
-    document.getElementById("overlayBlocker")?.classList.remove("show");
-    resumeGame();
+  document.getElementById("impressum")?.classList.add("hidden");
+  document.getElementById("overlayBlocker")?.classList.remove("show");
+  resumeGame();
 }
 
+/**
+ * Toggles the help page and pauses/resumes the game accordingly.
+ */
 function showHelpPage() {
   const helpPage = document.getElementById('help');
   const isVisible = helpPage.classList.toggle('hidden');
