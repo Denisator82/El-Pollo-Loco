@@ -1,73 +1,93 @@
 /**
- * Represents a coin in the game.
- * Inherits from MovableObject and includes properties for dimensions, images, and collection status.
+ * Represents a coin collectible in the game.
+ * Inherits from {@link MovableObject} and includes dimensions, animation, and collection logic.
  */
 class Coin extends MovableObject {
-    width = 120; // Width of the coin
-    height = 120; // Height of the coin
-    collected = false; // Status of the coin (collected or not)
+    /**
+     * Width of the coin.
+     * @type {number}
+     */
+    width = 120;
 
-    // Images for the coin
+    /**
+     * Height of the coin.
+     * @type {number}
+     */
+    height = 120;
+
+    /**
+     * Indicates whether the coin has been collected.
+     * @type {boolean}
+     */
+    collected = false;
+
+    /**
+     * Array of image paths used for the coin animation.
+     * @type {string[]}
+     */
     IMAGES = [
         'img/img/8_coin/coin_1.png',
         'img/img/8_coin/coin_2.png',
     ];
 
-    animationIntervalId = null; // Speichert die ID des Animationsintervalls
+    /**
+     * ID of the animation interval.
+     * @type {number|null}
+     */
+    animationIntervalId = null;
 
     /**
-     * Initializes the Coin class.
-     * Loads the images for the coin, sets the initial position and dimensions,
-     * and starts the animation.
+     * Creates a new Coin object.
+     * Loads images, sets position and offset, and starts the animation.
      */
     constructor() {
-        super(); // Call the parent class constructor
-        this.loadImage(this.IMAGES[0]); // Load the first image
-        this.loadImages(this.IMAGES); // Load all images into memory
-        this.offset = { top: 40, right: 40, bottom: 40, left: 40 }; // Set the offset for collision detection
-        this.x = 200 + Math.random() * 1800; // Set the initial x-coordinate randomly between 200 and 2000
-        this.y = 160 + Math.random() * 120; // Set the initial y-coordinate randomly between 160 and 280
-        this.animate(); // Start the animation
-    };
+        super();
+        this.loadImage(this.IMAGES[0]);
+        this.loadImages(this.IMAGES);
+        this.offset = { top: 40, right: 40, bottom: 40, left: 40 };
+        this.x = 200 + Math.random() * 1800;
+        this.y = 160 + Math.random() * 120;
+        this.animate();
+    }
 
     /**
-     * Collects the coin and updates its status.
-     * Sets the image to empty and reduces the width and height to 0 if collected.
+     * Handles logic for when the coin has been collected.
+     * Empties the image and hides it by setting width/height to 0.
      */
     coinCollected() {
         if (this.collected) {
-            this.loadImage(''); // Load an empty image
+            this.loadImage('');
             this.width = 0;
             this.height = 0;
         }
     }
 
     /**
-     * Plays the coin animation if the coin is not collected.
+     * Plays the coin animation if the coin has not yet been collected.
      */
     coinAnimation() {
         if (!this.collected) {
-            this.playAnimation(this.IMAGES); // Play the coin animation
+            this.playAnimation(this.IMAGES);
         }
     }
 
     /**
-     * Main animation loop for the coin.
-     * Checks the collection status and plays the appropriate animation.
+     * Starts the coin's animation loop.
+     * Checks collection state and updates animation accordingly.
      */
     animate() {
-        this.animationIntervalId = setInterval(() => { // Speichere die ID
-            this.coinCollected(); // Check if the coin is collected
-            this.coinAnimation(); // Play the coin animation
-        }, 200); // Run at 5 frames per second
+        this.animationIntervalId = setInterval(() => {
+            this.coinCollected();
+            this.coinAnimation();
+        }, 200); // 5 frames per second
     }
 
     /**
-     * Stops all intervals associated with the coin.
+     * Stops the coin's animation interval.
      */
     stopCoinIntervals() {
         clearInterval(this.animationIntervalId);
-        this.animationIntervalId = null; // Zur Sicherheit die ID zurücksetzen
-        console.log('Coin-Intervalle gestoppt.');
+        this.animationIntervalId = null;
+        console.log('Coin intervals stopped.');
     }
 }
