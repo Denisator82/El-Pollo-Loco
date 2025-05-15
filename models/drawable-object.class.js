@@ -1,32 +1,74 @@
 /**
  * Represents a drawable object in the game.
- * Contains properties for the image, image cache, current image index, 
- * position (x, y), dimensions (height, width), and offset for collision detection.
+ * Acts as a base class for all visual game entities.
+ * Includes image handling, drawing, and collision box support.
  */
 class DrawableObject {
-    img; // The image of the object
-    imageCache = []; // Cache for loaded images
-    currentImage = 0; // Index of the current image
-    x = 120; // Initial x-coordinate
-    y = 280; // Initial y-coordinate
-    height = 150; // Height of the object
-    width = 100; // Width of the object
-    offset = { top: 0, right: 0, bottom: 0, left: 0 }; // Offset for collision detection
+    /**
+     * The current image of the object.
+     * @type {HTMLImageElement|undefined}
+     */
+    img;
+
+    /**
+     * Stores multiple images used for animation.
+     * @type {Object<string, HTMLImageElement>}
+     */
+    imageCache = [];
+
+    /**
+     * The index of the currently displayed image.
+     * @type {number}
+     */
+    currentImage = 0;
+
+    /**
+     * Horizontal position on the canvas.
+     * @type {number}
+     */
+    x = 120;
+
+    /**
+     * Vertical position on the canvas.
+     * @type {number}
+     */
+    y = 280;
+
+    /**
+     * Height of the object.
+     * @type {number}
+     */
+    height = 150;
+
+    /**
+     * Width of the object.
+     * @type {number}
+     */
+    width = 100;
+
+    /**
+     * Collision offset used for hitbox detection.
+     * @type {{ top: number, right: number, bottom: number, left: number }}
+     */
+    offset = { top: 0, right: 0, bottom: 0, left: 0 };
+
+    /**
+     * Optional counter used for sound/music timing.
+     * @type {number}
+     */
     musicCounter = 0;
 
     /**
-     * Loads an image from the specified path and assigns it to the object's img property.
-     * 
-     * @param {string} path - The path to the image file.
+     * Loads a single image and assigns it to the object.
+     * @param {string} path - The file path of the image.
      */
     loadImage(path) {
-        this.img = new Image(); // this.img = document.getElementById('image') <img id="image" src>
-        this.img.src = path; 
+        this.img = new Image();
+        this.img.src = path;
     }
 
     /**
-     * Draws the object's image on the canvas.
-     * 
+     * Draws the object on the canvas.
      * @param {CanvasRenderingContext2D} ctx - The canvas rendering context.
      */
     draw(ctx) {
@@ -34,22 +76,27 @@ class DrawableObject {
     }
 
     /**
-     * Draws the bounding box and offset bounding box of the object for debugging purposes.
-     * If the object is an instance of Character, Chicken, ChickenMini, Coin, Bottle, or Endboss,
-     * it draws the original bounding box in blue and the offset bounding box in red.
-     * 
+     * Draws the original bounding box and the offset bounding box (hitbox) for debugging.
+     * Only applies to known game entities.
      * @param {CanvasRenderingContext2D} ctx - The canvas rendering context.
      */
     drawFrame(ctx) {
-        if (this instanceof Character || this instanceof Chicken || this instanceof ChickenMini || this instanceof Coin || this instanceof Bottle || this instanceof Endboss) {
-            // Draw the original bounding box in blue
+        if (
+            this instanceof Character ||
+            this instanceof Chicken ||
+            this instanceof ChickenMini ||
+            this instanceof Coin ||
+            this instanceof Bottle ||
+            this instanceof Endboss
+        ) {
+            // Original bounding box (blue)
             ctx.beginPath();
             ctx.lineWidth = '5';
             ctx.strokeStyle = 'blue';
             ctx.rect(this.x, this.y, this.width, this.height);
             ctx.stroke();
 
-            // Draw the offset bounding box in red
+            // Offset bounding box (red)
             ctx.beginPath();
             ctx.lineWidth = '3';
             ctx.strokeStyle = 'red';
@@ -64,13 +111,12 @@ class DrawableObject {
     }
 
     /**
-     * Loads an array of images and stores them in the image cache.
-     * 
-     * @param {Array} arr - An array of image paths to be loaded (e.g., ['img/image1.png', 'img/image2.png', ...]).
+     * Loads multiple images and caches them for later use (e.g., animations).
+     * @param {string[]} arr - An array of image paths.
      */
     loadImages(arr) {
         arr.forEach(path => {
-            let img = new Image();
+            const img = new Image();
             img.src = path;
             this.imageCache[path] = img;
         });
