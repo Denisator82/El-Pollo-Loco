@@ -1,27 +1,123 @@
 /**
  * Represents the main game world.
- * Handles rendering, audio, collisions, and object logic.
+ * Handles rendering, physics, audio, collisions, and game object updates.
  */
 class World {
+  /**
+   * The main player character.
+   * @type {Character}
+   */
   character = new Character();
+
+  /**
+   * Current level instance.
+   * @type {Level}
+   */
   level = level1;
+
+  /**
+   * Canvas rendering context.
+   * @type {CanvasRenderingContext2D}
+   */
   ctx;
+
+  /**
+   * HTML canvas element.
+   * @type {HTMLCanvasElement}
+   */
   canvas;
+
+  /**
+   * Audio manager instance.
+   * @type {AudioManager}
+   */
   audioManager;
+
+  /**
+   * Tracks keyboard state.
+   * @type {Keyboard}
+   */
   keyboard;
+
+  /**
+   * Horizontal camera offset.
+   * @type {number}
+   */
   camera_x = 0;
+
+  /**
+   * UI element: character health bar.
+   * @type {StatusBar}
+   */
   statusBar = new StatusBar();
+
+  /**
+   * UI element: bottle collection bar.
+   * @type {StatusBarBottle}
+   */
   statusBarBottle = new StatusBarBottle();
+
+  /**
+   * UI element: coin collection bar.
+   * @type {StatusBarCoin}
+   */
   statusBarCoin = new StatusBarCoin();
+
+  /**
+   * UI element: endboss health bar.
+   * @type {StatusBarEndboss}
+   */
   statusBarEndboss = new StatusBarEndboss();
+
+  /**
+   * All throwable objects (e.g. bottles) in the world.
+   * @type {ThrowableObject[]}
+   */
   throwableObjects = [];
+
+  /**
+   * Tracks total collected coins.
+   * @type {number}
+   */
   coinCounter = 0;
+
+  /**
+   * Timestamp of the last bottle throw.
+   * @type {number}
+   */
   lastThrowTime = 0;
+
+  /**
+   * Indicates if the game is over.
+   * @type {boolean}
+   */
   gameOver = false;
+
+  /**
+   * ID of the collision detection interval.
+   * @type {number|null}
+   */
   collisionIntervalId = null;
+
+  /**
+   * ID of the throw-check interval.
+   * @type {number|null}
+   */
   throwIntervalId = null;
+
+  /**
+   * ID of the requestAnimationFrame loop.
+   * @type {number|null}
+   */
   animationFrameId = null;
 
+  /**
+   * Creates the game world and starts main loops.
+   *
+   * @param {HTMLCanvasElement} canvas - The rendering canvas.
+   * @param {Keyboard} keyboard - The keyboard input state.
+   * @param {AudioManager} audioManager - The audio manager instance.
+   */
   constructor(canvas, keyboard, audioManager) {
     this.canvas = canvas;
     this.ctx = canvas.getContext("2d");
@@ -34,6 +130,9 @@ class World {
     this.run();
   }
 
+  /**
+   * Preloads all sound files into the audio manager.
+   */
   loadSounds() {
     if (!this.audioManager) return;
     const sounds = [
@@ -59,6 +158,9 @@ class World {
     });
   }
 
+  /**
+   * Assigns the world reference to all world-related objects.
+   */
   setWorld() {
     this.character.world = this;
     this.level.enemies?.forEach((enemy) => {
@@ -67,11 +169,17 @@ class World {
     });
   }
 
+  /**
+   * Starts collision and throw-check intervals.
+   */
   run() {
     this.collisionIntervalId = setInterval(() => this.collisionManager?.checkAllCollisions(), 25);
     this.throwIntervalId = setInterval(() => this.checkThrowObjects(), 50);
   }
 
+  /**
+   * Checks if the character is allowed to throw and creates a bottle if so.
+   */
   checkThrowObjects() {
     const cooldown = 850;
     const now = Date.now();
@@ -89,6 +197,10 @@ class World {
     }
   }
 
+  /**
+   * Main drawing loop using requestAnimationFrame.
+   * Draws all visible game objects and UI.
+   */
   draw() {
     if (!this.ctx || !this.canvas || this.gameOver) return;
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -119,6 +231,12 @@ class World {
     this.animationFrameId = requestAnimationFrame(() => this.draw());
   }
 
+  /**
+   * Checks if an object is within the visible camera area (with buffer).
+   * 
+   * @param {Object} obj - Game object with x and width.
+   * @returns {boolean}
+   */
   isVisibleOnCanvas(obj) {
     const buffer = 100;
     const x = obj?.x ?? 0;
@@ -128,10 +246,20 @@ class World {
     return x + width > left && x < right;
   }
 
+  /**
+   * Adds multiple objects to the canvas.
+   * 
+   * @param {Object[]} objects - Objects with a draw method.
+   */
   addObjectsToMap(objects) {
     objects?.forEach(obj => obj && this.addToMap(obj));
   }
 
+  /**
+   * Draws a single object and flips it if facing left.
+   * 
+   * @param {Object} obj - The object to draw.
+   */
   addToMap(obj) {
     if (!obj?.draw) return;
 
@@ -143,6 +271,11 @@ class World {
     if (shouldFlip) this.flipImageBack(obj);
   }
 
+  /**
+   * Flips an object horizontally.
+   * 
+   * @param {Object} obj - The object to flip.
+   */
   flipImage(obj) {
     this.ctx.save();
     this.ctx.translate(obj.width, 0);
@@ -150,11 +283,19 @@ class World {
     obj.x *= -1;
   }
 
+  /**
+   * Reverts image flipping.
+   * 
+   * @param {Object} obj - The object to unflip.
+   */
   flipImageBack(obj) {
     obj.x *= -1;
     this.ctx.restore();
   }
 
+  /**
+   * Stops all game intervals, animations, sounds and gravity.
+   */
   stopAllIntervals() {
     this.character?.stopCharacterIntervals?.();
 
@@ -180,17 +321,26 @@ class World {
     this.audioManager?.pauseEndbossMusic?.();
   }
 
+  /**
+   * Clears the internal world-specific intervals.
+   */
   stopWorldIntervals() {
     clearInterval(this.collisionIntervalId);
     clearInterval(this.throwIntervalId);
     this.collisionIntervalId = this.throwIntervalId = null;
   }
 
+  /**
+   * Restarts all world-specific intervals and rendering.
+   */
   startWorldIntervals() {
     this.run();
     this.draw();
   }
 
+  /**
+   * Resumes animation, movement, and music after pause.
+   */
   resumeAllIntervals() {
     this.startWorldIntervals?.();
     this.character.animateCharacter?.();
