@@ -1,41 +1,59 @@
 /**
- * Represents a cloud in the game.
- * Inherits from MovableObject and includes properties for dimensions and position.
+ * Represents a cloud in the game background.
+ * Inherits from {@link MovableObject} and includes properties for size, position, and animation.
  */
 class Cloud extends MovableObject {
-    y = 20; // Y-coordinate of the cloud
-    width = 500; // Width of the cloud
-    height = 250; // Height of the cloud
+  /**
+   * Vertical position of the cloud.
+   * @type {number}
+   */
+  y = 20;
 
-    moveIntervalId = null; // Speichert die ID des Bewegungsintervalls
+  /**
+   * Width of the cloud image.
+   * @type {number}
+   */
+  width = 500;
 
-    /**
-     * Initializes the Cloud class.
-     * Loads the image of the cloud, sets the initial position,
-     * and starts the animation to move the cloud.
-     */
-    constructor() {
-        super().loadImage('img/img/5_background/layers/4_clouds/1.png'); // Load the image for the cloud
-        this.x = 220 + Math.random() * 2500; // Set the initial x-coordinate randomly between 220 and 2720
-        this.animate(); // Start the animation
-    }
+  /**
+   * Height of the cloud image.
+   * @type {number}
+   */
+  height = 250;
 
-    /**
-     * Animates the cloud by moving it to the left continuously.
-     */
-    animate() {
-        // Move the cloud to the left at approximately 60 frames per second
-        this.moveIntervalId = setInterval(() => { // Speichere die ID
-            this.moveLeft();
-        }, 1000 / 60);
-    }
+  /**
+   * ID of the interval used to move the cloud.
+   * @type {number|null}
+   */
+  moveIntervalId = null;
 
-    /**
-     * Stops all intervals associated with the cloud.
-     */
-    stopCloudIntervals() {
-        clearInterval(this.moveIntervalId);
-        this.moveIntervalId = null; // Zur Sicherheit die ID zurücksetzen
-        console.log('Cloud-Intervalle gestoppt.');
-    }
+  /**
+   * Creates a new Cloud object at a random horizontal position.
+   * Loads the cloud image and starts the movement animation.
+   */
+  constructor() {
+    super().loadImage("img/img/5_background/layers/4_clouds/1.png");
+    this.x = 220 + Math.random() * 2500;
+    this.animate();
+  }
+
+  /**
+   * Starts animating the cloud by moving it continuously to the left.
+   * Runs at approximately 60 frames per second.
+   */
+  animate() {
+    this.moveIntervalId = setInterval(() => {
+      this.moveLeft();
+    }, 1000 / 60);
+  }
+
+  /**
+   * Stops the movement animation of the cloud.
+   * Clears the interval and resets its ID.
+   */
+  stopCloudIntervals() {
+    clearInterval(this.moveIntervalId);
+    this.moveIntervalId = null;
+    console.log("Cloud intervals stopped.");
+  }
 }
