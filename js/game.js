@@ -255,7 +255,6 @@ const justPressed = {
   SHIFT: false,
 };
 
-// Keyboard event listeners
 window.addEventListener("keydown", (e) => {
   const key = KEY_MAP[e.keyCode];
   if (!key) return;
@@ -293,7 +292,6 @@ function initMobile() {
   }
 }
 
-// Resize/orientation event listeners
 window.addEventListener("resize", handleOrientationChange);
 window.addEventListener("orientationchange", handleOrientationChange);
 

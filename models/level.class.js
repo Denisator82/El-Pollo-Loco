@@ -10,7 +10,7 @@ class Level {
   coins = [];
   bottles = [];
   backgroundObjects = [];
-  level_end_x = 3600; // Level Ende
+  level_end_x = 3600;
 
   /**
    * Initializes the Level class.

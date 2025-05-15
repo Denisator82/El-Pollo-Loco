@@ -76,7 +76,7 @@ class Coin extends MovableObject {
     this.animationIntervalId = setInterval(() => {
       this.coinCollected();
       this.coinAnimation();
-    }, 200); // 5 frames per second
+    }, 200);
   }
 
   /**

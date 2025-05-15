@@ -18,7 +18,7 @@ let level1;
  */
 function initLevel() {
   level1 = new Level(
-    [], // Enemies for flying enemies (left empty for now)
+    [],
     [
       new Endboss(),
       new Chicken(),

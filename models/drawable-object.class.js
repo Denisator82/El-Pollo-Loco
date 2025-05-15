@@ -89,14 +89,13 @@ class DrawableObject {
       this instanceof Bottle ||
       this instanceof Endboss
     ) {
-      // Original bounding box (blue)
+      
       ctx.beginPath();
       ctx.lineWidth = "5";
       ctx.strokeStyle = "blue";
       ctx.rect(this.x, this.y, this.width, this.height);
       ctx.stroke();
 
-      // Offset bounding box (red)
       ctx.beginPath();
       ctx.lineWidth = "3";
       ctx.strokeStyle = "red";
