@@ -1,10 +1,13 @@
 /**
- * Represents the status bar for the end boss in the game.
- * Inherits from DrawableObject and includes properties for images, health percentage, and visibility.
+ * Represents the health status bar for the end boss in the game.
+ * Inherits from {@link DrawableObject}.
+ * Displays the remaining health (0–100%) and supports toggling visibility.
  */
 class StatusBarEndboss extends DrawableObject {
-
-    // Images for the health status bar of the end boss based on percentage
+    /**
+     * Image paths representing different health levels of the end boss.
+     * @type {string[]}
+     */
     IMAGES_HEALTH = [
         'img/img/7_statusbars/2_statusbar_endboss/orange/orange0.png',
         'img/img/7_statusbars/2_statusbar_endboss/orange/orange20.png',
@@ -14,38 +17,49 @@ class StatusBarEndboss extends DrawableObject {
         'img/img/7_statusbars/2_statusbar_endboss/orange/orange100.png',
     ];
 
-    percentage = 100; // Initial health percentage of the end boss
-    visible = false; // Visibility status of the status bar
+    /**
+     * Current health percentage (0–100).
+     * @type {number}
+     */
+    percentage = 100;
 
     /**
-     * Initializes the StatusBarEndboss class.
-     * Loads the images for the health status bar, sets the initial position and dimensions,
-     * and sets the initial health percentage.
+     * Controls visibility of the status bar on the canvas.
+     * @type {boolean}
+     */
+    visible = false;
+
+    /**
+     * Creates a new StatusBarEndboss instance.
+     * Loads images, sets position and size, and initializes health to 100%.
      */
     constructor() {
-        super(); // Call the parent class constructor
-        this.loadImages(this.IMAGES_HEALTH); // Load all images for the health status bar
-        this.x = 500; // Set the initial x-coordinate of the status bar
-        this.y = 45; // Set the initial y-coordinate of the status bar
-        this.width = 200; // Set the width of the status bar
-        this.height = 50; // Set the height of the status bar
-        this.setPercentage(100); // Set the initial health percentage to 100
+        super();
+        this.loadImages(this.IMAGES_HEALTH);
+        this.x = 500;
+        this.y = 45;
+        this.width = 200;
+        this.height = 50;
+        this.setPercentage(100);
     }
 
     /**
-     * Sets the health percentage of the status bar and updates the displayed image.
-     * @param {number} percentage - The new health percentage value.
+     * Updates the health percentage and selects the corresponding status bar image.
+     * The value is clamped between 0 and 100.
+     *
+     * @param {number} health - The raw health value (e.g., 80).
      */
     setPercentage(health) {
         const maxHealth = 100;
         this.percentage = Math.max(0, Math.min((health / maxHealth) * 100, 100));
-        let path = this.IMAGES_HEALTH[this.resolveImageIndex()];
+        const path = this.IMAGES_HEALTH[this.resolveImageIndex()];
         this.img = this.imageCache[path];
     }
 
     /**
-     * Resolves the image index based on the current health percentage.
-     * @returns {number} - The index of the image corresponding to the health percentage.
+     * Maps the current percentage to an index in the image array.
+     *
+     * @returns {number} - Index of the image that corresponds to the current health.
      */
     resolveImageIndex() {
         if (this.percentage >= 100) return 5;
@@ -57,11 +71,12 @@ class StatusBarEndboss extends DrawableObject {
     }
 
     /**
-     * Draws the status bar on the given canvas context if it is visible.
-     * @param {Object} ctx - The canvas context to draw on.
+     * Draws the status bar on the canvas if it's marked as visible.
+     *
+     * @param {CanvasRenderingContext2D} ctx - The canvas context to draw on.
      */
     draw(ctx) {
-        if (this.visible) { // Draw only if the status bar is visible
+        if (this.visible) {
             ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
         }
     }
