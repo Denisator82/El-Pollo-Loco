@@ -1,18 +1,24 @@
 /**
  * Declares the global variable for the first level of the game.
- * @type {Level} level1 - The first level instance of the game.
+ * This will be initialized via `initLevel()`.
+ * @type {Level}
  */
 let level1;
 
 /**
- * Initializes the first level (level1) with arrays of game objects.
- * @type {Level} level1 - The first level instance of the game.
- * Includes arrays for the endboss/enemies, clouds, background objects, coins, and bottles.
+ * Initializes the first level of the game with all required game elements.
+ *
+ * This includes:
+ * - An array of enemies (Endboss, Chickens, ChickenMinis)
+ * - Background objects for the parallax scrolling effect
+ * - Clouds for atmospheric effect
+ * - Collectible coins and bottles
+ *
+ * The level is assigned to the global variable `level1`.
  */
 function initLevel() {
     level1 = new Level(
-        [
-        ],
+        [], // Enemies for flying enemies (left empty for now)
         [
             new Endboss(),
             new Chicken(),
