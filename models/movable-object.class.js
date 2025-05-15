@@ -1,33 +1,88 @@
 /**
- * Represents a movable object in the game.
- * Handles movement, collision detection, gravity, and animation.
- * Inherits from DrawableObject.
+ * Represents a movable object in the game world.
+ * Handles movement, collision detection, gravity simulation, and animation logic.
+ * Inherits from {@link DrawableObject}.
  */
 class MovableObject extends DrawableObject {
+  /**
+   * Horizontal movement speed.
+   * @type {number}
+   */
   speed = 0.55;
+
+  /**
+   * Indicates if the object is facing left (true) or right (false).
+   * @type {boolean}
+   */
   otherDirection = false;
+
+  /**
+   * Vertical speed (for jumping and falling).
+   * @type {number}
+   */
   speedY = 0;
+
+  /**
+   * Acceleration due to gravity.
+   * @type {number}
+   */
   acceleration = 0.3;
+
+  /**
+   * The health or energy level of the object.
+   * @type {number}
+   */
   energy = 100;
+
+  /**
+   * Timestamp of the last hit.
+   * @type {number}
+   */
   lastHit = 0;
+
+  /**
+   * Tracks idle time to trigger sleep animations.
+   * @type {number}
+   */
   standingTime = 0;
+
+  /**
+   * Time (in ms) after which sleep animations begin.
+   * @type {number}
+   */
   sleepDelay = 6000;
+
+  /**
+   * Y-coordinate representing the ground level.
+   * @type {number}
+   */
   groundLevel = 175;
+
+  /**
+   * ID of the requestAnimationFrame used for gravity.
+   * @type {number|null}
+   */
   gravityFrameId = null;
 
+  /**
+   * Creates a new movable object and initializes the DrawableObject base.
+   */
   constructor() {
     super();
   }
 
   /**
-   * Applies gravity to the object using requestAnimationFrame.
-   * Simulates falling until ground level is reached.
+   * Starts gravity simulation using requestAnimationFrame.
+   * Applies acceleration to simulate falling until ground contact.
    */
   applyGravity() {
     if (this.gravityFrameId !== null) return;
 
     const gravityEffect = () => {
-      if (this.isAboveGround() || (this.y <= this.groundLevel && this.speedY > 0)) {
+      if (
+        this.isAboveGround() ||
+        (this.y <= this.groundLevel && this.speedY > 0)
+      ) {
         this.y -= this.speedY;
         this.speedY -= this.acceleration;
         this.speedY = Math.max(this.speedY, -30);
@@ -43,7 +98,7 @@ class MovableObject extends DrawableObject {
   }
 
   /**
-   * Returns whether the object is currently above ground.
+   * Checks whether the object is currently above ground.
    * @returns {boolean}
    */
   isAboveGround() {
@@ -51,8 +106,10 @@ class MovableObject extends DrawableObject {
   }
 
   /**
-   * Determines collision with another object, factoring in offsets.
-   * @param {MovableObject} mo - The other object to check against.
+   * Checks if this object is colliding with another movable object.
+   * Takes object offsets into account for precision.
+   *
+   * @param {MovableObject} mo - The other object to test collision against.
    * @returns {boolean}
    */
   isColliding(mo) {
@@ -70,8 +127,10 @@ class MovableObject extends DrawableObject {
   }
 
   /**
-   * Loops through image frames for a repeating animation.
-   * @param {string[]} images
+   * Plays an animation by cycling through a given array of image paths.
+   * Loops continuously.
+   *
+   * @param {string[]} images - Array of image paths for the animation.
    */
   playAnimation(images) {
     const index = this.currentImage % images.length;
@@ -80,7 +139,8 @@ class MovableObject extends DrawableObject {
   }
 
   /**
-   * Cancels any active gravity effect.
+   * Stops gravity simulation.
+   * Cancels the current requestAnimationFrame if one is active.
    */
   stopGravity() {
     if (this.gravityFrameId !== null) {
@@ -90,23 +150,24 @@ class MovableObject extends DrawableObject {
   }
 
   /**
-   * Moves the object to the left.
+   * Moves the object one frame to the left.
    */
   moveLeft() {
     this.x -= this.speed;
   }
 
   /**
-   * Moves the object to the right.
+   * Moves the object one frame to the right.
    */
   moveRight() {
     this.x += this.speed;
   }
 
   /**
-   * Plays animation frames once and executes callback after completion.
-   * @param {string[]} images
-   * @param {Function} [callback]
+   * Plays an animation only once and calls the provided callback after completion.
+   *
+   * @param {string[]} images - Array of image paths for the animation.
+   * @param {Function} [callback] - Optional callback to run after animation ends.
    */
   playAnimationOnce(images, callback) {
     let i = 0;
