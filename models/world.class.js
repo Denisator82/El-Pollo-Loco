@@ -173,7 +173,10 @@ class World {
    * Starts collision and throw-check intervals.
    */
   run() {
-    this.collisionIntervalId = setInterval(() => this.collisionManager?.checkAllCollisions(), 25);
+    this.collisionIntervalId = setInterval(
+      () => this.collisionManager?.checkAllCollisions(),
+      25
+    );
     this.throwIntervalId = setInterval(() => this.checkThrowObjects(), 50);
   }
 
@@ -216,7 +219,7 @@ class World {
       ...this.level.coins,
       ...this.level.bottles,
       ...this.throwableObjects,
-    ].filter(obj => this.isVisibleOnCanvas(obj));
+    ].filter((obj) => this.isVisibleOnCanvas(obj));
 
     this.addObjectsToMap(visibleObjects);
     this.ctx.restore();
@@ -226,14 +229,14 @@ class World {
       this.statusBarBottle,
       this.statusBarCoin,
       this.statusBarEndboss,
-    ].forEach(el => this.addToMap(el));
+    ].forEach((el) => this.addToMap(el));
 
     this.animationFrameId = requestAnimationFrame(() => this.draw());
   }
 
   /**
    * Checks if an object is within the visible camera area (with buffer).
-   * 
+   *
    * @param {Object} obj - Game object with x and width.
    * @returns {boolean}
    */
@@ -248,22 +251,23 @@ class World {
 
   /**
    * Adds multiple objects to the canvas.
-   * 
+   *
    * @param {Object[]} objects - Objects with a draw method.
    */
   addObjectsToMap(objects) {
-    objects?.forEach(obj => obj && this.addToMap(obj));
+    objects?.forEach((obj) => obj && this.addToMap(obj));
   }
 
   /**
    * Draws a single object and flips it if facing left.
-   * 
+   *
    * @param {Object} obj - The object to draw.
    */
   addToMap(obj) {
     if (!obj?.draw) return;
 
-    const shouldFlip = obj.otherDirection && !(obj instanceof Endboss && obj.isDeadEndboss?.());
+    const shouldFlip =
+      obj.otherDirection && !(obj instanceof Endboss && obj.isDeadEndboss?.());
     if (shouldFlip) this.flipImage(obj);
 
     obj.draw(this.ctx);
@@ -273,7 +277,7 @@ class World {
 
   /**
    * Flips an object horizontally.
-   * 
+   *
    * @param {Object} obj - The object to flip.
    */
   flipImage(obj) {
@@ -285,7 +289,7 @@ class World {
 
   /**
    * Reverts image flipping.
-   * 
+   *
    * @param {Object} obj - The object to unflip.
    */
   flipImageBack(obj) {
@@ -299,13 +303,13 @@ class World {
   stopAllIntervals() {
     this.character?.stopCharacterIntervals?.();
 
-    this.level.enemies?.forEach(enemy => {
+    this.level.enemies?.forEach((enemy) => {
       enemy?.stopChickenIntervals?.();
       enemy?.stopChickenMiniIntervals?.();
       enemy?.stopEndbossIntervals?.();
     });
 
-    this.throwableObjects?.forEach(bottle => {
+    this.throwableObjects?.forEach((bottle) => {
       bottle?.stopThrowableObjectIntervals?.();
     });
 
@@ -345,21 +349,25 @@ class World {
     this.startWorldIntervals?.();
     this.character.animateCharacter?.();
 
-    this.level.enemies?.forEach(enemy => {
+    this.level.enemies?.forEach((enemy) => {
       enemy?.animate?.();
       if (enemy instanceof Endboss) enemy.resumeEndboss?.();
     });
 
     const am = this.audioManager;
-    const endboss = this.level.enemies.find(e => e instanceof Endboss);
+    const endboss = this.level.enemies.find((e) => e instanceof Endboss);
 
     if (am && !am.isMuted) {
       if (endboss?.hadFirstContact && !endboss?.isDeadEndboss()) {
         am.pauseBackgroundMusic?.();
-        am.sounds["endbossMusic"]?.play().catch(e => console.warn("Resume EndbossMusic failed", e));
+        am.sounds["endbossMusic"]
+          ?.play()
+          .catch((e) => console.warn("Resume EndbossMusic failed", e));
         am.endbossFightStarted = true;
       } else if (!am.backgroundMusicPlaying && am.backgroundMusic?.paused) {
-        am.backgroundMusic.play().catch(e => console.warn("Resume BackgroundMusic failed", e));
+        am.backgroundMusic
+          .play()
+          .catch((e) => console.warn("Resume BackgroundMusic failed", e));
         am.backgroundMusicPlaying = true;
       }
     }

@@ -194,7 +194,7 @@ function toggleMute() {
   const manager = world?.audioManager || audioManager;
   if (manager) {
     manager.toggleMute();
-    localStorage.setItem('isMuted', manager.isMuted.toString());
+    localStorage.setItem("isMuted", manager.isMuted.toString());
     updateAudioIcon();
   }
 }
@@ -221,11 +221,16 @@ function updateAudioIcon() {
  * @type {Object<number, string>}
  */
 const KEY_MAP = {
-  39: "RIGHT", 68: "RIGHT",
-  37: "LEFT", 65: "LEFT",
-  38: "UP", 87: "UP",
-  40: "DOWN", 83: "DOWN",
-  32: "SPACE", 16: "SHIFT",
+  39: "RIGHT",
+  68: "RIGHT",
+  37: "LEFT",
+  65: "LEFT",
+  38: "UP",
+  87: "UP",
+  40: "DOWN",
+  83: "DOWN",
+  32: "SPACE",
+  16: "SHIFT",
 };
 
 /**
@@ -233,9 +238,12 @@ const KEY_MAP = {
  * @type {Object<string, boolean>}
  */
 const keyState = {
-  SPACE: false, SHIFT: false,
-  RIGHT: false, LEFT: false,
-  UP: false, DOWN: false,
+  SPACE: false,
+  SHIFT: false,
+  RIGHT: false,
+  LEFT: false,
+  UP: false,
+  DOWN: false,
 };
 
 /**
@@ -286,8 +294,8 @@ function initMobile() {
 }
 
 // Resize/orientation event listeners
-window.addEventListener('resize', handleOrientationChange);
-window.addEventListener('orientationchange', handleOrientationChange);
+window.addEventListener("resize", handleOrientationChange);
+window.addEventListener("orientationchange", handleOrientationChange);
 
 /**
  * Sets up touch events for mobile control buttons.
@@ -304,19 +312,27 @@ function setupMobileButtonEvents() {
     const button = document.getElementById(id);
     if (!button) return;
 
-    button.addEventListener("touchstart", (e) => {
-      e.preventDefault();
-      keyboard[key] = true;
-      if (key === 'SPACE' || key === 'SHIFT') justPressed[key] = true;
-      button.classList.add("active");
-    }, { passive: false });
+    button.addEventListener(
+      "touchstart",
+      (e) => {
+        e.preventDefault();
+        keyboard[key] = true;
+        if (key === "SPACE" || key === "SHIFT") justPressed[key] = true;
+        button.classList.add("active");
+      },
+      { passive: false }
+    );
 
-    button.addEventListener("touchend", (e) => {
-      e.preventDefault();
-      keyboard[key] = false;
-      if (key === 'SPACE' || key === 'SHIFT') justPressed[key] = false;
-      button.classList.remove("active");
-    }, { passive: false });
+    button.addEventListener(
+      "touchend",
+      (e) => {
+        e.preventDefault();
+        keyboard[key] = false;
+        if (key === "SPACE" || key === "SHIFT") justPressed[key] = false;
+        button.classList.remove("active");
+      },
+      { passive: false }
+    );
   });
 }
 
@@ -325,24 +341,26 @@ function setupMobileButtonEvents() {
  */
 function handleOrientationChange() {
   const isPortrait = window.innerHeight > window.innerWidth;
-  const rotateOverlay = document.getElementById('rotateDevice');
-  const leftBtns = document.getElementById('leftMobile-container');
-  const rightBtns = document.getElementById('rightMobile-container');
+  const rotateOverlay = document.getElementById("rotateDevice");
+  const leftBtns = document.getElementById("leftMobile-container");
+  const rightBtns = document.getElementById("rightMobile-container");
 
   if (isPortrait) {
-    rotateOverlay?.classList.remove('hidden');
-    leftBtns?.classList.add('hidden');
-    rightBtns?.classList.add('hidden');
+    rotateOverlay?.classList.remove("hidden");
+    leftBtns?.classList.add("hidden");
+    rightBtns?.classList.add("hidden");
   } else {
-    rotateOverlay?.classList.add('hidden');
-    leftBtns?.classList.remove('hidden');
-    rightBtns?.classList.remove('hidden');
+    rotateOverlay?.classList.add("hidden");
+    leftBtns?.classList.remove("hidden");
+    rightBtns?.classList.remove("hidden");
   }
 
-  ['LEFT', 'RIGHT', 'SPACE', 'SHIFT'].forEach(key => keyboard[key] = false);
-  ['left_button', 'right_button', 'jump_button', 'throw_button'].forEach(id => {
-    document.getElementById(id)?.classList.remove('active');
-  });
+  ["LEFT", "RIGHT", "SPACE", "SHIFT"].forEach((key) => (keyboard[key] = false));
+  ["left_button", "right_button", "jump_button", "throw_button"].forEach(
+    (id) => {
+      document.getElementById(id)?.classList.remove("active");
+    }
+  );
 }
 
 /**
@@ -367,9 +385,11 @@ function closeImpressum() {
  * Toggles the help page and pauses/resumes the game accordingly.
  */
 function showHelpPage() {
-  const helpPage = document.getElementById('help');
-  const isVisible = helpPage.classList.toggle('hidden');
-  document.getElementById("overlayBlocker")?.classList.toggle("show", !helpPage.classList.contains("hidden"));
+  const helpPage = document.getElementById("help");
+  const isVisible = helpPage.classList.toggle("hidden");
+  document
+    .getElementById("overlayBlocker")
+    ?.classList.toggle("show", !helpPage.classList.contains("hidden"));
 
   if (helpPage.classList.contains("hidden")) {
     resumeGame();

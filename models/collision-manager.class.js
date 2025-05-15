@@ -36,7 +36,7 @@ class CollisionManager {
    * Checks if the character is colliding with the endboss.
    */
   checkCollisionsCharacterWithEndboss() {
-    const boss = this.world.level.enemies.find(e => e instanceof Endboss);
+    const boss = this.world.level.enemies.find((e) => e instanceof Endboss);
     if (!boss) return;
 
     if (this.isEndbossCollisionActive(boss)) {
@@ -53,10 +53,12 @@ class CollisionManager {
    * @returns {boolean}
    */
   isEndbossCollisionActive(boss) {
-    return boss?.isDeadEndboss?.() === false &&
+    return (
+      boss?.isDeadEndboss?.() === false &&
       !this.world.gameOver &&
       !this.world.character.isHurt?.() &&
-      this.world.character.isColliding?.(boss);
+      this.world.character.isColliding?.(boss)
+    );
   }
 
   /**
@@ -75,7 +77,8 @@ class CollisionManager {
   handleEndbossCharacterCollisionStart(boss) {
     boss.handleCharacterCollision?.();
 
-    const shouldAttack = !boss.isDeadEndboss?.() &&
+    const shouldAttack =
+      !boss.isDeadEndboss?.() &&
       !boss.isAttacking &&
       Date.now() - boss.lastAttackTime > boss.attackCooldown;
 
@@ -103,7 +106,7 @@ class CollisionManager {
    * Checks collisions between the character and all regular enemies.
    */
   checkCollisionsCharacterWithEnemies() {
-    this.world.level.enemies.forEach(e => {
+    this.world.level.enemies.forEach((e) => {
       if (!(e instanceof Endboss)) this.checkCollisionWithNormalEnemy(e);
     });
   }
@@ -124,10 +127,12 @@ class CollisionManager {
    * @returns {boolean}
    */
   isEnemyCollisionActive(enemy) {
-    return enemy?.isDead?.() === false &&
+    return (
+      enemy?.isDead?.() === false &&
       !this.world.gameOver &&
       !this.world.character.isHurt?.() &&
-      this.world.character.isColliding?.(enemy);
+      this.world.character.isColliding?.(enemy)
+    );
   }
 
   /**
@@ -135,7 +140,7 @@ class CollisionManager {
    * @param {MovableObject} enemy
    */
   handleCharacterEnemyHit(enemy) {
-    const dmg = typeof enemy.damage === 'number' ? enemy.damage : 5;
+    const dmg = typeof enemy.damage === "number" ? enemy.damage : 5;
     this.applyDamageToCharacterAndShowUpdate(dmg);
     if (this.world.character.isDead()) this.triggerGameOverLose();
   }
@@ -164,7 +169,7 @@ class CollisionManager {
     this.world.character.speedY = 5;
     enemy.setDead?.();
     this.scheduleEnemyRemoval(enemy);
-    this.world.audioManager?.playSound?.('chickenDead');
+    this.world.audioManager?.playSound?.("chickenDead");
   }
 
   /**
@@ -208,7 +213,7 @@ class CollisionManager {
    * Checks collisions between throwable bottles and enemies.
    */
   checkCollisionsThrowableObjectsWithEnemies() {
-    this.world.throwableObjects.forEach(bottle => {
+    this.world.throwableObjects.forEach((bottle) => {
       if (!bottle.isSplashed) {
         for (let i = this.world.level.enemies.length - 1; i >= 0; i--) {
           const enemy = this.world.level.enemies[i];
@@ -240,7 +245,7 @@ class CollisionManager {
    * @param {Endboss} boss
    */
   handleBottleHitsEndboss(bottle, boss) {
-    const dmg = typeof bottle.damage === 'number' ? bottle.damage : 20;
+    const dmg = typeof bottle.damage === "number" ? bottle.damage : 20;
     boss.hitEndboss?.(dmg);
   }
 
@@ -251,7 +256,7 @@ class CollisionManager {
    */
   handleBottleHitsNormalEnemy(bottle, enemy) {
     enemy.setDead?.();
-    this.world.audioManager?.playSound?.('chickenDead');
+    this.world.audioManager?.playSound?.("chickenDead");
     this.scheduleEnemyRemoval(enemy);
   }
 
@@ -264,7 +269,7 @@ class CollisionManager {
       bottle.onTargetHit();
     } else {
       bottle.isSplashing = true;
-      this.world.audioManager?.playSound?.('bottle_hit');
+      this.world.audioManager?.playSound?.("bottle_hit");
     }
   }
 
