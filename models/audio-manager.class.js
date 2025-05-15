@@ -3,26 +3,55 @@
  */
 class AudioManager {
   constructor() {
+    /**
+     * Stores all sound effects by name.
+     * @type {Object<string, HTMLAudioElement>}
+     */
     this.sounds = {};
+
+    /** Indicates whether all sounds are muted. */
     this.isMuted = false;
+
+    /** Background music audio element. */
     this.backgroundMusic = null;
+
+    /** Indicates whether background music is currently playing. */
     this.backgroundMusicPlaying = false;
+
+    /** Indicates whether the endboss fight music is currently playing. */
     this.endbossFightStarted = false;
+
+    /** Default volume level for all sounds. */
     this.defaultVolume = 0.5;
   }
 
+  /**
+   * Adds a sound effect to the manager.
+   * @param {string} name - Name to reference the sound.
+   * @param {string} src - Path to the audio file.
+   * @param {number} [volume=this.defaultVolume] - Volume level.
+   */
   addSound(name, src, volume = this.defaultVolume) {
     const sound = new Audio(src);
     sound.volume = volume;
     this.sounds[name] = sound;
   }
 
+  /**
+   * Sets the background music.
+   * @param {string} src - Path to the background music file.
+   * @param {number} [volume=this.defaultVolume] - Volume level.
+   */
   setBackgroundMusic(src, volume = this.defaultVolume) {
     this.backgroundMusic = new Audio(src);
     this.backgroundMusic.loop = true;
     this.backgroundMusic.volume = volume;
   }
 
+  /**
+   * Plays a sound effect by name.
+   * @param {string} name - Name of the sound to play.
+   */
   playSound(name) {
     if (this.isMuted) return;
     const sound = this.sounds[name];
@@ -32,6 +61,9 @@ class AudioManager {
     }
   }
 
+  /**
+   * Plays the background music if conditions allow.
+   */
   playBackgroundMusic() {
     if (
       this.backgroundMusic &&
@@ -44,6 +76,9 @@ class AudioManager {
     }
   }
 
+  /**
+   * Pauses the background music.
+   */
   pauseBackgroundMusic() {
     if (this.backgroundMusic) {
       this.backgroundMusic.pause();
@@ -51,6 +86,9 @@ class AudioManager {
     }
   }
 
+  /**
+   * Plays the endboss fight music and pauses background music.
+   */
   playEndbossMusic() {
     const bossMusic = this.sounds['endbossMusic'];
     if (!this.isMuted && bossMusic) {
@@ -62,6 +100,9 @@ class AudioManager {
     }
   }
 
+  /**
+   * Pauses the endboss fight music.
+   */
   pauseEndbossMusic() {
     const bossMusic = this.sounds['endbossMusic'];
     if (bossMusic) {
@@ -70,6 +111,9 @@ class AudioManager {
     }
   }
 
+  /**
+   * Plays the victory sound effect.
+   */
   playWinSound() {
     const winSound = this.sounds['win'];
     if (!this.isMuted && winSound) {
@@ -78,6 +122,9 @@ class AudioManager {
     }
   }
 
+  /**
+   * Plays the lose sound effect.
+   */
   playLoseSound() {
     const loseSound = this.sounds['lose'];
     if (!this.isMuted && loseSound) {
@@ -86,6 +133,9 @@ class AudioManager {
     }
   }
 
+  /**
+   * Toggles mute state and pauses/resumes sounds accordingly.
+   */
   toggleMute() {
     this.isMuted = !this.isMuted;
     if (this.isMuted) {
@@ -100,6 +150,9 @@ class AudioManager {
     }
   }
 
+  /**
+   * Stops all sounds and resets their playback time.
+   */
   stopAllSounds() {
     Object.values(this.sounds).forEach(sound => {
       sound.pause();
@@ -113,6 +166,10 @@ class AudioManager {
     this.endbossFightStarted = false;
   }
 
+  /**
+   * Preloads all sounds and calls the callback when all are ready.
+   * @param {Function} [callback] - Function to call after loading completes.
+   */
   loadSounds(callback) {
     let soundsToLoad = Object.keys(this.sounds).length + (this.backgroundMusic ? 1 : 0);
     if (soundsToLoad === 0) {
