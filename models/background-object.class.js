@@ -1,18 +1,26 @@
 /**
- * Represents a background object in the game.
- * Inherits from MovableObject and sets default dimensions for width and height.
+ * Represents a background object in the game, such as a layer in the parallax effect.
+ * Inherits from {@link MovableObject}.
  */
 class BackgroundObject extends MovableObject {
-    width = 720; // Width of the background object
-    height = 480; // Height of the background object
+    /**
+     * Width of the background object.
+     * @type {number}
+     */
+    width = 720;
 
     /**
-     * Initializes an object with the specified image path and x-coordinate.
-     * Loads the image using the provided path and sets the initial x and y positions.
-     * The y-coordinate is calculated to position the object based on its height.
+     * Height of the background object.
+     * @type {number}
+     */
+    height = 480;
+
+    /**
+     * Creates a new background object at the specified horizontal position using a given image.
+     * The y-coordinate is automatically calculated to align with the bottom of the screen.
      * 
      * @param {string} imagePath - The path to the image file.
-     * @param {number} x - The initial x-coordinate of the object.
+     * @param {number} x - The initial x-coordinate of the background object.
      */
     constructor(imagePath, x) {
         super().loadImage(imagePath);
